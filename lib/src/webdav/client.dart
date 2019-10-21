@@ -148,6 +148,7 @@ class WebDavClient {
         <d:prop>
           <d:getlastmodified/>
           <d:getcontentlength/>
+          <d:getcontenttype/>
         </d:prop>
       </d:propfind>
     ''');

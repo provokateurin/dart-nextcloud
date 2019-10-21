@@ -6,12 +6,16 @@ class WebDavFile {
   // ignore: public_member_api_docs
   WebDavFile(
     this.path,
+    this.mimeType,
     this.size,
     this.lastModified,
   );
 
   // ignore: public_member_api_docs
   final String path;
+
+  // ignore: public_member_api_docs
+  final String mimeType;
 
   // ignore: public_member_api_docs
   final int size;
@@ -34,7 +38,7 @@ class WebDavFile {
   @override
   String toString() =>
       // ignore: lines_longer_than_80_chars
-      'WebDavFile{name: $name, isDirectory: $isDirectory, path: $path, size: $size, modificationTime: $lastModified}';
+      'WebDavFile{name: $name, isDirectory: $isDirectory, path: $path, mimeType: $mimeType, size: $size, modificationTime: $lastModified}';
 }
 
 /// Extract the file tree from the webdav xml
@@ -48,6 +52,10 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
   // Iterate over the response to find all folders / files and parse the information
   for (final response in xmlDocument.findAllElements('d:response')) {
     final davItemName = response.findAllElements('d:href').single.text;
+    final contentTypeElements = response.findAllElements('d:getcontenttype');
+    final contentType = contentTypeElements.single.text != ''
+        ? contentTypeElements.single.text
+        : null;
     final contentLengthElements =
         response.findAllElements('d:getcontentlength');
     final contentLength = contentLengthElements.single.text != ''
@@ -62,6 +70,7 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
 
     tree.add(WebDavFile(
       davItemName.replaceAll('remote.php/webdav/', ''),
+      contentType,
       contentLength,
       lastModified,
     ));
