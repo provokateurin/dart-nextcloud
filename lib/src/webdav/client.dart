@@ -138,8 +138,8 @@ class WebDavClient {
       _send('PUT', remotePath, [200, 201, 204], data: localData);
 
   /// download [remotePath] and store the response file contents to String
-  Future<String> download(String remotePath) async =>
-      (await _send('GET', remotePath, [200])).body;
+  Future<Uint8List> download(String remotePath) async =>
+      (await _send('GET', remotePath, [200])).bodyBytes;
 
   /// list the directories and files under given [remotePath]
   Future<List<WebDavFile>> ls(String remotePath) async {
