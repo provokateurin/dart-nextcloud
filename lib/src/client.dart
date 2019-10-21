@@ -10,6 +10,7 @@ class NextCloudClient {
     this.password, {
     this.port,
   }) {
+    host = host.replaceFirst(RegExp(r'/http(s)?:/'), '');
     _webDavClient = WebDavClient(
       host,
       username,
@@ -25,7 +26,7 @@ class NextCloudClient {
   }
 
   // ignore: public_member_api_docs
-  final String host;
+  String host;
 
   // ignore: public_member_api_docs
   final int port;

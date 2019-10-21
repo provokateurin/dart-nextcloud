@@ -2,19 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:http_auth/http_auth.dart' as http_auth;
 import 'package:nextcloud/nextcloud.dart';
+import 'package:nextcloud/src/network.dart';
 import 'package:nextcloud/src/webdav/file.dart';
-import 'package:retry/retry.dart';
 
-/// WebDavException class
-class WebDavException implements Exception {
-  // ignore: public_member_api_docs
-  WebDavException(this.cause);
-
-  // ignore: public_member_api_docs
-  String cause;
-}
 
 /// WebDavClient class
 class WebDavClient {
@@ -31,12 +22,13 @@ class WebDavClient {
       _baseUrl = 'https://$host:$port';
     }
     _baseUrl = '$_baseUrl/remote.php/webdav/';
-    _httpClient = http_auth.BasicAuthClient(username, password);
+    final client = NextCloudHttpClient(username, password);
+    _network = Network(client, _baseUrl);
   }
 
   String _baseUrl;
 
-  http.Client _httpClient;
+  Network _network;
 
   /// get url from given [path]
   String getUrl(String path) {
@@ -52,43 +44,6 @@ class WebDavClient {
     return [_baseUrl, path].join('');
   }
 
-  /// send the request with given [method] and [path]
-  ///
-  Future<http.Response> _send(
-          String method, String path, List<int> expectedCodes,
-          {Uint8List data}) =>
-      retry(
-        () => __send(
-          method,
-          path,
-          expectedCodes,
-          data: data,
-        ),
-        retryIf: (e) => e is WebDavException,
-        maxAttempts: 5,
-      );
-
-  /// send the request with given [method] and [path]
-  Future<http.Response> __send(
-    String method,
-    String path,
-    List<int> expectedCodes, {
-    Uint8List data,
-  }) async {
-    final url = getUrl(path);
-
-    final response = await _httpClient.send(http.Request(method, Uri.parse(url))
-      ..followRedirects = false
-      ..persistentConnection = true
-      ..body = data != null ? utf8.decode(data) : '');
-    if (!expectedCodes.contains(response.statusCode)) {
-      throw WebDavException('operation failed method:$method '
-          'path:$path exceptionCodes:$expectedCodes '
-          'statusCode:${response.statusCode}');
-    }
-    return http.Response.fromStream(response);
-  }
-
   /// make a dir with [path] under current dir
   Future<http.Response> mkdir(String path, [bool safe = true]) {
     final expectedCodes = [
@@ -98,7 +53,7 @@ class WebDavClient {
         405,
       ],
     ];
-    return _send('MKCOL', path, expectedCodes);
+    return _network.send('MKCOL', path, expectedCodes);
   }
 
   /// just like mkdir -p
@@ -118,28 +73,15 @@ class WebDavClient {
   }
 
   /// remove dir with given [path]
-  Future rmdir(String path, [bool safe = true]) async {
-    path = path.trim();
-    final expectedCodes = [
-      204,
-      if (safe) ...[
-        204,
-        404,
-      ]
-    ];
-    await _send('DELETE', path, expectedCodes);
-  }
-
-  /// remove dir with given [path]
-  Future delete(String path) => _send('DELETE', path, [204]);
+  Future delete(String path) => _network.send('DELETE', path, [204]);
 
   /// upload a new file with [localData] as content to [remotePath]
   Future upload(Uint8List localData, String remotePath) =>
-      _send('PUT', remotePath, [200, 201, 204], data: localData);
+      _network.send('PUT', remotePath, [200, 201, 204], data: localData);
 
   /// download [remotePath] and store the response file contents to String
   Future<Uint8List> download(String remotePath) async =>
-      (await _send('GET', remotePath, [200])).bodyBytes;
+      (await _network.send('GET', remotePath, [200])).bodyBytes;
 
   /// list the directories and files under given [remotePath]
   Future<List<WebDavFile>> ls(String remotePath) async {
@@ -153,7 +95,7 @@ class WebDavClient {
       </d:propfind>
     ''');
     final response =
-        await _send('PROPFIND', remotePath, [207, 301], data: data);
+        await _network.send('PROPFIND', remotePath, [207, 301], data: data);
     if (response.statusCode == 301) {
       return ls(response.headers['location']);
     }
