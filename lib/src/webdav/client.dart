@@ -100,4 +100,28 @@ class WebDavClient {
     }
     return treeFromWebDavXml(response.body);
   }
+
+  /// Move a file from [sourcePath] to [destinationPath]
+  Future move(String sourcePath, String destinationPath) async {
+    await _network.send(
+      'MOVE',
+      getUrl(sourcePath),
+      [200, 201],
+      headers: {
+        'Destination': getUrl(destinationPath),
+      },
+    );
+  }
+
+  /// Copy a file from [sourcePath] to [destinationPath]
+  Future copy(String sourcePath, String destinationPath) async {
+    await _network.send(
+      'COPY',
+      getUrl(sourcePath),
+      [200, 201],
+      headers: {
+        'Destination': getUrl(destinationPath),
+      },
+    );
+  }
 }

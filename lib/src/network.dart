@@ -24,6 +24,7 @@ class NextCloudHttpClient extends http.BaseClient {
   final http.Client _inner;
   final String _authString;
 
+  @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     request.headers['Authorization'] = _authString;
     request.headers['OCS-APIRequest'] = 'true';
@@ -49,18 +50,23 @@ class Network {
   /// The http client
   final http.Client client;
 
-  /// send the request with given [method] and [path]
+  /// send the request with given [method] and [url]
   Future<http.Response> send(
     String method,
     String url,
     List<int> expectedCodes, {
     Uint8List data,
+    Map<String, String> headers,
   }) async {
     final response = await client.send(http.Request(method, Uri.parse(url))
       ..followRedirects = false
       ..persistentConnection = true
-      ..body = data != null ? utf8.decode(data) : '');
+      ..body = data != null ? utf8.decode(data) : ''
+      ..headers.addAll(headers ?? {}));
     if (!expectedCodes.contains(response.statusCode)) {
+      final r = await http.Response.fromStream(response);
+      print(r.statusCode);
+      print(r.body);
       throw RequestException(
           'operation failed method:$method exceptionCodes:$expectedCodes statusCode:${response.statusCode}');
     }

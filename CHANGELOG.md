@@ -1,3 +1,6 @@
+# v1.0.3
+* Add move and copy operations
+
 # v1.0.2
 * Change structure
 * Fix everything for web
