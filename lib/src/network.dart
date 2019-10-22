@@ -61,7 +61,7 @@ class Network {
     final response = await client.send(http.Request(method, Uri.parse(url))
       ..followRedirects = false
       ..persistentConnection = true
-      ..body = data != null ? utf8.decode(data) : ''
+      ..body = data != null ? String.fromCharCodes(data) : ''
       ..headers.addAll(headers ?? {}));
     if (!expectedCodes.contains(response.statusCode)) {
       final r = await http.Response.fromStream(response);
