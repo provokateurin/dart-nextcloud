@@ -1,3 +1,7 @@
+# v1.0.2
+* Change structure
+* Fix everything for web
+
 # v1.0.1
 * Fix download
 * Add content type

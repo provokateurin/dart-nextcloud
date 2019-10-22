@@ -1,26 +1,38 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:http_auth/http_auth.dart' as http_auth;
 import 'package:http/http.dart' as http;
-import 'package:retry/retry.dart';
+import 'package:nextcloud/src/http_client/http_client.dart';
 
 /// Http client with the correct authentication and header
 class NextCloudHttpClient extends http.BaseClient {
-  NextCloudHttpClient(String username, String password, {inner})
-      : _inner = inner ?? http_auth.BasicAuthClient(username, password),
-        super();
+  /// Creates a client wrapping [inner] that uses Basic HTTP auth.
+  ///
+  /// Constructs a new [NextCloudHttpClient] which will use the provided [username]
+  /// and [password] for all subsequent requests.
+  NextCloudHttpClient(this.username, this.password, {inner})
+      : _authString =
+            'Basic ${base64.encode(utf8.encode('$username:$password')).trim()}',
+        _inner = inner ?? HttpClient();
 
-  final http_auth.BasicAuthClient _inner;
+  /// The username to be used for all requests
+  final String username;
 
-  @override
+  /// The password to be used for all requests
+  final String password;
+
+  final http.Client _inner;
+  final String _authString;
+
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    request.headers['Authorization'] = _authString;
     request.headers['OCS-APIRequest'] = 'true';
+
     return _inner.send(request);
   }
 }
 
-/// WebDavException class
+/// RequestException class
 class RequestException implements Exception {
   // ignore: public_member_api_docs
   RequestException(this.cause);
@@ -29,49 +41,28 @@ class RequestException implements Exception {
   String cause;
 }
 
-/// Organizes the requests 
+/// Organizes the requests
 class Network {
-
   /// Create a network with the given client and base url
-  Network(this.client, this.baseUrl);
+  Network(this.client);
 
   /// The http client
   final http.Client client;
 
-  /// The base url for all requests
-  final String baseUrl;
-
   /// send the request with given [method] and [path]
   Future<http.Response> send(
-          String method, String path, List<int> expectedCodes,
-          {Uint8List data}) =>
-      retry(
-        () => _send(
-          method,
-          path,
-          expectedCodes,
-          data: data,
-        ),
-        retryIf: (e) => e is RequestException,
-        maxAttempts: 5,
-      );
-
-  /// send the request with given [method] and [path]
-  Future<http.Response> _send(
     String method,
-    String path,
+    String url,
     List<int> expectedCodes, {
     Uint8List data,
   }) async {
-    final response =
-        await client.send(http.Request(method, Uri.parse(baseUrl))
-          ..followRedirects = false
-          ..persistentConnection = true
-          ..body = data != null ? utf8.decode(data) : '');
+    final response = await client.send(http.Request(method, Uri.parse(url))
+      ..followRedirects = false
+      ..persistentConnection = true
+      ..body = data != null ? utf8.decode(data) : '');
     if (!expectedCodes.contains(response.statusCode)) {
-      throw RequestException('operation failed method:$method '
-          'path:$path exceptionCodes:$expectedCodes '
-          'statusCode:${response.statusCode}');
+      throw RequestException(
+          'operation failed method:$method exceptionCodes:$expectedCodes statusCode:${response.statusCode}');
     }
     return http.Response.fromStream(response);
   }

@@ -6,7 +6,6 @@ import 'package:nextcloud/nextcloud.dart';
 import 'package:nextcloud/src/network.dart';
 import 'package:nextcloud/src/webdav/file.dart';
 
-
 /// WebDavClient class
 class WebDavClient {
   // ignore: public_member_api_docs
@@ -23,7 +22,7 @@ class WebDavClient {
     }
     _baseUrl = '$_baseUrl/remote.php/webdav/';
     final client = NextCloudHttpClient(username, password);
-    _network = Network(client, _baseUrl);
+    _network = Network(client);
   }
 
   String _baseUrl;
@@ -53,7 +52,7 @@ class WebDavClient {
         405,
       ],
     ];
-    return _network.send('MKCOL', path, expectedCodes);
+    return _network.send('MKCOL', getUrl(path), expectedCodes);
   }
 
   /// just like mkdir -p
@@ -73,15 +72,15 @@ class WebDavClient {
   }
 
   /// remove dir with given [path]
-  Future delete(String path) => _network.send('DELETE', path, [204]);
+  Future delete(String path) => _network.send('DELETE', getUrl(path), [204]);
 
   /// upload a new file with [localData] as content to [remotePath]
-  Future upload(Uint8List localData, String remotePath) =>
-      _network.send('PUT', remotePath, [200, 201, 204], data: localData);
+  Future upload(Uint8List localData, String remotePath) => _network
+      .send('PUT', getUrl(remotePath), [200, 201, 204], data: localData);
 
   /// download [remotePath] and store the response file contents to String
   Future<Uint8List> download(String remotePath) async =>
-      (await _network.send('GET', remotePath, [200])).bodyBytes;
+      (await _network.send('GET', getUrl(remotePath), [200])).bodyBytes;
 
   /// list the directories and files under given [remotePath]
   Future<List<WebDavFile>> ls(String remotePath) async {
@@ -94,8 +93,8 @@ class WebDavClient {
         </d:prop>
       </d:propfind>
     ''');
-    final response =
-        await _network.send('PROPFIND', remotePath, [207, 301], data: data);
+    final response = await _network
+        .send('PROPFIND', getUrl(remotePath), [207, 301], data: data);
     if (response.statusCode == 301) {
       return ls(response.headers['location']);
     }
