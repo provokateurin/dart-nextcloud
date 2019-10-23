@@ -6,3 +6,8 @@ export 'package:nextcloud/src/metadata/metadata.dart' show MetaData;
 export 'package:nextcloud/src/network.dart' show RequestException;
 export 'package:nextcloud/src/webdav/client.dart' show WebDavClient;
 export 'package:nextcloud/src/webdav/file.dart' show WebDavFile;
+export 'package:nextcloud/src/shares/share.dart' show Share;
+export 'package:nextcloud/src/shares/client.dart' show SharesClient;
+export 'package:nextcloud/src/shares/share.dart' show Permission;
+export 'package:nextcloud/src/shares/share.dart' show Permissions;
+export 'package:nextcloud/src/shares/share.dart' show ShareTypes;

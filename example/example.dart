@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:nextcloud/nextcloud.dart';
+import 'package:nextcloud/src/shares/share.dart';
 
 Future main() async {
   final client = NextCloudClient('cloud.example.com', 'myuser', 'mypassword');
+  await client.webDav.upload(utf8.encode('Test file'), '/test.txt');
   await listFiles(client);
   await client.webDav.move('/test.txt', '/abc.txt');
   await listFiles(client);
@@ -11,6 +15,24 @@ Future main() async {
   final userData = await client.metaData.getMetaData();
   print(userData.fullName);
   print(userData.groups);
+  
+  // Sharing example
+  print('Share file:');
+  final share = await client.shares.createShare(
+    '/test.txt', 
+    ShareTypes.user, 
+    shareWith: 'USER',
+    permissions: Permissions([Permission.read, Permission.update]));
+  print(share);
+  print('List shared files');
+  final shares = await client.shares.getShares(path: '/test.txt', reshares: false);
+  print(shares.join('\n'));
+  await client.shares.updateShareNote(share.id, 'Test Notiz');
+  print('New note:');
+  await client.shares.getShare(share.id);
+  print('Delete share');
+  await client.shares.deleteShare(share.id);
+  
 }
 
 Future listFiles(NextCloudClient client) async {
