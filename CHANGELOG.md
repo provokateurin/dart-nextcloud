@@ -1,3 +1,6 @@
+# v1.0.6
+* Add shares feature
+
 # v1.0.5
 * Fix web headers
 

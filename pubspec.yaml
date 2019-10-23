@@ -1,6 +1,6 @@
 name: nextcloud
-version: 1.0.5
-description: A Nextcloud client for dart which can use WebDav and parts of the OCS API
+version: 1.0.6
+description: A Nextcloud client for dart which can use WebDav and the OCS Share API
 homepage: https://github.com/jld3103/nextcloud
 author: jld3103 <pub@2bad2c0.de>
 
