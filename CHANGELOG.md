@@ -1,3 +1,6 @@
+# v1.0.7
+* Add sharees search feature
+
 # v1.0.6
 * Add shares feature
 

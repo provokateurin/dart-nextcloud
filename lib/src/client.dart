@@ -1,4 +1,5 @@
 import 'package:nextcloud/src/metadata/client.dart';
+import 'package:nextcloud/src/sharees/client.dart';
 import 'package:nextcloud/src/shares/client.dart';
 import 'package:nextcloud/src/webdav/client.dart';
 
@@ -30,6 +31,12 @@ class NextCloudClient {
       password,
       port: port,
     );
+    _shareesClient = ShareesClient(
+      host,
+      username,
+      password,
+      port: port,
+    );
   }
 
   // ignore: public_member_api_docs
@@ -47,6 +54,7 @@ class NextCloudClient {
   WebDavClient _webDavClient;
   MetaDataClient _metaDataClient;
   SharesClient _sharesClient;
+  ShareesClient _shareesClient;
 
   // ignore: public_member_api_docs
   WebDavClient get webDav => _webDavClient;
@@ -56,4 +64,7 @@ class NextCloudClient {
 
   // ignore: public_member_api_docs
   SharesClient get shares => _sharesClient;
+
+  // ignore: public_member_api_docs
+  ShareesClient get sharees => _shareesClient;
 }

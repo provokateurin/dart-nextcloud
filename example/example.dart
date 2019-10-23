@@ -35,6 +35,9 @@ Future main() async {
 
   await client.webDav.delete('/test.txt');
   await client.webDav.delete('/abc.txt');
+
+  print('List all sharees:');
+  print(await client.sharees.getSharees('', 1000, 'file'));
 }
 
 Future listFiles(NextCloudClient client) async {
