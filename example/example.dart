@@ -18,10 +18,9 @@ Future main() async {
   
   // Sharing example
   print('Share file:');
-  final share = await client.shares.createShare(
+  final share = await client.shares.shareWithUser(
     '/test.txt', 
-    ShareTypes.user, 
-    shareWith: 'USER',
+    'USER',
     permissions: Permissions([Permission.read, Permission.update]));
   print(share);
   print('List shared files');
