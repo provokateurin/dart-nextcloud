@@ -1,3 +1,6 @@
+# v1.0.4
+* Fix upload body
+
 # v1.0.3
 * Add move and copy operations
 
