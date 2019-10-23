@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:nextcloud/src/http_client/http_client.dart';
 
 /// Http client with the correct authentication and header
-class NextCloudHttpClient extends http.BaseClient {
+class NextCloudHttpClient extends HttpClient {
   /// Creates a client wrapping [inner] that uses Basic HTTP auth.
   ///
   /// Constructs a new [NextCloudHttpClient] which will use the provided [username]
@@ -28,6 +28,7 @@ class NextCloudHttpClient extends http.BaseClient {
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     request.headers['Authorization'] = _authString;
     request.headers['OCS-APIRequest'] = 'true';
+    request.headers['Content-Type'] = 'application/xml';
 
     return _inner.send(request);
   }

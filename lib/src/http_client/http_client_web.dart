@@ -9,8 +9,6 @@ class HttpClient extends http.BaseClient {
   final http.BaseClient _client;
 
   @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) {
-    request.headers['Content-Type'] = 'application/xml; charset=utf-8';
-    return _client.send(request);
-  }
+  Future<http.StreamedResponse> send(http.BaseRequest request) =>
+      _client.send(request);
 }
