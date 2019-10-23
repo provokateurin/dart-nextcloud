@@ -114,7 +114,7 @@ class SharesClient {
   /// The [password] is optional to protect a public link Share
   /// 
   /// It returns the share id of the created share
-  Future<Share> createShare(
+  Future<Share> _createShare(
       String path, 
       int shareType, 
       {String shareWith, 
@@ -145,14 +145,14 @@ class SharesClient {
 
   /// Shares a [path] (dir/file) with a [user]
   Future<Share> shareWithUser(String path, String user, {Permissions permissions, bool publicUpload}) =>
-    createShare(path, ShareTypes.user, shareWith: user, permissions: permissions, publicUpload: publicUpload);
+    _createShare(path, ShareTypes.user, shareWith: user, permissions: permissions, publicUpload: publicUpload);
 
   /// Shares a [path] (dir/file) with a [group]
   Future<Share> shareWithGroup(String path, String group, {Permissions permissions, bool publicUpload}) =>
-    createShare(path, ShareTypes.group, shareWith: group, permissions: permissions, publicUpload: publicUpload);
+    _createShare(path, ShareTypes.group, shareWith: group, permissions: permissions, publicUpload: publicUpload);
   
   /// Shares a [path] (dir/file) with a url.
   /// This url can be found in the returned [Share.url]
   Future<Share> shareWithPublicLink(String path, {Permissions permissions, String password, bool publicUpload}) =>
-    createShare(path, ShareTypes.publicLink, password: password, permissions: permissions, publicUpload: publicUpload);
+    _createShare(path, ShareTypes.publicLink, password: password, permissions: permissions, publicUpload: publicUpload);
 }
