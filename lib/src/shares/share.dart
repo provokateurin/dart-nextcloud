@@ -3,36 +3,35 @@ import 'package:xml/xml.dart' as xml;
 /// Share class
 class Share {
   // ignore: public_member_api_docs
-  Share({
-    this.id,
-    this.shareType,
-    this.uidOwner,
-    this.displaynameOwner,
-    this.permissions,
-    this.stime,
-    this.parent,
-    this.expiration,
-    this.token,
-    this.uidFileOwner,
-    this.note,
-    this.label,
-    this.displaynameFileOwner,
-    this.path,
-    this.itemType,
-    this.mimeType,
-    this.storageId,
-    this.storage,
-    this.itemSource,
-    this.fileSource,
-    this.fileParent,
-    this.fileTarget,
-    this.shareWith,
-    this.shareWithDisplayName,
-    this.mailSend,
-    this.hideDownload,
-    this.password,
-    this.url
-  });
+  Share(
+      {this.id,
+      this.shareType,
+      this.uidOwner,
+      this.displaynameOwner,
+      this.permissions,
+      this.stime,
+      this.parent,
+      this.expiration,
+      this.token,
+      this.uidFileOwner,
+      this.note,
+      this.label,
+      this.displaynameFileOwner,
+      this.path,
+      this.itemType,
+      this.mimeType,
+      this.storageId,
+      this.storage,
+      this.itemSource,
+      this.fileSource,
+      this.fileParent,
+      this.fileTarget,
+      this.shareWith,
+      this.shareWithDisplayName,
+      this.mailSend,
+      this.hideDownload,
+      this.password,
+      this.url});
 
   /// The share id
   final int id;
@@ -144,10 +143,10 @@ class ShareTypes {
 /// Defines the permission
 class Permission {
   /// Read only
-  static const read = 1; 
+  static const read = 1;
 
   /// Update only
-  static const update = 2; 
+  static const update = 2;
 
   /// Create only
   static const create = 4;
@@ -167,7 +166,6 @@ class Permission {
 
 /// Defines the combination of permissions
 class Permissions {
-
   /// Create permissions by the integer lists of [Permission].VALUE objects
   Permissions(List<int> permissions) {
     _permissions = permissions;
@@ -208,7 +206,7 @@ result parse<result>(String text, result Function(String) parser) {
   if (text == null || text.isEmpty) {
     // ignore: avoid_returning_null
     return null;
-  } 
+  }
   return parser(text);
 }
 
@@ -248,64 +246,76 @@ Share shareFromRequestResponseXml(String xmlStr) {
 /// Converts a share xml a a share object
 Share shareFromShareXml(xml.XmlElement element) {
   final id = parse<int>(element.findAllElements('id').single.text, int.parse);
-  final shareType = parse<int>(element.findAllElements('share_type').single.text, int.parse);
-  final stime = parse<int>(element.findAllElements('stime').single.text, int.parse);
+  final shareType =
+      parse<int>(element.findAllElements('share_type').single.text, int.parse);
+  final stime =
+      parse<int>(element.findAllElements('stime').single.text, int.parse);
   final uidOwner = element.findAllElements('uid_owner').single.text;
-  final displaynameOwner = element.findAllElements('displayname_owner').single.text;
+  final displaynameOwner =
+      element.findAllElements('displayname_owner').single.text;
   final parent = element.findAllElements('parent').single.text;
-  final expiration = parse<DateTime>(element.findAllElements('expiration').single.text, DateTime.parse);
+  final expiration = parse<DateTime>(
+      element.findAllElements('expiration').single.text, DateTime.parse);
   final token = element.findAllElements('token').single.text;
   final uidFileOwner = element.findAllElements('uid_file_owner').single.text;
   final note = element.findAllElements('note').single.text;
   final label = element.findAllElements('label').single.text;
-  final displaynameFileOwner = element.findAllElements('displayname_file_owner').single.text;
+  final displaynameFileOwner =
+      element.findAllElements('displayname_file_owner').single.text;
   final path = element.findAllElements('path').single.text;
   final itemType = element.findAllElements('item_type').single.text;
   final mimeType = element.findAllElements('mimetype').single.text;
   final storageId = element.findAllElements('storage_id').single.text;
-  final storage = parse<int>(element.findAllElements('storage').single.text, int.parse);
-  final itemSource = parse<int>(element.findAllElements('item_source').single.text, int.parse);
-  final fileSource = parse<int>(element.findAllElements('file_source').single.text, int.parse);
-  final fileParent = parse<int>(element.findAllElements('file_parent').single.text, int.parse);
+  final storage =
+      parse<int>(element.findAllElements('storage').single.text, int.parse);
+  final itemSource =
+      parse<int>(element.findAllElements('item_source').single.text, int.parse);
+  final fileSource =
+      parse<int>(element.findAllElements('file_source').single.text, int.parse);
+  final fileParent =
+      parse<int>(element.findAllElements('file_parent').single.text, int.parse);
   final fileTarget = element.findAllElements('file_target').single.text;
   final shareWith = element.findAllElements('share_with').single.text;
-  final shareWithDisplayName = element.findAllElements('share_with_displayname').single.text;
-  final mailSend = parse<int>(element.findAllElements('mail_send').single.text, int.parse);
-  final hideDownload = parse<int>(element.findAllElements('hide_download').single.text, int.parse);
+  final shareWithDisplayName =
+      element.findAllElements('share_with_displayname').single.text;
+  final mailSend =
+      parse<int>(element.findAllElements('mail_send').single.text, int.parse);
+  final hideDownload = parse<int>(
+      element.findAllElements('hide_download').single.text, int.parse);
   final password = getElement(element.findAllElements('password'));
   final url = getElement(element.findAllElements('url'));
 
-  final permissionsNumber = parse<int>(element.findAllElements('permissions').single.text, int.parse);
+  final permissionsNumber =
+      parse<int>(element.findAllElements('permissions').single.text, int.parse);
   final permissions = Permissions.fromInt(permissionsNumber);
 
   return Share(
-    id: id,
-    shareType: shareType,
-    uidOwner: uidOwner,
-    displaynameOwner: displaynameOwner,
-    permissions: permissions,
-    stime: stime,
-    parent: parent,
-    expiration: expiration,
-    token: token,
-    uidFileOwner: uidFileOwner,
-    note: note,
-    label: label,
-    displaynameFileOwner: displaynameFileOwner,
-    path: path,
-    itemType: itemType,
-    mimeType: mimeType,
-    storageId: storageId,
-    storage: storage,
-    itemSource: itemSource,
-    fileSource: fileSource,
-    fileParent: fileParent,
-    fileTarget: fileTarget,
-    shareWith: shareWith,
-    shareWithDisplayName: shareWithDisplayName,
-    mailSend: mailSend,
-    hideDownload: hideDownload,
-    password: password,
-    url: url
-  );
+      id: id,
+      shareType: shareType,
+      uidOwner: uidOwner,
+      displaynameOwner: displaynameOwner,
+      permissions: permissions,
+      stime: stime,
+      parent: parent,
+      expiration: expiration,
+      token: token,
+      uidFileOwner: uidFileOwner,
+      note: note,
+      label: label,
+      displaynameFileOwner: displaynameFileOwner,
+      path: path,
+      itemType: itemType,
+      mimeType: mimeType,
+      storageId: storageId,
+      storage: storage,
+      itemSource: itemSource,
+      fileSource: fileSource,
+      fileParent: fileParent,
+      fileTarget: fileTarget,
+      shareWith: shareWith,
+      shareWithDisplayName: shareWithDisplayName,
+      mailSend: mailSend,
+      hideDownload: hideDownload,
+      password: password,
+      url: url);
 }

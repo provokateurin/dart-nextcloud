@@ -40,9 +40,10 @@ class SharesClient {
   }
 
   /// Get a list of shares.
-  /// 
+  ///
   /// By default it is a list of all shares of the current user
-  Future<List<Share>> getShares({String path, bool reshares = false, bool subfiles = false}) async {
+  Future<List<Share>> getShares(
+      {String path, bool reshares = false, bool subfiles = false}) async {
     var url = getUrl('/shares?reshares=$reshares&subfiles=$subfiles');
     if (path != null) {
       url += '&path=$path';
@@ -87,7 +88,8 @@ class SharesClient {
 
   /// Updates the expire date of a share
   Future<Share> updateShareExpireDate(int id, DateTime expireDate) async {
-    final url = getUrl('/shares/$id?expireDate=${expireDate.year}-${expireDate.month}-${expireDate.day}');
+    final url = getUrl(
+        '/shares/$id?expireDate=${expireDate.year}-${expireDate.month}-${expireDate.day}');
     final response = await _network.send('PUT', url, [200]);
     return shareFromRequestResponseXml(response.body);
   }
@@ -100,43 +102,41 @@ class SharesClient {
   }
 
   /// share a folder of file
-  /// 
+  ///
   /// The [path] can be a directory of a file
-  /// 
+  ///
   /// To set the [shareType] use the [ShareTypes] class
-  /// 
+  ///
   /// If [shareType] is [ShareTypes.user] or [ShareTypes.group] the [shareWith] attribute is required
-  /// 
+  ///
   /// [shareWith] must be a username or group id
-  /// 
+  ///
   /// To set the [permissions] user the [Permissions] class
-  /// 
+  ///
   /// The [password] is optional to protect a public link Share
-  /// 
+  ///
   /// It returns the share id of the created share
-  Future<Share> _createShare(
-      String path, 
-      int shareType, 
-      {String shareWith, 
-      bool publicUpload = false, 
+  Future<Share> _createShare(String path, int shareType,
+      {String shareWith,
+      bool publicUpload = false,
       String password,
-      Permissions permissions
-    }) async {
+      Permissions permissions}) async {
     // For sharing with user or group the user or group must be defined
-    if ((shareType == ShareTypes.user || shareType == ShareTypes.group) && shareWith == null) {
-      throw RequestException('When the share type is \'user\' or \'group\' than the share with attribute must not be null');
+    if ((shareType == ShareTypes.user || shareType == ShareTypes.group) &&
+        shareWith == null) {
+      throw RequestException(
+          'When the share type is \'user\' or \'group\' than the share with attribute must not be null');
     }
-    // For public shares the default permission is one 
+    // For public shares the default permission is one
     if (shareType == ShareTypes.publicLink && permissions == null) {
       permissions = Permissions([Permission.read]);
     }
     permissions ??= Permissions([Permission.all]);
-    print(permissions.value);
-    var url = getUrl('/shares?path=$path&shareType=$shareType&publicUpload=$publicUpload&permissions=${permissions.value}');
+    var url = getUrl(
+        '/shares?path=$path&shareType=$shareType&publicUpload=$publicUpload&permissions=${permissions.value}');
     if (shareType == ShareTypes.user || shareType == ShareTypes.group) {
       url += '&shareWith=$shareWith';
-    }
-    else if (shareType == ShareTypes.publicLink && password != null) {
+    } else if (shareType == ShareTypes.publicLink && password != null) {
       url += '&password=$password';
     }
     final response = await _network.send('POST', url, [200]);
@@ -144,15 +144,27 @@ class SharesClient {
   }
 
   /// Shares a [path] (dir/file) with a [user]
-  Future<Share> shareWithUser(String path, String user, {Permissions permissions, bool publicUpload}) =>
-    _createShare(path, ShareTypes.user, shareWith: user, permissions: permissions, publicUpload: publicUpload);
+  Future<Share> shareWithUser(String path, String user,
+          {Permissions permissions, bool publicUpload}) =>
+      _createShare(path, ShareTypes.user,
+          shareWith: user,
+          permissions: permissions,
+          publicUpload: publicUpload);
 
   /// Shares a [path] (dir/file) with a [group]
-  Future<Share> shareWithGroup(String path, String group, {Permissions permissions, bool publicUpload}) =>
-    _createShare(path, ShareTypes.group, shareWith: group, permissions: permissions, publicUpload: publicUpload);
-  
+  Future<Share> shareWithGroup(String path, String group,
+          {Permissions permissions, bool publicUpload}) =>
+      _createShare(path, ShareTypes.group,
+          shareWith: group,
+          permissions: permissions,
+          publicUpload: publicUpload);
+
   /// Shares a [path] (dir/file) with a url.
   /// This url can be found in the returned [Share.url]
-  Future<Share> shareWithPublicLink(String path, {Permissions permissions, String password, bool publicUpload}) =>
-    _createShare(path, ShareTypes.publicLink, password: password, permissions: permissions, publicUpload: publicUpload);
+  Future<Share> shareWithPublicLink(String path,
+          {Permissions permissions, String password, bool publicUpload}) =>
+      _createShare(path, ShareTypes.publicLink,
+          password: password,
+          permissions: permissions,
+          publicUpload: publicUpload);
 }

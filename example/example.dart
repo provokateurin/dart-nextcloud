@@ -15,23 +15,26 @@ Future main() async {
   final userData = await client.metaData.getMetaData();
   print(userData.fullName);
   print(userData.groups);
-  
+
   // Sharing example
   print('Share file:');
-  final share = await client.shares.shareWithUser(
-    '/test.txt', 
-    'USER',
-    permissions: Permissions([Permission.read, Permission.update]));
+  final share = await client.shares.shareWithUser('/test.txt', 'USER',
+      permissions: Permissions([Permission.read, Permission.update]));
   print(share);
   print('List shared files');
-  final shares = await client.shares.getShares(path: '/test.txt', reshares: false);
-  print(shares.join('\n'));
-  await client.shares.updateShareNote(share.id, 'Test Notiz');
+  print((await client.shares.getShares(path: '/test.txt', reshares: false))
+      .join('\n'));
+  await client.shares.updateShareNote(share.id, 'Test notice');
   print('New note:');
-  await client.shares.getShare(share.id);
+  print(await client.shares.getShare(share.id));
   print('Delete share');
   await client.shares.deleteShare(share.id);
-  
+  print('List shared files');
+  print((await client.shares.getShares(path: '/test.txt', reshares: false))
+      .join('\n'));
+
+  await client.webDav.delete('/test.txt');
+  await client.webDav.delete('/abc.txt');
 }
 
 Future listFiles(NextCloudClient client) async {

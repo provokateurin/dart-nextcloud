@@ -1,6 +1,6 @@
 import 'package:nextcloud/src/metadata/client.dart';
-import 'package:nextcloud/src/webdav/client.dart';
 import 'package:nextcloud/src/shares/client.dart';
+import 'package:nextcloud/src/webdav/client.dart';
 
 /// NextCloudClient class
 class NextCloudClient {
