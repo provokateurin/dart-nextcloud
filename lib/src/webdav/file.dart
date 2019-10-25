@@ -8,8 +8,9 @@ class WebDavFile {
     this.path,
     this.mimeType,
     this.size,
-    this.lastModified,
-  );
+    this.lastModified, {
+    this.shareTypes = const [],
+  });
 
   // ignore: public_member_api_docs
   final String path;
@@ -22,6 +23,9 @@ class WebDavFile {
 
   // ignore: public_member_api_docs
   final DateTime lastModified;
+
+  // ignore: public_member_api_docs
+  final List<int> shareTypes;
 
   /// Returns the decoded name of the file / folder without the whole path
   String get name {
@@ -38,7 +42,7 @@ class WebDavFile {
   @override
   String toString() =>
       // ignore: lines_longer_than_80_chars
-      'WebDavFile{name: $name, isDirectory: $isDirectory, path: $path, mimeType: $mimeType, size: $size, modificationTime: $lastModified}';
+      'WebDavFile{name: $name, isDirectory: $isDirectory, path: $path, mimeType: $mimeType, size: $size, modificationTime: $lastModified, shareTypes: $shareTypes}';
 }
 
 /// Extract the file tree from the webdav xml
@@ -68,11 +72,17 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
             .parse(lastModifiedElements.single.text)
         : null;
 
+    final shareTypes = response
+        .findAllElements('oc:share-type')
+        .map((element) => int.parse(element.text))
+        .toList();
+
     tree.add(WebDavFile(
       davItemName.replaceAll('remote.php/webdav/', ''),
       contentType,
       contentLength,
       lastModified,
+      shareTypes: shareTypes,
     ));
   }
   return tree.cast<WebDavFile>()..removeAt(0);

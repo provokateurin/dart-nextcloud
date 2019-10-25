@@ -7,6 +7,7 @@ class Sharee {
     this.label,
     this.uuid,
     this.name,
+    this.shareType,
   );
 
   // ignore: public_member_api_docs
@@ -18,8 +19,12 @@ class Sharee {
   // ignore: public_member_api_docs
   final String name;
 
+  // ignore: public_member_api_docs
+  final int shareType;
+
   @override
-  String toString() => 'Sharee{label: $label, uuid: $uuid, name: $name}';
+  String toString() =>
+      'Sharee{label: $label, uuid: $uuid, name: $name, shareType: $shareType}';
 }
 
 /// Extract the sharees from the sharees xml
@@ -39,4 +44,5 @@ Sharee shareeFromShareeXml(xml.XmlElement element) => Sharee(
               : element.findAllElements('label'))
           .single
           .text,
+      int.parse(element.findAllElements('shareType').single.text),
     );

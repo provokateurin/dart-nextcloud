@@ -1,3 +1,4 @@
+import 'package:nextcloud/nextcloud.dart';
 import 'package:nextcloud/src/network.dart';
 import 'package:nextcloud/src/sharees/sharee.dart';
 
@@ -38,4 +39,26 @@ class ShareesClient {
     final response = await _network.send('GET', url, [200]);
     return shareesFromShareesXml(response.body);
   }
+
+  /// Get a list of group sharees
+  Future<List<Sharee>> getGroupSharees(
+    String search,
+    int perPage,
+    String itemType, {
+    bool lookup = false,
+  }) async =>
+      (await getSharees(search, perPage, itemType))
+          .where((sharee) => sharee.shareType == ShareTypes.group)
+          .toList();
+
+  /// Get a list of user sharees
+  Future<List<Sharee>> getUserSharees(
+    String search,
+    int perPage,
+    String itemType, {
+    bool lookup = false,
+  }) async =>
+      (await getSharees(search, perPage, itemType))
+          .where((sharee) => sharee.shareType == ShareTypes.user)
+          .toList();
 }

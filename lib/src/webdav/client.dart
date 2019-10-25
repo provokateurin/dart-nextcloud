@@ -85,11 +85,12 @@ class WebDavClient {
   /// list the directories and files under given [remotePath]
   Future<List<WebDavFile>> ls(String remotePath) async {
     final data = utf8.encode('''
-      <d:propfind xmlns:d="DAV:">
+      <d:propfind xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">
         <d:prop>
           <d:getlastmodified/>
           <d:getcontentlength/>
           <d:getcontenttype/>
+          <oc:share-types/>
         </d:prop>
       </d:propfind>
     ''');
