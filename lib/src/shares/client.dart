@@ -67,7 +67,7 @@ class SharesClient {
 
   /// Updates the permissions of a share
   Future<Share> updateSharePermissions(int id, Permissions permissions) async {
-    final url = getUrl('/shares/$id?permissions=${permissions.value}');
+    final url = getUrl('/shares/$id?permissions=${permissions.toInt()}');
     final response = await _network.send('PUT', url, [200]);
     return shareFromRequestResponseXml(response.body);
   }
@@ -125,7 +125,7 @@ class SharesClient {
     if ((shareType == ShareTypes.user || shareType == ShareTypes.group) &&
         shareWith == null) {
       throw RequestException(
-          'When the share type is \'user\' or \'group\' than the share with attribute must not be null');
+          'When the share type is \'user\' or \'group\' then the share with attribute must not be null');
     }
     // For public shares the default permission is one
     if (shareType == ShareTypes.publicLink && permissions == null) {
@@ -133,7 +133,7 @@ class SharesClient {
     }
     permissions ??= Permissions([Permission.all]);
     var url = getUrl(
-        '/shares?path=$path&shareType=$shareType&publicUpload=$publicUpload&permissions=${permissions.value}');
+        '/shares?path=$path&shareType=$shareType&publicUpload=$publicUpload&permissions=${permissions.toInt()}');
     if (shareType == ShareTypes.user || shareType == ShareTypes.group) {
       url += '&shareWith=$shareWith';
     } else if (shareType == ShareTypes.publicLink && password != null) {

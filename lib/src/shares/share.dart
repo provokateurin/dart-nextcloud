@@ -161,7 +161,7 @@ class Permission {
   static const all = 31;
 
   /// All possible permission values
-  static const values = [read, update, create, delete, share, all];
+  static const values = [all, read, update, create, delete, share];
 }
 
 /// Defines the combination of permissions
@@ -169,7 +169,6 @@ class Permissions {
   /// Create permissions by the integer lists of [Permission].VALUE objects
   Permissions(List<int> permissions) {
     _permissions = permissions;
-    _value = permissions.reduce((i1, i2) => i1 + i2);
   }
 
   /// Create permissions the the combined permission integer
@@ -177,8 +176,8 @@ class Permissions {
     // ignore: omit_local_variable_types
     final List<int> permissions = [];
     // ignore: avoid_function_literals_in_foreach_calls
-    Permission.values.forEach((value) {
-      if (value <= number) {
+    Permission.values.reversed.forEach((value) {
+      if (number >= value) {
         number -= value;
         permissions.add(value);
       }
@@ -186,19 +185,36 @@ class Permissions {
     return Permissions(permissions);
   }
 
-  int _value;
-  List<int> _permissions;
+  /// Add a permission if not existing
+  void addPermission(int permission) {
+    if (!_permissions.contains(permission)) {
+      _permissions.add(permission);
+    }
+  }
 
-  /// Returns the permission as value
-  int get value => _value;
+  /// Remove a permission if existing
+  void removePermission(int permission) {
+    if (_permissions.contains(permission)) {
+      _permissions.remove(permission);
+    }
+  }
+
+  /// Create the combined permissions integer
+  int toInt() {
+    var number = 0;
+    for (final value in permissions) {
+      number += value;
+    }
+    return number;
+  }
+
+  List<int> _permissions;
 
   /// Returns the separated permissions as list
   List<int> get permissions => _permissions;
 
   @override
-  String toString() {
-    return '$_value: $_permissions';
-  }
+  String toString() => '${toInt()}: $_permissions';
 }
 
 /// Parse a nullable value with given parser

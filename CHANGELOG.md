@@ -1,3 +1,7 @@
+# v1.0.8
+* Add share type to sharees and webdav
+* Fix share permissions
+
 # v1.0.7
 * Add sharees search feature
 
