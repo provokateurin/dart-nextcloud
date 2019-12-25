@@ -1,3 +1,6 @@
+# v1.0.9
+* Fix performance issues
+
 # v1.0.8
 * Add share type to sharees and webdav
 * Fix share permissions

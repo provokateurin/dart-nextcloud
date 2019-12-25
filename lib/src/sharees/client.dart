@@ -17,8 +17,7 @@ class ShareesClient {
       _baseUrl = 'https://$host:$port';
     }
     _baseUrl = '$_baseUrl/ocs/v1.php/apps/files_sharing/api/v1/sharees';
-    final _httpClient = NextCloudHttpClient(username, password);
-    _network = Network(_httpClient);
+    _network = Network(username, password);
   }
 
   String _baseUrl;
@@ -37,7 +36,7 @@ class ShareesClient {
       url += '&itemType=$itemType';
     }
     final response = await _network.send('GET', url, [200]);
-    return shareesFromShareesXml(response.body);
+    return shareesFromShareesXml(response.toString());
   }
 
   /// Get a list of group sharees

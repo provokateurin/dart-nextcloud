@@ -57,12 +57,14 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
   for (final response in xmlDocument.findAllElements('d:response')) {
     final davItemName = response.findAllElements('d:href').single.text;
     final contentTypeElements = response.findAllElements('d:getcontenttype');
-    final contentType = contentTypeElements.single.text != ''
-        ? contentTypeElements.single.text
-        : null;
+    final contentType =
+        contentTypeElements.isNotEmpty && contentTypeElements.single.text != ''
+            ? contentTypeElements.single.text
+            : null;
     final contentLengthElements =
         response.findAllElements('d:getcontentlength');
-    final contentLength = contentLengthElements.single.text != ''
+    final contentLength = contentLengthElements.isNotEmpty &&
+            contentLengthElements.single.text != ''
         ? int.parse(contentLengthElements.single.text)
         : 0;
 

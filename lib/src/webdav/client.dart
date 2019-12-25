@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:nextcloud/nextcloud.dart';
 import 'package:nextcloud/src/network.dart';
 import 'package:nextcloud/src/webdav/file.dart';
@@ -21,8 +21,7 @@ class WebDavClient {
       _baseUrl = 'https://$host:$port';
     }
     _baseUrl = '$_baseUrl/remote.php/webdav/';
-    final client = NextCloudHttpClient(username, password);
-    _network = Network(client);
+    _network = Network(username, password);
   }
 
   String _baseUrl;
@@ -44,7 +43,7 @@ class WebDavClient {
   }
 
   /// make a dir with [path] under current dir
-  Future<http.Response> mkdir(String path, [bool safe = true]) {
+  Future<Response> mkdir(String path, [bool safe = true]) {
     final expectedCodes = [
       201,
       if (safe) ...[
@@ -80,7 +79,7 @@ class WebDavClient {
 
   /// download [remotePath] and store the response file contents to String
   Future<Uint8List> download(String remotePath) async =>
-      (await _network.send('GET', getUrl(remotePath), [200])).bodyBytes;
+      (await _network.send('GET', getUrl(remotePath), [200])).data;
 
   /// list the directories and files under given [remotePath]
   Future<List<WebDavFile>> ls(String remotePath) async {
@@ -97,9 +96,9 @@ class WebDavClient {
     final response = await _network
         .send('PROPFIND', getUrl(remotePath), [207, 301], data: data);
     if (response.statusCode == 301) {
-      return ls(response.headers['location']);
+      return ls(response.headers.map['location'][0]);
     }
-    return treeFromWebDavXml(response.body);
+    return treeFromWebDavXml(response.toString());
   }
 
   /// Move a file from [sourcePath] to [destinationPath]
