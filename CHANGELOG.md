@@ -1,3 +1,6 @@
+# v1.0.11
+* Fix dependency constraints
+
 # v1.0.10
 * Fix dependency conflict with flutter
 
