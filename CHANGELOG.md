@@ -1,3 +1,7 @@
+# v1.0.14
+* Update example URLs
+* Fix pub scoring
+
 # v1.0.13
 * Update homepage URL
 

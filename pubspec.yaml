@@ -1,6 +1,6 @@
 name: nextcloud
-version: 1.0.13
-description: A Nextcloud client for dart
+version: 1.0.14
+description: A Nextcloud client for dart which can use several official Nextcloud APIs
 homepage: https://github.com/viktoriaschule/dart-nextcloud
 
 environment:
