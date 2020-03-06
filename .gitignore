@@ -6,5 +6,6 @@
 .packages
 pubspec.lock
 /doc/
-example/test.txt
 .vscode/
+example/*.txt
+example/*.png

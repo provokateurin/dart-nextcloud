@@ -1,3 +1,16 @@
+# v1.0.15
+* Add download streaming
+
+# v1.0.14
+* Update example URLs
+* Fix pub scoring
+
+# v1.0.13
+* Update homepage URL
+
+# v1.0.12
+* Fix binary data upload and download
+
 # v1.0.11
 * Fix dependency constraints
 

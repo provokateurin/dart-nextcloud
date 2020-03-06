@@ -17,7 +17,8 @@ class SharesClient {
       _baseUrl = 'https://$host:$port';
     }
     _baseUrl = '$_baseUrl/ocs/v2.php/apps/files_sharing/api/v1/';
-    _network = Network(username, password);
+    final client = NextCloudHttpClient(username, password);
+    _network = Network(client);
   }
 
   String _baseUrl;
@@ -48,14 +49,14 @@ class SharesClient {
       url += '&path=$path';
     }
     final response = await _network.send('GET', url, [200]);
-    return sharesFromSharesXml(response.toString());
+    return sharesFromSharesXml(response.body);
   }
 
   /// Get a share by [id]
   Future<Share> getShare(int id) async {
     final url = getUrl('/shares/$id');
     final response = await _network.send('GET', url, [200]);
-    return sharesFromSharesXml(response.toString()).single;
+    return sharesFromSharesXml(response.body).single;
   }
 
   /// Get a share by [id]
@@ -68,21 +69,21 @@ class SharesClient {
   Future<Share> updateSharePermissions(int id, Permissions permissions) async {
     final url = getUrl('/shares/$id?permissions=${permissions.toInt()}');
     final response = await _network.send('PUT', url, [200]);
-    return shareFromRequestResponseXml(response.toString());
+    return shareFromRequestResponseXml(response.body);
   }
 
   /// Updates the password of a share
   Future<Share> updateSharePassword(int id, String password) async {
     final url = getUrl('/shares/$id?password=$password');
     final response = await _network.send('PUT', url, [200]);
-    return shareFromRequestResponseXml(response.toString());
+    return shareFromRequestResponseXml(response.body);
   }
 
   /// Updates the public upload option of a share
   Future<Share> updateSharePublicUpload(int id, bool publicUpload) async {
     final url = getUrl('/shares/$id?publicUpload=$publicUpload');
     final response = await _network.send('PUT', url, [200]);
-    return shareFromRequestResponseXml(response.toString());
+    return shareFromRequestResponseXml(response.body);
   }
 
   /// Updates the expire date of a share
@@ -90,14 +91,14 @@ class SharesClient {
     final url = getUrl(
         '/shares/$id?expireDate=${expireDate.year}-${expireDate.month}-${expireDate.day}');
     final response = await _network.send('PUT', url, [200]);
-    return shareFromRequestResponseXml(response.toString());
+    return shareFromRequestResponseXml(response.body);
   }
 
   /// Updates the note of a share
   Future<Share> updateShareNote(int id, String note) async {
     final url = getUrl('/shares/$id?note=$note');
     final response = await _network.send('PUT', url, [200]);
-    return shareFromRequestResponseXml(response.toString());
+    return shareFromRequestResponseXml(response.body);
   }
 
   /// share a folder of file
@@ -123,7 +124,7 @@ class SharesClient {
     // For sharing with user or group the user or group must be defined
     if ((shareType == ShareTypes.user || shareType == ShareTypes.group) &&
         shareWith == null) {
-      throw Exception(
+      throw RequestException(
           'When the share type is \'user\' or \'group\' then the share with attribute must not be null');
     }
     // For public shares the default permission is one
@@ -139,7 +140,7 @@ class SharesClient {
       url += '&password=$password';
     }
     final response = await _network.send('POST', url, [200]);
-    return shareFromRequestResponseXml(response.toString());
+    return shareFromRequestResponseXml(response.body);
   }
 
   /// Shares a [path] (dir/file) with a [user]

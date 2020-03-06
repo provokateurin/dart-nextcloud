@@ -1,7 +1,7 @@
 name: nextcloud
-version: 1.0.11
-description: A Nextcloud client for dart which can use WebDav and the OCS API
-homepage: https://github.com/jld3103/nextcloud
+version: 1.0.15
+description: A Nextcloud client for dart which can use several official Nextcloud APIs
+homepage: https://github.com/viktoriaschule/dart-nextcloud
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
@@ -9,4 +9,4 @@ environment:
 dependencies:
   xml: ">=3.0.0 <4.0.0"
   intl: ">=0.16.0 <0.17.0"
-  dio: ">=3.0.0 <4.0.0"
+  http:  ">=0.12.0 <0.13.0"

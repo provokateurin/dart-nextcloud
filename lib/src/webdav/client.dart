@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:nextcloud/nextcloud.dart';
 import 'package:nextcloud/src/network.dart';
 import 'package:nextcloud/src/webdav/file.dart';
@@ -21,7 +21,8 @@ class WebDavClient {
       _baseUrl = 'https://$host:$port';
     }
     _baseUrl = '$_baseUrl/remote.php/webdav/';
-    _network = Network(username, password);
+    final client = NextCloudHttpClient(username, password);
+    _network = Network(client);
   }
 
   String _baseUrl;
@@ -43,7 +44,7 @@ class WebDavClient {
   }
 
   /// make a dir with [path] under current dir
-  Future<Response> mkdir(String path, [bool safe = true]) {
+  Future<http.Response> mkdir(String path, [bool safe = true]) {
     final expectedCodes = [
       201,
       if (safe) ...[
@@ -79,11 +80,11 @@ class WebDavClient {
 
   /// download [remotePath] and store the response file contents to String
   Future<Uint8List> download(String remotePath) async =>
-      (await _network.send('GET', getUrl(remotePath), [200])).data;
+      (await _network.send('GET', getUrl(remotePath), [200])).bodyBytes;
 
-  /// download [remotePath] and store the response file contents to Stream<Uint8List>
-  Future<Stream<Uint8List>> downloadStream(String remotePath) async =>
-      (await _network.download('GET', getUrl(remotePath), [200])).data.stream;
+  /// download [remotePath] and store the response file contents to ByteStream
+  Future<http.ByteStream> downloadStream(String remotePath) async =>
+      (await _network.download('GET', getUrl(remotePath), [200])).stream;
 
   /// list the directories and files under given [remotePath]
   Future<List<WebDavFile>> ls(String remotePath) async {
@@ -100,9 +101,9 @@ class WebDavClient {
     final response = await _network
         .send('PROPFIND', getUrl(remotePath), [207, 301], data: data);
     if (response.statusCode == 301) {
-      return ls(response.headers.map['location'][0]);
+      return ls(response.headers['location']);
     }
-    return treeFromWebDavXml(response.toString());
+    return treeFromWebDavXml(response.body);
   }
 
   /// Move a file from [sourcePath] to [destinationPath]
