@@ -63,4 +63,36 @@ class Network {
           e.response.toString());
     }
   }
+
+  /// send the request with given [method] and [url]
+  Future<Response<ResponseBody>> download(
+    String method,
+    String url,
+    List<int> expectedCodes, {
+    Uint8List data,
+    Map<String, String> headers,
+  }) async {
+    try {
+      final response = await _client.request<ResponseBody>(
+        url,
+        data: data ?? Uint8List(0),
+        options: Options(
+          headers: headers ?? {},
+          method: method,
+          responseType: ResponseType.stream
+        ),
+      );
+
+      if (!expectedCodes.contains(response.statusCode)) {
+        throw RequestException(
+            'operation failed method: $method statusCode: ${response.statusCode}',
+            response.toString());
+      }
+      return response;
+    } on DioError catch (e) {
+      throw RequestException(
+          'operation failed method: $method statusCode: ${e.response.statusCode}',
+          e.response.toString());
+    }
+  }
 }
