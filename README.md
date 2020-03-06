@@ -11,4 +11,4 @@ A Nextcloud client for dart
 * Search for users to share a file or folder with (sharees)
 
 ## Usage/Example
-[https://github.com/jld3103/nextcloud/blob/master/example/example.dart](https://github.com/jld3103/nextcloud/blob/master/example/example.dart)
+[https://github.com/Viktoriaschule/dart-nextcloud/blob/master/example/example.dart](https://github.com/Viktoriaschule/dart-nextcloud/blob/master/example/example.dart)
