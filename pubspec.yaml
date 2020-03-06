@@ -1,7 +1,7 @@
 name: nextcloud
 version: 1.0.12
 description: A Nextcloud client for dart
-homepage: https://github.com/jld3103/nextcloud
+homepage: https://github.com/viktoriaschule/dart-nextcloud
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
