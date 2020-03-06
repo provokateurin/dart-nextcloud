@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:nextcloud/nextcloud.dart';
 import 'package:nextcloud/src/shares/share.dart';
@@ -6,6 +7,10 @@ import 'package:nextcloud/src/shares/share.dart';
 Future main() async {
   try {
     final client = NextCloudClient('cloud.example.com', 'myuser', 'mypassword');
+    await client.webDav
+        .upload(File('example/test.png').readAsBytesSync(), '/test.png');
+    File('example/bla.png')
+        .writeAsBytesSync(await client.webDav.download('/test.png'));
     await client.webDav.upload(utf8.encode('Test file'), '/test.txt');
     await listFiles(client);
     await client.webDav.move('/test.txt', '/abc.txt');
@@ -40,7 +45,7 @@ Future main() async {
     print(await client.sharees.getSharees('', 1000, 'file'));
   } on RequestException catch (e, stacktrace) {
     print(e.cause);
-    print(e.response);
+    print(e.toString());
     print(stacktrace);
   }
 }

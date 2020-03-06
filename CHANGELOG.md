@@ -1,3 +1,6 @@
+# v1.0.12
+* Fix binary data upload and download
+
 # v1.0.11
 * Fix dependency constraints
 

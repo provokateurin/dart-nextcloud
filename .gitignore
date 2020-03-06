@@ -6,3 +6,5 @@
 .packages
 pubspec.lock
 /doc/
+
+example/*.png

@@ -16,7 +16,8 @@ class MetaDataClient {
       _baseUrl = 'https://$host:$port';
     }
     _baseUrl = '$_baseUrl/ocs/v1.php/cloud/users/$username';
-    _network = Network(username, password);
+    final _httpClient = NextCloudHttpClient(username, password);
+    _network = Network(_httpClient);
   }
 
   String _baseUrl;
@@ -26,6 +27,6 @@ class MetaDataClient {
   /// Get the meta data of the user
   Future<MetaData> getMetaData() async {
     final response = await _network.send('GET', _baseUrl, [200]);
-    return metaDataFromMetaDataXml(response.toString());
+    return metaDataFromMetaDataXml(response.body);
   }
 }
