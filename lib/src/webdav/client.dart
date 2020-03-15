@@ -82,6 +82,10 @@ class WebDavClient {
   Future<Uint8List> download(String remotePath) async =>
       (await _network.send('GET', getUrl(remotePath), [200])).bodyBytes;
 
+  /// download [remotePath] and store the response file contents to ByteStream
+  Future<http.ByteStream> downloadStream(String remotePath) async =>
+      (await _network.download('GET', getUrl(remotePath), [200])).stream;
+
   /// list the directories and files under given [remotePath]
   Future<List<WebDavFile>> ls(String remotePath) async {
     final data = utf8.encode('''

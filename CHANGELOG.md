@@ -1,3 +1,6 @@
+# v1.0.15
+* Add download streaming
+
 # v1.0.14
 * Update example URLs
 * Fix pub scoring

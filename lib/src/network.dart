@@ -73,4 +73,28 @@ class Network {
     }
     return http.Response.fromStream(response);
   }
+
+  /// send the request with given [method] and [url]
+  Future<http.StreamedResponse> download(
+    String method,
+    String url,
+    List<int> expectedCodes, {
+    Uint8List data,
+    Map<String, String> headers,
+  }) async {
+    final response = await client.send(http.Request(method, Uri.parse(url))
+      ..followRedirects = false
+      ..persistentConnection = true
+      ..bodyBytes = data ?? Uint8List(0)
+      ..headers.addAll(headers ?? {}));
+
+    if (!expectedCodes.contains(response.statusCode)) {
+      final r = await http.Response.fromStream(response);
+      print(r.statusCode);
+      print(r.body);
+      throw RequestException(
+          'operation failed method:$method exceptionCodes:$expectedCodes statusCode:${response.statusCode}');
+    }
+    return response;
+  }
 }

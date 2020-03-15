@@ -38,6 +38,19 @@ Future main() async {
     print(
         'List shared files: ${(await client.shares.getShares(path: '/test.txt', reshares: false)).length}');
 
+    print('Download /test.txt ...');
+    final downloadedData = await client.webDav.downloadStream('/test.txt');
+
+    final file = File('example/test.txt');
+    if (file.existsSync()) {
+      file.deleteSync();
+    }
+    final inputStream = file.openWrite();
+    await inputStream.addStream(downloadedData);
+    await inputStream.close();
+
+    print('... done!');
+
     await client.webDav.delete('/test.txt');
     await client.webDav.delete('/abc.txt');
 
