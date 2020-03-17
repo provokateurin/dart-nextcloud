@@ -20,7 +20,6 @@ class WebDavClient {
     } else {
       _baseUrl = 'https://$host:$port';
     }
-    _baseUrl = '$_baseUrl/remote.php/webdav/';
     final client = NextCloudHttpClient(username, password);
     _network = Network(client);
   }
@@ -36,11 +35,11 @@ class WebDavClient {
     if (path.startsWith('/')) {
       // Since the base url ends with '/' by default trim of one char at the
       // beginning of the path
-      return _baseUrl + path.substring(1, path.length);
+      return '$_baseUrl/remote.php/webdav/${path.substring(1, path.length)}';
     }
 
     // If the path does not start with '/' append it after the baseUrl
-    return [_baseUrl, path].join('');
+    return [_baseUrl, '/remote.php/webdav/', path].join('');
   }
 
   /// make a dir with [path] under current dir
@@ -85,6 +84,22 @@ class WebDavClient {
   /// download [remotePath] and store the response file contents to ByteStream
   Future<http.ByteStream> downloadStream(String remotePath) async =>
       (await _network.download('GET', getUrl(remotePath), [200])).stream;
+
+  /// download [remotePath] and returns the received bytes
+  Future<Uint8List> downloadDirectoryAsZip(String remotePath) async {
+    final url =
+        '$_baseUrl/index.php/apps/files/ajax/download.php?dir=$remotePath';
+    final result = await _network.send('GET', url, [200]);
+    return result.bodyBytes;
+  }
+
+  /// download [remotePath] and returns a stream with the received bytes
+  Future<http.ByteStream> downloadStreamDirectoryAsZip(
+      String remotePath) async {
+    final url =
+        '$_baseUrl/index.php/apps/files/ajax/download.php?dir=$remotePath';
+    return (await _network.download('GET', url, [200])).stream;
+  }
 
   /// list the directories and files under given [remotePath]
   Future<List<WebDavFile>> ls(String remotePath) async {
