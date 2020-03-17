@@ -1,3 +1,6 @@
+# v1.0.16
+* Add zip directory downloading
+
 # v1.0.15
 * Add download streaming
 
