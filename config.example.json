@@ -1,0 +1,7 @@
+{
+  "host": "TEST_CLOUD_HOST",
+  "username": "CLOUD_USERNAME",
+  "password": "CLOUD_USER_PASSWORD",
+  "shareUser": "USER_TO_SHARE_TEST_FILE_WITH",
+  "testDir": "DIRECTORY_FOR_TESTS"
+}

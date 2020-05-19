@@ -1,22 +1,15 @@
-import 'package:nextcloud/nextcloud.dart';
-import 'package:nextcloud/src/network.dart';
-import 'package:nextcloud/src/sharees/sharee.dart';
+import '../../nextcloud.dart';
+import '../network.dart';
 
 /// ShareesClient class
 class ShareesClient {
   // ignore: public_member_api_docs
   ShareesClient(
-    String host,
+    String baseUrl,
     String username,
-    String password, {
-    int port,
-  }) {
-    if (port == null) {
-      _baseUrl = 'https://$host';
-    } else {
-      _baseUrl = 'https://$host:$port';
-    }
-    _baseUrl = '$_baseUrl/ocs/v1.php/apps/files_sharing/api/v1/sharees';
+    String password,
+  ) {
+    _baseUrl = '$baseUrl/ocs/v1.php/apps/files_sharing/api/v1/sharees';
     final _httpClient = NextCloudHttpClient(username, password);
     _network = Network(_httpClient);
   }

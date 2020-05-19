@@ -1,3 +1,8 @@
+# v1.1.0
+* Add Nextcloud Talk
+* Add avatar fetching
+* Add user autocomplete
+
 # v1.0.16
 * Add zip directory downloading
 

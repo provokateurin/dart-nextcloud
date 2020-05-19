@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:nextcloud/src/http_client/http_client.dart';
+
+import 'http_client/http_client.dart';
 
 /// Http client with the correct authentication and header
 class NextCloudHttpClient extends HttpClient {
@@ -10,8 +11,12 @@ class NextCloudHttpClient extends HttpClient {
   ///
   /// Constructs a new [NextCloudHttpClient] which will use the provided [username]
   /// and [password] for all subsequent requests.
-  NextCloudHttpClient(this.username, this.password, {inner})
-      : _authString =
+  NextCloudHttpClient(
+    this.username,
+    this.password, {
+    inner,
+    this.useJson = false,
+  })  : _authString =
             'Basic ${base64.encode(utf8.encode('$username:$password')).trim()}',
         _inner = inner ?? HttpClient();
 
@@ -21,6 +26,9 @@ class NextCloudHttpClient extends HttpClient {
   /// The password to be used for all requests
   final String password;
 
+  // ignore: public_member_api_docs
+  final bool useJson;
+
   final http.Client _inner;
   final String _authString;
 
@@ -28,7 +36,10 @@ class NextCloudHttpClient extends HttpClient {
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     request.headers['Authorization'] = _authString;
     request.headers['OCS-APIRequest'] = 'true';
-    request.headers['Content-Type'] = 'application/xml';
+
+    final format = useJson ? 'json' : 'xml';
+    request.headers['Content-Type'] = 'application/$format';
+    request.headers['Accept'] = 'application/$format';
 
     return _inner.send(request);
   }
@@ -37,10 +48,13 @@ class NextCloudHttpClient extends HttpClient {
 /// RequestException class
 class RequestException implements Exception {
   // ignore: public_member_api_docs
-  RequestException(this.cause);
+  RequestException(this.cause, this.statusCode);
 
   // ignore: public_member_api_docs
   String cause;
+
+  // ignore: public_member_api_docs
+  int statusCode;
 }
 
 /// Organizes the requests
@@ -69,7 +83,9 @@ class Network {
       print(r.statusCode);
       print(r.body);
       throw RequestException(
-          'operation failed method:$method exceptionCodes:$expectedCodes statusCode:${response.statusCode}');
+        'operation failed method:$method exceptionCodes:$expectedCodes statusCode:${response.statusCode}',
+        response.statusCode,
+      );
     }
     return http.Response.fromStream(response);
   }
@@ -93,7 +109,9 @@ class Network {
       print(r.statusCode);
       print(r.body);
       throw RequestException(
-          'operation failed method:$method exceptionCodes:$expectedCodes statusCode:${response.statusCode}');
+        'operation failed method:$method exceptionCodes:$expectedCodes statusCode:${response.statusCode}',
+        response.statusCode,
+      );
     }
     return response;
   }

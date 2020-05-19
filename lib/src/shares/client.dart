@@ -1,22 +1,15 @@
-import 'package:nextcloud/nextcloud.dart';
-import 'package:nextcloud/src/network.dart';
-import 'package:nextcloud/src/shares/share.dart';
+import '../../nextcloud.dart';
+import '../network.dart';
 
 /// SharesClient class
 class SharesClient {
   // ignore: public_member_api_docs
   SharesClient(
-    String host,
+    String baseUrl,
     String username,
-    String password, {
-    int port,
-  }) {
-    if (port == null) {
-      _baseUrl = 'https://$host';
-    } else {
-      _baseUrl = 'https://$host:$port';
-    }
-    _baseUrl = '$_baseUrl/ocs/v2.php/apps/files_sharing/api/v1/';
+    String password,
+  ) {
+    _baseUrl = '$baseUrl/ocs/v2.php/apps/files_sharing/api/v1/';
     final client = NextCloudHttpClient(username, password);
     _network = Network(client);
   }
@@ -26,7 +19,7 @@ class SharesClient {
   Network _network;
 
   /// get url from given [path]
-  String getUrl(String path) {
+  String _getUrl(String path) {
     path = path.trim();
 
     if (path.startsWith('/')) {
@@ -42,9 +35,12 @@ class SharesClient {
   /// Get a list of shares.
   ///
   /// By default it is a list of all shares of the current user
-  Future<List<Share>> getShares(
-      {String path, bool reshares = false, bool subfiles = false}) async {
-    var url = getUrl('/shares?reshares=$reshares&subfiles=$subfiles');
+  Future<List<Share>> getShares({
+    String path,
+    bool reshares = false,
+    bool subfiles = false,
+  }) async {
+    var url = _getUrl('/shares?reshares=$reshares&subfiles=$subfiles');
     if (path != null) {
       url += '&path=$path';
     }
@@ -54,41 +50,41 @@ class SharesClient {
 
   /// Get a share by [id]
   Future<Share> getShare(int id) async {
-    final url = getUrl('/shares/$id');
+    final url = _getUrl('/shares/$id');
     final response = await _network.send('GET', url, [200]);
     return sharesFromSharesXml(response.body).single;
   }
 
   /// Get a share by [id]
   Future deleteShare(int id) async {
-    final url = getUrl('/shares/$id');
+    final url = _getUrl('/shares/$id');
     await _network.send('DELETE', url, [200]);
   }
 
   /// Updates the permissions of a share
   Future<Share> updateSharePermissions(int id, Permissions permissions) async {
-    final url = getUrl('/shares/$id?permissions=${permissions.toInt()}');
+    final url = _getUrl('/shares/$id?permissions=${permissions.toInt()}');
     final response = await _network.send('PUT', url, [200]);
     return shareFromRequestResponseXml(response.body);
   }
 
   /// Updates the password of a share
   Future<Share> updateSharePassword(int id, String password) async {
-    final url = getUrl('/shares/$id?password=$password');
+    final url = _getUrl('/shares/$id?password=$password');
     final response = await _network.send('PUT', url, [200]);
     return shareFromRequestResponseXml(response.body);
   }
 
   /// Updates the public upload option of a share
   Future<Share> updateSharePublicUpload(int id, bool publicUpload) async {
-    final url = getUrl('/shares/$id?publicUpload=$publicUpload');
+    final url = _getUrl('/shares/$id?publicUpload=$publicUpload');
     final response = await _network.send('PUT', url, [200]);
     return shareFromRequestResponseXml(response.body);
   }
 
   /// Updates the expire date of a share
   Future<Share> updateShareExpireDate(int id, DateTime expireDate) async {
-    final url = getUrl(
+    final url = _getUrl(
         '/shares/$id?expireDate=${expireDate.year}-${expireDate.month}-${expireDate.day}');
     final response = await _network.send('PUT', url, [200]);
     return shareFromRequestResponseXml(response.body);
@@ -96,7 +92,7 @@ class SharesClient {
 
   /// Updates the note of a share
   Future<Share> updateShareNote(int id, String note) async {
-    final url = getUrl('/shares/$id?note=$note');
+    final url = _getUrl('/shares/$id?note=$note');
     final response = await _network.send('PUT', url, [200]);
     return shareFromRequestResponseXml(response.body);
   }
@@ -125,14 +121,16 @@ class SharesClient {
     if ((shareType == ShareTypes.user || shareType == ShareTypes.group) &&
         shareWith == null) {
       throw RequestException(
-          'When the share type is \'user\' or \'group\' then the share with attribute must not be null');
+        'When the share type is \'user\' or \'group\' then the share with attribute must not be null',
+        -1,
+      );
     }
     // For public shares the default permission is one
     if (shareType == ShareTypes.publicLink && permissions == null) {
       permissions = Permissions([Permission.read]);
     }
     permissions ??= Permissions([Permission.all]);
-    var url = getUrl(
+    var url = _getUrl(
         '/shares?path=$path&shareType=$shareType&publicUpload=$publicUpload&permissions=${permissions.toInt()}');
     if (shareType == ShareTypes.user || shareType == ShareTypes.group) {
       url += '&shareWith=$shareWith';
