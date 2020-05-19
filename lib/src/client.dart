@@ -1,46 +1,61 @@
-import 'package:nextcloud/src/metadata/client.dart';
-import 'package:nextcloud/src/sharees/client.dart';
-import 'package:nextcloud/src/shares/client.dart';
-import 'package:nextcloud/src/webdav/client.dart';
+import '../nextcloud.dart';
 
 /// NextCloudClient class
 class NextCloudClient {
   // ignore: public_member_api_docs
   NextCloudClient(
-    this.host,
+    String host,
     this.username,
     this.password, {
     this.port,
   }) {
-    host = host.replaceFirst(RegExp(r'/http(s)?:/'), '');
+    final prefix = host.startsWith('http://') ? 'http' : 'https';
+    final main =
+        host.replaceAll(RegExp(r'https?:\/\/|\/index.php(.+)?|:.+'), '');
+    final end = port != null ? ':$port' : '';
+    baseUrl = '$prefix://$main$end';
+
     _webDavClient = WebDavClient(
-      host,
+      baseUrl,
       username,
       password,
-      port: port,
     );
-    _metaDataClient = MetaDataClient(
-      host,
+    _usersClient = UsersClient(
+      baseUrl,
       username,
       password,
-      port: port,
     );
     _sharesClient = SharesClient(
-      host,
+      baseUrl,
       username,
       password,
-      port: port,
     );
     _shareesClient = ShareesClient(
-      host,
+      baseUrl,
       username,
       password,
-      port: port,
+    );
+    _talkClient = TalkClient(
+      baseUrl,
+      username,
+      password,
+    );
+    _avatarClient = AvatarClient(
+      baseUrl,
+      username,
+      password,
+    );
+    _autocompleteClient = AutocompleteClient(
+      baseUrl,
+      username,
+      password,
     );
   }
 
-  // ignore: public_member_api_docs
-  String host;
+  /// The host of the cloud
+  ///
+  /// For example: `cloud.example.com`
+  String baseUrl;
 
   // ignore: public_member_api_docs
   final int port;
@@ -52,19 +67,31 @@ class NextCloudClient {
   final String password;
 
   WebDavClient _webDavClient;
-  MetaDataClient _metaDataClient;
+  UsersClient _usersClient;
   SharesClient _sharesClient;
   ShareesClient _shareesClient;
+  TalkClient _talkClient;
+  AvatarClient _avatarClient;
+  AutocompleteClient _autocompleteClient;
 
   // ignore: public_member_api_docs
   WebDavClient get webDav => _webDavClient;
 
   // ignore: public_member_api_docs
-  MetaDataClient get metaData => _metaDataClient;
+  UsersClient get users => _usersClient;
 
   // ignore: public_member_api_docs
   SharesClient get shares => _sharesClient;
 
   // ignore: public_member_api_docs
   ShareesClient get sharees => _shareesClient;
+
+  // ignore: public_member_api_docs
+  TalkClient get talk => _talkClient;
+
+  // ignore: public_member_api_docs
+  AvatarClient get avatar => _avatarClient;
+
+  // ignore: public_member_api_docs
+  AutocompleteClient get autocomplete => _autocompleteClient;
 }

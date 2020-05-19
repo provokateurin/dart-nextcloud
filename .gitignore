@@ -9,3 +9,4 @@ pubspec.lock
 .vscode/
 example/*.txt
 example/*.png
+/config.json

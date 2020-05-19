@@ -2,24 +2,19 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:nextcloud/nextcloud.dart';
-import 'package:nextcloud/src/network.dart';
-import 'package:nextcloud/src/webdav/file.dart';
+
+import '../../nextcloud.dart';
+import '../network.dart';
 
 /// WebDavClient class
 class WebDavClient {
   // ignore: public_member_api_docs
   WebDavClient(
-    String host,
+    String baseUrl,
     String username,
-    String password, {
-    int port,
-  }) {
-    if (port == null) {
-      _baseUrl = 'https://$host';
-    } else {
-      _baseUrl = 'https://$host:$port';
-    }
+    String password,
+  ) {
+    _baseUrl = '$baseUrl/remote.php/dav/';
     final client = NextCloudHttpClient(username, password);
     _network = Network(client);
   }
@@ -29,7 +24,7 @@ class WebDavClient {
   Network _network;
 
   /// get url from given [path]
-  String getUrl(String path) {
+  String _getUrl(String path) {
     path = path.trim();
 
     if (path.startsWith('/')) {
@@ -39,7 +34,7 @@ class WebDavClient {
     }
 
     // If the path does not start with '/' append it after the baseUrl
-    return [_baseUrl, '/remote.php/webdav/', path].join('');
+    return '$_baseUrl/$path';
   }
 
   /// make a dir with [path] under current dir
@@ -51,7 +46,7 @@ class WebDavClient {
         405,
       ],
     ];
-    return _network.send('MKCOL', getUrl(path), expectedCodes);
+    return _network.send('MKCOL', _getUrl(path), expectedCodes);
   }
 
   /// just like mkdir -p
@@ -71,19 +66,19 @@ class WebDavClient {
   }
 
   /// remove dir with given [path]
-  Future delete(String path) => _network.send('DELETE', getUrl(path), [204]);
+  Future delete(String path) => _network.send('DELETE', _getUrl(path), [204]);
 
   /// upload a new file with [localData] as content to [remotePath]
   Future upload(Uint8List localData, String remotePath) => _network
-      .send('PUT', getUrl(remotePath), [200, 201, 204], data: localData);
+      .send('PUT', _getUrl(remotePath), [200, 201, 204], data: localData);
 
   /// download [remotePath] and store the response file contents to String
   Future<Uint8List> download(String remotePath) async =>
-      (await _network.send('GET', getUrl(remotePath), [200])).bodyBytes;
+      (await _network.send('GET', _getUrl(remotePath), [200])).bodyBytes;
 
   /// download [remotePath] and store the response file contents to ByteStream
   Future<http.ByteStream> downloadStream(String remotePath) async =>
-      (await _network.download('GET', getUrl(remotePath), [200])).stream;
+      (await _network.download('GET', _getUrl(remotePath), [200])).stream;
 
   /// download [remotePath] and returns the received bytes
   Future<Uint8List> downloadDirectoryAsZip(String remotePath) async {
@@ -114,7 +109,7 @@ class WebDavClient {
       </d:propfind>
     ''');
     final response = await _network
-        .send('PROPFIND', getUrl(remotePath), [207, 301], data: data);
+        .send('PROPFIND', _getUrl(remotePath), [207, 301], data: data);
     if (response.statusCode == 301) {
       return ls(response.headers['location']);
     }
@@ -125,10 +120,10 @@ class WebDavClient {
   Future move(String sourcePath, String destinationPath) async {
     await _network.send(
       'MOVE',
-      getUrl(sourcePath),
+      _getUrl(sourcePath),
       [200, 201],
       headers: {
-        'Destination': getUrl(destinationPath),
+        'Destination': _getUrl(destinationPath),
       },
     );
   }
@@ -137,10 +132,10 @@ class WebDavClient {
   Future copy(String sourcePath, String destinationPath) async {
     await _network.send(
       'COPY',
-      getUrl(sourcePath),
+      _getUrl(sourcePath),
       [200, 201],
       headers: {
-        'Destination': getUrl(destinationPath),
+        'Destination': _getUrl(destinationPath),
       },
     );
   }

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:nextcloud/nextcloud.dart';
-import 'package:nextcloud/src/shares/share.dart';
 
 Future main() async {
   try {
@@ -18,7 +17,7 @@ Future main() async {
     await client.webDav.copy('/abc.txt', '/test.txt');
     await listFiles(client);
 
-    final userData = await client.metaData.getMetaData();
+    final userData = await client.users.getMetaData('otheruser');
     print(userData.fullName);
     print(userData.groups);
 
