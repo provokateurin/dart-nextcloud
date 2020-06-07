@@ -29,8 +29,8 @@ class Sharee {
 
 /// Extract the sharees from the sharees xml
 List<Sharee> shareesFromShareesXml(String xmlStr) {
-  // parse the xml using the xml.parse method
-  final xmlDocument = xml.parse(xmlStr);
+  // parse the xml using the xml.XmlDocument.parse method
+  final xmlDocument = xml.XmlDocument.parse(xmlStr);
   final usersElements = xmlDocument.findAllElements('element');
   return usersElements.map(shareeFromShareeXml).toList().cast<Sharee>();
 }

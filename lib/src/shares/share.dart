@@ -239,8 +239,8 @@ List<Share> sharesFromSharesXml(String xmlStr) {
   // Initialize a list to store the FileInfo Objects
   final tree = [];
 
-  // parse the xml using the xml.parse method
-  final xmlDocument = xml.parse(xmlStr);
+  // parse the xml using the xml.XmlDocument.parse method
+  final xmlDocument = xml.XmlDocument.parse(xmlStr);
 
   // Iterate over the response to find all share elements and parse the information
   for (final response in xmlDocument.findAllElements('element')) {
@@ -251,8 +251,8 @@ List<Share> sharesFromSharesXml(String xmlStr) {
 
 /// Converts the shares xml to a list of share objects
 Share shareFromRequestResponseXml(String xmlStr) {
-  // parse the xml using the xml.parse method
-  final xmlDocument = xml.parse(xmlStr);
+  // parse the xml using the xml.XmlDocument.parse method
+  final xmlDocument = xml.XmlDocument.parse(xmlStr);
 
   // Get the created share
   final response = xmlDocument.findAllElements('data').single;

@@ -27,14 +27,12 @@ class WebDavClient {
   String _getUrl(String path) {
     path = path.trim();
 
+    // Remove the trailing slash if needed
     if (path.startsWith('/')) {
-      // Since the base url ends with '/' by default trim of one char at the
-      // beginning of the path
-      return '$_baseUrl/remote.php/webdav/${path.substring(1, path.length)}';
+      path = path.substring(1, path.length);
     }
 
-    // If the path does not start with '/' append it after the baseUrl
-    return '$_baseUrl/$path';
+    return '$_baseUrl/remote.php/dav/$path';
   }
 
   /// make a dir with [path] under current dir

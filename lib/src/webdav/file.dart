@@ -50,8 +50,8 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
   // Initialize a list to store the FileInfo Objects
   final tree = [];
 
-  // parse the xml using the xml.parse method
-  final xmlDocument = xml.parse(xmlStr);
+  // parse the xml using the xml.XmlDocument.parse method
+  final xmlDocument = xml.XmlDocument.parse(xmlStr);
 
   // Iterate over the response to find all folders / files and parse the information
   for (final response in xmlDocument.findAllElements('d:response')) {
@@ -78,7 +78,7 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
         .toList();
 
     tree.add(WebDavFile(
-      davItemName.replaceAll('remote.php/webdav/', ''),
+      davItemName.replaceAll(RegExp('remote.php/(web)?dav/'), ''),
       contentType,
       contentLength,
       lastModified,

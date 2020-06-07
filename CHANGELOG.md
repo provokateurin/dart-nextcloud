@@ -1,3 +1,7 @@
+# v1.1.1
+* Fix WebDAV paths
+* Fix deprecated methods
+
 # v1.1.0
 * Add Nextcloud Talk
 * Add avatar fetching
