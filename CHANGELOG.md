@@ -1,3 +1,6 @@
+# v1.2.0
+* Add Nextcloud Preview/Thumbnail
+
 # v1.1.1
 * Fix WebDAV paths
 * Fix deprecated methods

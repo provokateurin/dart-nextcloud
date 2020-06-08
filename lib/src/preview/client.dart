@@ -31,31 +31,27 @@ class PreviewClient {
   }
 
   /// fetch preview for [remotePath] with provided [width] and [height]
-  /// [width] and [height] default to 512
-  Future<Uint8List> getPreview(String remotePath, {int width = 512, int height = 512}) async {
+  Future<Uint8List> getPreview(String remotePath, int width, int height) async {
     final response = await _network.send('GET', _getPreviewUrl(remotePath, width, height), [200]);
     return response.bodyBytes;
   }
 
   /// fetch preview for [remotePath] with provided [width] and [height] as ByteStream
-  /// [width] and [height] default to 512
-  Future<ByteStream> getPreviewStream(String remotePath, {int width = 512, int height = 512}) async {
+  Future<ByteStream> getPreviewStream(String remotePath, int width, int height) async {
     final response = await _network.download('GET', _getPreviewUrl(remotePath, width, height), [200]);
     return response.stream;
   }
 
   /// fetch thumbnail for [remotePath] with provided [width] and [height]
-  /// [width] and [height] default to 512
   /// thumbnail will crop your image if you want resized images use preview
-  Future<Uint8List> getThumbnail(String remotePath, {int width = 512, int height = 512}) async {
+  Future<Uint8List> getThumbnail(String remotePath, int width, int height) async {
     final response = await _network.send('GET', _getThumbnailUrl(remotePath, width, height), [200]);
     return response.bodyBytes;
   }
 
-  /// fetch thumbnail for [remotePath] with provided [width] and [height]
-  /// [width] and [height] default to 512
+  /// fetch thumbnail for [remotePath] with provided [width] and [height] as ByteStream
   /// thumbnail will crop your image if you want resized images use preview
-  Future<ByteStream> getThumbnailStream(String remotePath, {int width = 512, int height = 512}) async {
+  Future<ByteStream> getThumbnailStream(String remotePath, int width, int height) async {
     final response = await _network.download('GET', _getThumbnailUrl(remotePath, width, height), [200]);
     return response.stream;
   }
