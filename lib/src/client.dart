@@ -53,9 +53,9 @@ class NextCloudClient {
       password,
     );
     _previewClient = PreviewClient(
-      baseUrl, 
-      username, 
-      password
+      baseUrl,
+      username,
+      password,
     );
   }
 

@@ -10,7 +10,7 @@ class PreviewClient {
   PreviewClient(
     this._baseUrl,
     String username,
-    String password
+    String password,
   ) {
     final client = NextCloudHttpClient(username, password);
     _network = Network(client);
@@ -24,7 +24,7 @@ class PreviewClient {
   }
 
   String _getThumbnailUrl(String remotePath, int width, int height) {
-    if(!remotePath.startsWith('/')) {
+    if (!remotePath.startsWith('/')) {
       remotePath = '/$remotePath';
     }
     return '$_baseUrl/index.php/apps/files/api/v1/thumbnail/$width/$height${Uri.encodeFull(remotePath)}';
@@ -32,27 +32,46 @@ class PreviewClient {
 
   /// fetch preview for [remotePath] with provided [width] and [height]
   Future<Uint8List> getPreview(String remotePath, int width, int height) async {
-    final response = await _network.send('GET', _getPreviewUrl(remotePath, width, height), [200]);
+    final response = await _network.send(
+      'GET',
+      _getPreviewUrl(remotePath, width, height),
+      [200],
+    );
     return response.bodyBytes;
   }
 
   /// fetch preview for [remotePath] with provided [width] and [height] as ByteStream
-  Future<ByteStream> getPreviewStream(String remotePath, int width, int height) async {
-    final response = await _network.download('GET', _getPreviewUrl(remotePath, width, height), [200]);
+  Future<ByteStream> getPreviewStream(
+      String remotePath, int width, int height) async {
+    final response = await _network.download(
+      'GET',
+      _getPreviewUrl(remotePath, width, height),
+      [200],
+    );
     return response.stream;
   }
 
   /// fetch thumbnail for [remotePath] with provided [width] and [height]
   /// thumbnail will crop your image if you want resized images use preview
-  Future<Uint8List> getThumbnail(String remotePath, int width, int height) async {
-    final response = await _network.send('GET', _getThumbnailUrl(remotePath, width, height), [200]);
+  Future<Uint8List> getThumbnail(
+      String remotePath, int width, int height) async {
+    final response = await _network.send(
+      'GET',
+      _getThumbnailUrl(remotePath, width, height),
+      [200],
+    );
     return response.bodyBytes;
   }
 
   /// fetch thumbnail for [remotePath] with provided [width] and [height] as ByteStream
   /// thumbnail will crop your image if you want resized images use preview
-  Future<ByteStream> getThumbnailStream(String remotePath, int width, int height) async {
-    final response = await _network.download('GET', _getThumbnailUrl(remotePath, width, height), [200]);
+  Future<ByteStream> getThumbnailStream(
+      String remotePath, int width, int height) async {
+    final response = await _network.download(
+      'GET',
+      _getThumbnailUrl(remotePath, width, height),
+      [200],
+    );
     return response.stream;
   }
 }
