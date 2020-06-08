@@ -11,6 +11,7 @@ class Config {
     this.password,
     this.shareUser,
     this.testDir,
+    this.image,
   });
 
   factory Config.fromJson(Map<String, dynamic> json) => Config(
@@ -19,6 +20,7 @@ class Config {
         password: json['password'],
         shareUser: json['shareUser'],
         testDir: json['testDir'],
+        image: json['image']
       );
 
   final String host;
@@ -26,6 +28,7 @@ class Config {
   final String password;
   final String shareUser;
   final String testDir;
+  final String image;
 }
 
 // TODO: add more tests
@@ -267,6 +270,20 @@ void main() {
     test('Delete conversation', () async {
       expect(await client.talk.conversationManagement.deleteConversation(token),
           isNull);
+    });
+  });
+  group('Preview', () {
+    test('Get preview', () async {
+      expect(await client.preview.getPreview('/${config.image}', 64, 64), isNotNull);
+    });
+    test('Get preview stream', () async {
+      expect(await client.preview.getPreviewStream('/${config.image}', 64, 64), isNotNull);
+    });
+    test('Get thumbnail', () async {
+      expect(await client.preview.getThumbnail('/${config.image}', 64, 64), isNotNull);
+    });
+    test('Get thumbnail stream', () async {
+      expect(await client.preview.getThumbnailStream('/${config.image}', 64, 64), isNotNull);
     });
   });
 }

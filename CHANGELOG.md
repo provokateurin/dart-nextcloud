@@ -1,3 +1,6 @@
+# v1.2.0
+* Add Nextcloud Preview/Thumbnail
+
 # v1.1.2
 * Fix WebDAV base URL
 
