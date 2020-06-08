@@ -10,16 +10,15 @@ import '../network.dart';
 class WebDavClient {
   // ignore: public_member_api_docs
   WebDavClient(
-    String baseUrl,
+    this._baseUrl,
     String username,
     String password,
   ) {
-    _baseUrl = '$baseUrl/remote.php/dav/';
     final client = NextCloudHttpClient(username, password);
     _network = Network(client);
   }
 
-  String _baseUrl;
+  final String _baseUrl;
 
   Network _network;
 
