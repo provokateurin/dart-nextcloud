@@ -1,3 +1,5 @@
+import 'package:nextcloud/src/preview/client.dart';
+
 import '../nextcloud.dart';
 
 /// NextCloudClient class
@@ -50,6 +52,11 @@ class NextCloudClient {
       username,
       password,
     );
+    _previewClient = PreviewClient(
+      baseUrl,
+      username,
+      password,
+    );
   }
 
   /// The host of the cloud
@@ -73,6 +80,7 @@ class NextCloudClient {
   TalkClient _talkClient;
   AvatarClient _avatarClient;
   AutocompleteClient _autocompleteClient;
+  PreviewClient _previewClient;
 
   // ignore: public_member_api_docs
   WebDavClient get webDav => _webDavClient;
@@ -94,4 +102,7 @@ class NextCloudClient {
 
   // ignore: public_member_api_docs
   AutocompleteClient get autocomplete => _autocompleteClient;
+
+  // ignore: public_member_api_docs
+  PreviewClient get preview => _previewClient;
 }

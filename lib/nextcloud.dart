@@ -5,6 +5,7 @@ export 'src/autocomplete/user.dart';
 export 'src/avatar/client.dart';
 export 'src/client.dart';
 export 'src/network.dart' show RequestException;
+export 'src/preview/client.dart';
 export 'src/sharees/client.dart';
 export 'src/sharees/sharee.dart';
 export 'src/shares/client.dart';
