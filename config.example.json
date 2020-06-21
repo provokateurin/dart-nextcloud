@@ -3,5 +3,6 @@
   "username": "admin",
   "password": "admin",
   "shareUser": "admin",
-  "testDir": "/files/admin/dart-nextcloud-tests"
+  "testDir": "/files/admin/dart-nextcloud-tests",
+  "pushToken": "My FCM Push Token"
 }

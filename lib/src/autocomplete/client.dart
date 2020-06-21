@@ -8,17 +8,12 @@ class AutocompleteClient {
   // ignore: public_member_api_docs
   AutocompleteClient(
     String baseUrl,
-    String username,
-    String password,
-  ) {
-    _baseUrl = '$baseUrl/ocs/v2.php/core/autocomplete/get';
-    final client = NextCloudHttpClient(username, password, useJson: true);
-    _network = Network(client);
-  }
+    this._network,
+  ) : _baseUrl = '$baseUrl/ocs/v2.php/core/autocomplete/get';
 
-  String _baseUrl;
+  final String _baseUrl;
 
-  Network _network;
+  final Network _network;
 
   /// Search a user
   Future<List<User>> searchUser(
@@ -29,9 +24,7 @@ class AutocompleteClient {
     final response = await _network.send('GET', url, [200]);
     return json
         .decode(response.body)['ocs']['data']
-        .map((user) => User.fromJson(user))
-        .toList()
-        .cast<User>()
+        .map<User>((user) => User.fromJson(user))
         .toList();
   }
 }

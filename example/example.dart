@@ -5,7 +5,11 @@ import 'package:nextcloud/nextcloud.dart';
 
 Future main() async {
   try {
-    final client = NextCloudClient('cloud.example.com', 'myuser', 'mypassword');
+    final client = NextCloudClient.withCredentials(
+      'cloud.example.com',
+      'myuser',
+      'mypassword',
+    );
     await client.webDav
         .upload(File('example/test.png').readAsBytesSync(), '/test.png');
     File('example/bla.png')
@@ -56,8 +60,8 @@ Future main() async {
     print('List all sharees:');
     print(await client.sharees.getSharees('', 1000, 'file'));
   } on RequestException catch (e, stacktrace) {
-    print(e.cause);
-    print(e.toString());
+    print(e.statusCode);
+    print(e.body);
     print(stacktrace);
   }
 }

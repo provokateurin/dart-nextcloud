@@ -194,7 +194,7 @@ class ConversationManagement {
       _getUrl('room/$token/notify'),
       [200],
       data: utf8.encode(json.encode({
-        'level': level.index + 1,
+        'level': level.index,
       })),
     );
   }
