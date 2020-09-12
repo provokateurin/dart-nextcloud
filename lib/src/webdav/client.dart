@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:xml/xml.dart';
 
 import '../../nextcloud.dart';
 import '../network.dart';
@@ -21,6 +22,48 @@ class WebDavClient {
   final String _baseUrl;
 
   Network _network;
+
+  /// XML namespaces supported by Nextcloud:
+  /// see [WebDav/Requesting properties](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/basic.html#requesting-properties)
+  static const Map<String, String> namespaces = {
+    'DAV:': 'd',
+    'http://owncloud.org/ns': 'oc',
+    'http://nextcloud.org/ns': 'nc',
+  };
+
+  /// All WebDAV props supported by Nextcloud, in prefix form
+  static const Set<String> allProps = {
+    'd:getlastmodified',
+    'd:getetag',
+    'd:getcontenttype',
+    'd:resourcetype',
+    'd:getcontentlength',
+    'oc:id',
+    'oc:fileid',
+    'oc:tags', // editable
+    'oc:favorite', // editable, reportable
+    'oc:systemtag', // reportable
+    'oc:circle', // reportable
+    'oc:comments-href',
+    'oc:comments-count',
+    'oc:comments-unread',
+    'oc:downloadURL',
+    'oc:owner-id',
+    'oc:owner-display-name',
+    'oc:share-types',
+    'nc:sharees',
+    'nc:note',
+    'oc:checksums',
+    'oc:size',
+    'oc:permissions',
+    'nc:data-fingerprint',
+    'nc:has-preview',
+    'nc:mount-type',
+    'nc:is-encrypted',
+    'nc:metadata_etag', // editable
+    'nc:upload_time', // editable
+    'nc:creation_time', // editable
+  };
 
   /// get url from given [path]
   String _getUrl(String path) {
@@ -120,6 +163,28 @@ class WebDavClient {
       return ls(response.headers['location']);
     }
     return treeFromWebDavXml(response.body);
+  }
+
+  /// Retrieves properties for the given [remotePath].
+  ///
+  /// Populates all available properties by default, but a reduced set can be
+  /// specified via [props].
+  Future<WebDavFile> getProps(String remotePath,
+      {Set<String> props = WebDavClient.allProps}) async {
+    final builder = XmlBuilder();
+    builder
+      ..processing('xml', 'version="1.0"')
+      ..element('d:propfind', nest: () {
+        namespaces.forEach(builder.namespace);
+        builder.element('d:prop', nest: () {
+          props.forEach(builder.element);
+        });
+      });
+    final data = utf8.encode(builder.buildDocument().toString());
+    final response = await _network.send(
+        'PROPFIND', _getUrl(remotePath), [200, 207],
+        data: data, headers: {'Depth': '0'});
+    return fileFromWebDavXml(response.body);
   }
 
   /// Move a file from [sourcePath] to [destinationPath]

@@ -19,7 +19,10 @@ class Config {
       username: json['username'],
       password: json['password'],
       shareUser: json['shareUser'],
-      testDir: json['testDir'],
+      // normalised path (remove trailing slash)
+      testDir: json['testDir'].endsWith('/')
+          ? json['testDir'].substring(0, json['testDir'].length - 1)
+          : json['testDir'],
       image: json['image']);
 
   final String host;
@@ -139,6 +142,33 @@ void main() {
       final files = await client.webDav.ls(config.testDir);
       expect(files.where((f) => f.name == 'test2.txt'), isEmpty);
       expect(files.where((f) => f.name == 'test3.txt'), hasLength(1));
+    });
+    test('Get file properties', () async {
+      final startTime = DateTime.now().subtract(Duration(seconds: 2));
+      final path = '${config.testDir}/prop-test.txt';
+      final data = utf8.encode('WebDAV proptest');
+      await client.webDav.upload(data, path);
+
+      final file = await client.webDav.getProps(path);
+      expect(file.isDirectory, false);
+      expect(file.name, 'prop-test.txt');
+      expect(file.lastModified.isAfter(startTime), isTrue,
+          reason: 'Expected $startTime < ${file.lastModified}');
+      expect(file.mimeType, 'text/plain');
+      expect(file.path, path);
+      expect(file.shareTypes, isEmpty);
+      expect(file.size, data.length);
+    });
+    test('Get directory properties', () async {
+      final path = Uri.parse(config.testDir);
+      final file = await client.webDav.getProps(path.toString());
+      expect(file.isDirectory, true);
+      expect(file.name, path.pathSegments.last);
+      expect(file.lastModified, isNotNull);
+      expect(file.mimeType, isNull);
+      expect(file.path, '$path/');
+      expect(file.shareTypes, isEmpty);
+      expect(file.size, 0);
     });
   });
   group('Talk', () {

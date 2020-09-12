@@ -45,6 +45,40 @@ class WebDavFile {
       'WebDavFile{name: $name, isDirectory: $isDirectory, path: $path, mimeType: $mimeType, size: $size, modificationTime: $lastModified, shareTypes: $shareTypes}';
 }
 
+/// Converts a single d:response to a [WebDavFile]
+WebDavFile _fromWebDavXml(xml.XmlElement response) {
+  final davItemName = response.findAllElements('d:href').single.text;
+  final contentTypeElements = response.findAllElements('d:getcontenttype');
+  final contentType = contentTypeElements.single.text != ''
+      ? contentTypeElements.single.text
+      : null;
+  final contentLengthElements = response.findAllElements('d:getcontentlength');
+  final contentLength = contentLengthElements.single.text != ''
+      ? int.parse(contentLengthElements.single.text)
+      : 0;
+
+  final lastModifiedElements = response.findAllElements('d:getlastmodified');
+  final lastModified = lastModifiedElements.single.text != ''
+      ? DateFormat('E, d MMM yyyy HH:mm:ss', 'en_US')
+          .parseUtc(lastModifiedElements.single.text)
+      : null;
+
+  final shareTypes = response
+      .findAllElements('oc:share-type')
+      .map((element) => int.parse(element.text))
+      .toList();
+
+  return WebDavFile(davItemName.replaceAll(RegExp('remote.php/(web)?dav/'), ''),
+      contentType, contentLength, lastModified,
+      shareTypes: shareTypes);
+}
+
+/// Extract a file from the webav xml
+WebDavFile fileFromWebDavXml(String xmlStr) {
+  final xmlDocument = xml.XmlDocument.parse(xmlStr);
+  return _fromWebDavXml(xmlDocument.findAllElements('d:response').single);
+}
+
 /// Extract the file tree from the webdav xml
 List<WebDavFile> treeFromWebDavXml(String xmlStr) {
   // Initialize a list to store the FileInfo Objects
@@ -55,35 +89,7 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
 
   // Iterate over the response to find all folders / files and parse the information
   for (final response in xmlDocument.findAllElements('d:response')) {
-    final davItemName = response.findAllElements('d:href').single.text;
-    final contentTypeElements = response.findAllElements('d:getcontenttype');
-    final contentType = contentTypeElements.single.text != ''
-        ? contentTypeElements.single.text
-        : null;
-    final contentLengthElements =
-        response.findAllElements('d:getcontentlength');
-    final contentLength = contentLengthElements.single.text != ''
-        ? int.parse(contentLengthElements.single.text)
-        : 0;
-
-    final lastModifiedElements = response.findAllElements('d:getlastmodified');
-    final lastModified = lastModifiedElements.single.text != ''
-        ? DateFormat('E, d MMM yyyy HH:mm:ss', 'en_US')
-            .parseUtc(lastModifiedElements.single.text)
-        : null;
-
-    final shareTypes = response
-        .findAllElements('oc:share-type')
-        .map((element) => int.parse(element.text))
-        .toList();
-
-    tree.add(WebDavFile(
-      davItemName.replaceAll(RegExp('remote.php/(web)?dav/'), ''),
-      contentType,
-      contentLength,
-      lastModified,
-      shareTypes: shareTypes,
-    ));
+    tree.add(_fromWebDavXml(response));
   }
   return tree.cast<WebDavFile>()..removeAt(0);
 }
