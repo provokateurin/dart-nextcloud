@@ -1,3 +1,6 @@
+# v1.2.1
+* Fix WebDav timezone parsing
+
 # v1.2.0
 * Add Nextcloud Preview/Thumbnail
 

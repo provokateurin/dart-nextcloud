@@ -15,13 +15,12 @@ class Config {
   });
 
   factory Config.fromJson(Map<String, dynamic> json) => Config(
-        host: json['host'],
-        username: json['username'],
-        password: json['password'],
-        shareUser: json['shareUser'],
-        testDir: json['testDir'],
-        image: json['image']
-      );
+      host: json['host'],
+      username: json['username'],
+      password: json['password'],
+      shareUser: json['shareUser'],
+      testDir: json['testDir'],
+      image: json['image']);
 
   final String host;
   final String username;
@@ -297,16 +296,21 @@ void main() {
   });
   group('Preview', () {
     test('Get preview', () async {
-      expect(await client.preview.getPreview('/${config.image}', 64, 64), isNotNull);
+      expect(await client.preview.getPreview('/${config.image}', 64, 64),
+          isNotNull);
     });
     test('Get preview stream', () async {
-      expect(await client.preview.getPreviewStream('/${config.image}', 64, 64), isNotNull);
+      expect(await client.preview.getPreviewStream('/${config.image}', 64, 64),
+          isNotNull);
     });
     test('Get thumbnail', () async {
-      expect(await client.preview.getThumbnail('/${config.image}', 64, 64), isNotNull);
+      expect(await client.preview.getThumbnail('/${config.image}', 64, 64),
+          isNotNull);
     });
     test('Get thumbnail stream', () async {
-      expect(await client.preview.getThumbnailStream('/${config.image}', 64, 64), isNotNull);
+      expect(
+          await client.preview.getThumbnailStream('/${config.image}', 64, 64),
+          isNotNull);
     });
   });
 }
