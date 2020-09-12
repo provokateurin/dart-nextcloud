@@ -1,8 +1,8 @@
 {
-  "host": "TEST_CLOUD_HOST",
-  "username": "CLOUD_USERNAME",
-  "password": "CLOUD_USER_PASSWORD",
-  "shareUser": "USER_TO_SHARE_TEST_FILE_WITH",
-  "testDir": "DIRECTORY_FOR_TESTS",
-  "image": "PATH_TO_TEST_IMAGE"
+  "host": "http://localhost:8080",
+  "username": "admin",
+  "password": "admin",
+  "shareUser": "admin",
+  "testDir": "/files/admin/dart-nextcloud-tests",
+  "image": "Nextcloud.png"
 }

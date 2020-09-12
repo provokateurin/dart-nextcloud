@@ -15,3 +15,20 @@ A Nextcloud client for dart
 
 ## Usage/Example
 [https://github.com/Viktoriaschule/dart-nextcloud/blob/master/example/example.dart](https://github.com/Viktoriaschule/dart-nextcloud/blob/master/example/example.dart)
+
+## Development
+
+To get started you need a running Nextcloud test instance with the Talk app
+enabled.
+
+Then configure and run the tests:
+
+* Copy `config.example.json` to `config.json`
+* Configure details in `config.json`
+  * `host`: host of the Nextcloud instance
+  * `username`: user for tests
+  * `password`: user's password
+  * `shareUser`: user to share test file with
+  * `testDir`: full webdav path to directory for tests, writeable by the user
+  * `image`: relatuve path to test image based on user's root
+* Run tests with `pub run test` or your IDE
