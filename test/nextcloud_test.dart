@@ -63,7 +63,11 @@ void main() {
             try {
               await client.webDav.delete(config.testDir);
               // ignore: empty_catches
-            } on RequestException {}
+            } on RequestException catch (ex) {
+              if (ex.statusCode != 404) {
+                rethrow;
+              }
+            }
           })(),
           equals(null));
     });
