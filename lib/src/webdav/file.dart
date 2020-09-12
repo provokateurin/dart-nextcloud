@@ -68,8 +68,8 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
 
     final lastModifiedElements = response.findAllElements('d:getlastmodified');
     final lastModified = lastModifiedElements.single.text != ''
-        ? DateFormat('E, d MMM yyyy HH:mm:ss Z')
-            .parse(lastModifiedElements.single.text)
+        ? DateFormat('E, d MMM yyyy HH:mm:ss', 'en_US')
+            .parseUtc(lastModifiedElements.single.text)
         : null;
 
     final shareTypes = response

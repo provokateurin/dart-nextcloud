@@ -88,7 +88,31 @@ void main() {
                   '${config.testDir}/test.txt'))
               .statusCode,
           equals(201));
-      expect((await client.webDav.ls(config.testDir)).length, equals(2));
+      final files = await client.webDav.ls(config.testDir);
+      expect(files.length, equals(2));
+      expect(files.singleWhere((f) => f.name == 'test.png', orElse: () => null),
+          isNotNull);
+      expect(files.singleWhere((f) => f.name == 'test.txt', orElse: () => null),
+          isNotNull);
+    });
+    test('List directory with properties', () async {
+      final startTime = DateTime.now()
+          // lastmodified is second-precision only
+          .subtract(Duration(seconds: 2));
+      final path = '${config.testDir}/list-test.txt';
+      final data = utf8.encode('WebDAV list-test');
+      await client.webDav.upload(data, path);
+
+      final files = await client.webDav.ls(config.testDir);
+      final file = files.singleWhere((f) => f.name == 'list-test.txt');
+      expect(file.isDirectory, false);
+      expect(file.name, 'list-test.txt');
+      expect(startTime.isBefore(file.lastModified), isTrue,
+          reason: 'Expected $startTime < ${file.lastModified}');
+      expect(file.mimeType, 'text/plain');
+      expect(file.path, path);
+      expect(file.shareTypes, []);
+      expect(file.size, data.length);
     });
     test('Copy file', () async {
       expect(
@@ -97,7 +121,9 @@ void main() {
             '${config.testDir}/test2.txt',
           ),
           null);
-      expect((await client.webDav.ls(config.testDir)).length, equals(3));
+      final files = await client.webDav.ls(config.testDir);
+      expect(files.where((f) => f.name == 'test.txt'), hasLength(1));
+      expect(files.where((f) => f.name == 'test2.txt'), hasLength(1));
     });
     test('Move file', () async {
       expect(
@@ -106,12 +132,9 @@ void main() {
             '${config.testDir}/test3.txt',
           ),
           null);
-      expect((await client.webDav.ls(config.testDir)).length, equals(3));
-      expect(
-          (await client.webDav.ls(config.testDir))
-              .where((f) => f.name == 'test3.txt')
-              .length,
-          equals(1));
+      final files = await client.webDav.ls(config.testDir);
+      expect(files.where((f) => f.name == 'test2.txt'), isEmpty);
+      expect(files.where((f) => f.name == 'test3.txt'), hasLength(1));
     });
   });
   group('Talk', () {
