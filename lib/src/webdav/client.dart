@@ -145,18 +145,26 @@ class WebDavClient {
     return (await _network.download('GET', url, [200])).stream;
   }
 
-  /// list the directories and files under given [remotePath]
-  Future<List<WebDavFile>> ls(String remotePath) async {
-    final data = utf8.encode('''
-      <d:propfind xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">
-        <d:prop>
-          <d:getlastmodified/>
-          <d:getcontentlength/>
-          <d:getcontenttype/>
-          <oc:share-types/>
-        </d:prop>
-      </d:propfind>
-    ''');
+  /// list the directories and files under given [remotePath].
+  ///
+  /// Optionally populates the given [props] on the returned files.
+  Future<List<WebDavFile>> ls(String remotePath,
+      {Set<String> props = const {
+        'd:getlastmodified',
+        'd:getcontentlength',
+        'd:getcontenttype',
+        'oc:share-types',
+      }}) async {
+    final builder = XmlBuilder();
+    builder
+      ..processing('xml', 'version="1.0"')
+      ..element('d:propfind', nest: () {
+        namespaces.forEach(builder.namespace);
+        builder.element('d:prop', nest: () {
+          props.forEach(builder.element);
+        });
+      });
+    final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network
         .send('PROPFIND', _getUrl(remotePath), [207, 301], data: data);
     if (response.statusCode == 301) {
