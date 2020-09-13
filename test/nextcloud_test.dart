@@ -173,6 +173,20 @@ void main() {
       expect(file.shareTypes, isEmpty);
       expect(file.size, greaterThan(0));
     });
+    test('Set properties', () async {
+      final createdDate = DateTime.utc(1971, 2, 1);
+      final createdEpoch = createdDate.millisecondsSinceEpoch / 1000;
+      final path = '${config.testDir}/prop-test.txt';
+      final updated = await client.webDav.updateProps(
+          path, {'oc:favorite': '1', 'nc:creation_time': '$createdEpoch'});
+      expect(updated, isTrue);
+
+      final file = await client.webDav.getProps(path);
+      expect(file.favorite, isTrue);
+      expect(file.createdDate.isAtSameMomentAs(createdDate), isTrue,
+          reason: 'Expected same time: $createdDate = ${file.createdDate}');
+      expect(file.uploadedDate, isNotNull);
+    });
   });
   group('Talk', () {
     test('Signaling', () async {

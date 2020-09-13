@@ -173,3 +173,17 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
   }
   return tree.cast<WebDavFile>()..removeAt(0);
 }
+
+/// Returns false if some updates have failed.
+bool checkUpdateFromWebDavXml(String xmlStr) {
+  final xmlDocument = xml.XmlDocument.parse(xmlStr);
+  final response = xmlDocument.findAllElements('d:response').single;
+  final propStatElements = response.findElements('d:propstat');
+  for (final propStat in propStatElements) {
+    final status = propStat.getElement('d:status').text;
+    if (!status.contains('200')) {
+      return false;
+    }
+  }
+  return true;
+}

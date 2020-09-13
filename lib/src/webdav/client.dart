@@ -196,6 +196,31 @@ class WebDavClient {
     return fileFromWebDavXml(response.body);
   }
 
+  /// Update (string) properties of the given [remotePath].
+  ///
+  /// Returns true if the update was successful.
+  Future<bool> updateProps(String remotePath, Map<String, String> props) async {
+    final builder = XmlBuilder();
+    builder
+      ..processing('xml', 'version="1.0"')
+      ..element('d:propertyupdate', nest: () {
+        namespaces.forEach(builder.namespace);
+        builder.element('d:set', nest: () {
+          builder.element('d:prop', nest: () {
+            props.forEach((key, value) {
+              builder.element(key, nest: () {
+                builder.text(value);
+              });
+            });
+          });
+        });
+      });
+    final data = utf8.encode(builder.buildDocument().toString());
+    final response = await _network
+        .send('PROPPATCH', _getUrl(remotePath), [200, 207], data: data);
+    return checkUpdateFromWebDavXml(response.body);
+  }
+
   /// Move a file from [sourcePath] to [destinationPath]
   Future move(String sourcePath, String destinationPath) async {
     await _network.send(
