@@ -34,6 +34,15 @@ class WebDavClient {
     return '$_baseUrl/remote.php/dav/$path';
   }
 
+  /// returns the WebDAV capabilities of the server
+  Future<WebDavStatus> status() async {
+    final response = await _network.send('OPTIONS', _getUrl('/'), [200]);
+    final davCapabilities = response.headers['dav'] ?? '';
+    final davSearchCapabilities = response.headers['dasl'] ?? '';
+    return WebDavStatus(davCapabilities.split(',').map((e) => e.trim()).toSet(),
+        davSearchCapabilities.split(',').map((e) => e.trim()).toSet());
+  }
+
   /// make a dir with [path] under current dir
   Future<http.Response> mkdir(String path, [bool safe = true]) {
     final expectedCodes = [
@@ -136,4 +145,20 @@ class WebDavClient {
       },
     );
   }
+}
+
+/// WebDAV server status.
+class WebDavStatus {
+  /// Creates a new WebDavStatus.
+  WebDavStatus(
+    this.capabilities,
+    this.searchCapabilities,
+  );
+
+  /// DAV capabilities as advertised by the server in the 'dav' header.
+  Set<String> capabilities;
+
+  /// DAV search and locating capabilities as advertised by the server in the
+  /// 'dasl' header.
+  Set<String> searchCapabilities;
 }

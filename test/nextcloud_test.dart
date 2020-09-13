@@ -57,6 +57,11 @@ void main() {
     });
   });
   group('WebDav', () {
+    test('Get status', () async {
+      final status = await client.webDav.status();
+      expect(status.capabilities, containsAll(['1', '3', 'access-control']));
+      expect(status.searchCapabilities, contains('<DAV:basicsearch>'));
+    });
     test('Clean test environment', () async {
       expect(
           await (() async {
