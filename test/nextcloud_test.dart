@@ -153,7 +153,9 @@ void main() {
       expect(file.isDirectory, false);
       expect(file.name, 'prop-test.txt');
       expect(file.lastModified.isAfter(startTime), isTrue,
-          reason: 'Expected $startTime < ${file.lastModified}');
+          reason: 'Expected lastModified: $startTime < ${file.lastModified}');
+      expect(file.uploadedDate.isAfter(startTime), isTrue,
+          reason: 'Expected uploadedDate: $startTime < ${file.uploadedDate}');
       expect(file.mimeType, 'text/plain');
       expect(file.path, path);
       expect(file.shareTypes, isEmpty);
@@ -168,7 +170,7 @@ void main() {
       expect(file.mimeType, isNull);
       expect(file.path, '$path/');
       expect(file.shareTypes, isEmpty);
-      expect(file.size, 0);
+      expect(file.size, greaterThan(0));
     });
   });
   group('Talk', () {

@@ -3,37 +3,56 @@ import 'package:xml/xml.dart' as xml;
 
 /// WebDavFile class
 class WebDavFile {
-  // ignore: public_member_api_docs
-  WebDavFile(
-    this.path,
-    this.mimeType,
-    this.size,
-    this.lastModified, {
-    this.shareTypes = const [],
-  });
+  /// Creates a new WebDavFile object with the given path
+  WebDavFile(this.path);
 
   // ignore: public_member_api_docs
   final String path;
 
-  // ignore: public_member_api_docs
-  final String mimeType;
+  /// The fileid namespaced by the instance id, globally unique
+  String id;
+
+  /// The unique id for the file within the instance
+  String fileId;
 
   // ignore: public_member_api_docs
-  final int size;
+  String mimeType;
+
+  /// File content length or folder size
+  int size;
+
+  /// The user id of the owner of a shared file
+  String ownerId;
+
+  /// The display name of the owner of a shared file
+  String ownerDisplay;
+
+  /// Share note
+  String note;
 
   // ignore: public_member_api_docs
-  final DateTime lastModified;
+  DateTime lastModified;
+
+  /// Upload date of the file.
+  DateTime uploadedDate;
+
+  /// Creation date of the file as provided by uploader.
+  DateTime createdDate;
 
   // ignore: public_member_api_docs
-  final List<int> shareTypes;
+  List<int> shareTypes = [];
+
+  /// User IDs of sharees.
+  List<String> sharees = [];
+
+  /// Whether this file is marked as favorite.
+  bool favorite = false;
 
   /// Returns the decoded name of the file / folder without the whole path
   String get name {
-    if (isDirectory) {
-      return Uri.decodeFull(
-          path.substring(0, path.lastIndexOf('/')).split('/').last);
-    }
-    return Uri.decodeFull(path.split('/').last);
+    // normalised path (remove trailing slash)
+    final end = path.endsWith('/') ? path.length - 1 : path.length;
+    return Uri.parse(path, 0, end).pathSegments.last;
   }
 
   /// Returns if the file is a directory
@@ -42,35 +61,90 @@ class WebDavFile {
   @override
   String toString() =>
       // ignore: lines_longer_than_80_chars
-      'WebDavFile{name: $name, isDirectory: $isDirectory, path: $path, mimeType: $mimeType, size: $size, modificationTime: $lastModified, shareTypes: $shareTypes}';
+      'WebDavFile{name: $name, id: $id, isDirectory: $isDirectory, path: $path, mimeType: $mimeType, size: $size, modificationTime: $lastModified, shareTypes: $shareTypes}';
+}
+
+void _handleProp(xml.XmlElement prop, WebDavFile file) {
+  if (prop.text.isEmpty) {
+    // Ignore empty properties
+    return;
+  }
+
+  switch (prop.name.qualified) {
+    case 'd:getcontenttype':
+      file.mimeType = prop.text;
+      break;
+    case 'd:getcontentlength':
+      file.size = int.parse(prop.text);
+      break;
+    case 'd:getlastmodified':
+      file.lastModified =
+          DateFormat('E, d MMM yyyy HH:mm:ss', 'en_US').parseUtc(prop.text);
+      break;
+    case 'oc:id':
+      file.id = prop.text;
+      break;
+    case 'oc:fileid':
+      file.fileId = prop.text;
+      break;
+    case 'oc:favorite':
+      file.favorite = prop.text == '1';
+      break;
+    case 'oc:owner-id':
+      file.ownerId = prop.text;
+      break;
+    case 'oc:owner-display-name':
+      file.ownerDisplay = prop.text;
+      break;
+    case 'oc:share-types':
+      file.shareTypes = prop
+          .findElements('oc:share-type')
+          .map((element) => int.parse(element.text))
+          .toList();
+      break;
+    case 'nc:sharees':
+      file.sharees = prop.findAllElements('nc:id').map((e) => e.text).toList();
+      break;
+    case 'oc:note':
+      file.note = prop.text;
+      break;
+    case 'oc:size':
+      file.size = int.parse(prop.text);
+      break;
+    case 'nc:creation_time':
+      file.createdDate =
+          DateTime.fromMillisecondsSinceEpoch(int.parse(prop.text) * 1000);
+      break;
+    case 'nc:upload_time':
+      file.uploadedDate =
+          DateTime.fromMillisecondsSinceEpoch(int.parse(prop.text) * 1000);
+      break;
+    default:
+      print('Ignoring unsupported prop: ${prop.name} - ${prop.text}');
+  }
 }
 
 /// Converts a single d:response to a [WebDavFile]
 WebDavFile _fromWebDavXml(xml.XmlElement response) {
-  final davItemName = response.findAllElements('d:href').single.text;
-  final contentTypeElements = response.findAllElements('d:getcontenttype');
-  final contentType = contentTypeElements.single.text != ''
-      ? contentTypeElements.single.text
-      : null;
-  final contentLengthElements = response.findAllElements('d:getcontentlength');
-  final contentLength = contentLengthElements.single.text != ''
-      ? int.parse(contentLengthElements.single.text)
-      : 0;
+  final davItemName = response.findElements('d:href').single.text;
+  final path = davItemName.replaceAll(RegExp('remote.php/(web)?dav/'), '');
+  final file = WebDavFile(path);
 
-  final lastModifiedElements = response.findAllElements('d:getlastmodified');
-  final lastModified = lastModifiedElements.single.text != ''
-      ? DateFormat('E, d MMM yyyy HH:mm:ss', 'en_US')
-          .parseUtc(lastModifiedElements.single.text)
-      : null;
+  final propStatElements = response.findElements('d:propstat');
+  for (final propStat in propStatElements) {
+    final status = propStat.getElement('d:status').text;
+    final props = propStat.getElement('d:prop');
 
-  final shareTypes = response
-      .findAllElements('oc:share-type')
-      .map((element) => int.parse(element.text))
-      .toList();
+    if (!status.contains('200')) {
+      // Skip any props that are not returned correctly (e.g. not found)
+      continue;
+    }
+    for (final prop in props.nodes.whereType<xml.XmlElement>()) {
+      _handleProp(prop, file);
+    }
+  }
 
-  return WebDavFile(davItemName.replaceAll(RegExp('remote.php/(web)?dav/'), ''),
-      contentType, contentLength, lastModified,
-      shareTypes: shareTypes);
+  return file;
 }
 
 /// Extract a file from the webav xml

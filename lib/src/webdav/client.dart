@@ -153,6 +153,7 @@ class WebDavClient {
         'd:getlastmodified',
         'd:getcontentlength',
         'd:getcontenttype',
+        'oc:id',
         'oc:share-types',
       }}) async {
     final builder = XmlBuilder();
