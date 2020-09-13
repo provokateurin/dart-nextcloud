@@ -171,7 +171,7 @@ List<WebDavFile> treeFromWebDavXml(String xmlStr) {
   for (final response in xmlDocument.findAllElements('d:response')) {
     tree.add(_fromWebDavXml(response));
   }
-  return tree.cast<WebDavFile>()..removeAt(0);
+  return tree.cast<WebDavFile>();
 }
 
 /// Returns false if some updates have failed.

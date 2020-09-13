@@ -173,6 +173,27 @@ void main() {
       expect(file.shareTypes, isEmpty);
       expect(file.size, greaterThan(0));
     });
+    test('Filter files', () async {
+      final path = '${config.testDir}/filter-test.txt';
+      final data = utf8.encode('WebDAV filtertest');
+      final response = await client.webDav.upload(data, path);
+      final id = response.headers['oc-fileid'];
+
+      // Favorite file
+      await client.webDav.updateProps(path, {'oc:favorite': '1'});
+
+      // Find favorites
+      final files = await client.webDav.filter(config.testDir, {
+        'oc:favorite': '1',
+      }, props: {
+        'oc:id',
+        'oc:fileid',
+        'oc:favorite',
+      });
+      final file = files.singleWhere((e) => e.name == 'filter-test.txt');
+      expect(file.favorite, isTrue);
+      expect(file.id, id);
+    });
     test('Set properties', () async {
       final createdDate = DateTime.utc(1971, 2, 1);
       final createdEpoch = createdDate.millisecondsSinceEpoch / 1000;

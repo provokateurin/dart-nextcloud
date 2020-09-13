@@ -171,6 +171,38 @@ class WebDavClient {
     if (response.statusCode == 301) {
       return ls(response.headers['location']);
     }
+    return treeFromWebDavXml(response.body)..removeAt(0);
+  }
+
+  /// Runs the filter-files report with the given [propFilters] on the
+  /// [remotePath].
+  ///
+  /// Optionally populates the given [props] on the returned files.
+  Future<List<WebDavFile>> filter(
+    String remotePath,
+    Map<String, String> propFilters, {
+    Set<String> props = const {},
+  }) async {
+    final builder = XmlBuilder();
+    builder
+      ..processing('xml', 'version="1.0"')
+      ..element('oc:filter-files', nest: () {
+        namespaces.forEach(builder.namespace);
+        builder
+          ..element('oc:filter-rules', nest: () {
+            propFilters.forEach((key, value) {
+              builder.element(key, nest: () {
+                builder.text(value);
+              });
+            });
+          })
+          ..element('d:prop', nest: () {
+            props.forEach(builder.element);
+          });
+      });
+    final data = utf8.encode(builder.buildDocument().toString());
+    final response = await _network
+        .send('REPORT', _getUrl(remotePath), [200, 207], data: data);
     return treeFromWebDavXml(response.body);
   }
 
