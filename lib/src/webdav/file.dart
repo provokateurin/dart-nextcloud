@@ -51,6 +51,26 @@ class WebDavFile {
   /// Whether this file is marked as favorite.
   bool favorite = false;
 
+  /// Other properties, mapped by their prefixed name name
+  final Map<String, String> _otherProps = {};
+
+  /// Additional namespace-prefix mappings for custom properties
+  final Map<String, String> _otherNamespaces = {};
+
+  /// Add an additional property by [name] and [value]
+  void addOtherProp(xml.XmlName name, String value) {
+    _otherNamespaces[name.namespaceUri] = name.prefix;
+    _otherProps[name.qualified] = value;
+  }
+
+  /// Lookup an additional property by [name] and [namespaceUri]
+  String getOtherProp(String name, String namespaceUri) {
+    final localName = xml.XmlName.fromString(name).local;
+    // find correct prefix
+    final prefix = _otherNamespaces[namespaceUri];
+    return _otherProps['$prefix:$localName'];
+  }
+
   /// Returns the decoded name of the file / folder without the whole path
   String get name {
     // normalised path (remove trailing slash)
@@ -126,7 +146,8 @@ void _handleProp(xml.XmlElement prop, WebDavFile file) {
           DateTime.fromMillisecondsSinceEpoch(int.parse(prop.text) * 1000);
       break;
     default:
-      print('Ignoring unsupported prop: ${prop.name} - ${prop.text}');
+      // store with fully qualified name
+      file.addOtherProp(prop.name, prop.text);
   }
 }
 

@@ -23,12 +23,14 @@ class WebDavClient {
 
   Network _network;
 
-  /// XML namespaces supported by Nextcloud:
-  /// see [WebDav/Requesting properties](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/basic.html#requesting-properties)
-  static const Map<String, String> namespaces = {
+  /// XML namespaces supported by this client.
+  ///
+  /// For Nextcloud namespaces see [WebDav/Requesting properties](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/basic.html#requesting-properties).
+  final Map<String, String> namespaces = {
     'DAV:': 'd',
     'http://owncloud.org/ns': 'oc',
     'http://nextcloud.org/ns': 'nc',
+    'http://sabredav.org/ns': 's', // mostly used in error responses
   };
 
   /// All WebDAV props supported by Nextcloud, in prefix form
@@ -76,6 +78,12 @@ class WebDavClient {
 
     return '$_baseUrl/remote.php/dav/$path';
   }
+
+  /// Registers a custom namespace for properties.
+  ///
+  /// Requires a unique [namespaceUri] and [prefix].
+  void registerNamespace(String namespaceUri, String prefix) =>
+      namespaces.putIfAbsent(namespaceUri, () => prefix);
 
   /// returns the WebDAV capabilities of the server
   Future<WebDavStatus> status() async {
@@ -210,8 +218,10 @@ class WebDavClient {
   ///
   /// Populates all available properties by default, but a reduced set can be
   /// specified via [props].
-  Future<WebDavFile> getProps(String remotePath,
-      {Set<String> props = WebDavClient.allProps}) async {
+  Future<WebDavFile> getProps(
+    String remotePath, {
+    Set<String> props = WebDavClient.allProps,
+  }) async {
     final builder = XmlBuilder();
     builder
       ..processing('xml', 'version="1.0"')

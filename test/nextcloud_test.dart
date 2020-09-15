@@ -213,6 +213,15 @@ void main() {
       expect(file.shareTypes, isEmpty);
       expect(file.size, greaterThan(0));
     });
+    test('Get additional properties', () async {
+      final path = '${config.testDir}/prop-test.txt';
+      final file = await client.webDav.getProps(path);
+
+      expect(file.getOtherProp('oc:comments-count', 'http://owncloud.org/ns'),
+          '0');
+      expect(file.getOtherProp('nc:has-preview', 'http://nextcloud.org/ns'),
+          'true');
+    });
     test('Filter files', () async {
       final path = '${config.testDir}/filter-test.txt';
       final data = utf8.encode('WebDAV filtertest');
@@ -247,6 +256,38 @@ void main() {
       expect(file.createdDate.isAtSameMomentAs(createdDate), isTrue,
           reason: 'Expected same time: $createdDate = ${file.createdDate}');
       expect(file.uploadedDate, isNotNull);
+    });
+    test('Set custom properties', () async {
+      final customNamespaces = {
+        'http://leonhardt.co.nz/ns': 'le',
+        'http://test/ns': 'test'
+      };
+      final path = '${config.testDir}/prop-test.txt';
+
+      customNamespaces
+          .forEach((ns, prefix) => client.webDav.registerNamespace(ns, prefix));
+
+      final updated = await client.webDav.updateProps(path, {
+        'le:custom': 'le-custom-prop-value',
+        'le:custom2': 'le-custom-prop-value2',
+        'test:custom': 'test-custom-prop-value',
+      });
+      expect(updated, isTrue);
+
+      final file = await client.webDav.getProps(path, props: {
+        'd:getlastmodified',
+        'oc:fileid',
+        'le:custom',
+        'le:custom2',
+        'test:custom',
+      });
+      expect(file.name, 'prop-test.txt');
+      expect(file.getOtherProp('custom', customNamespaces.keys.first),
+          'le-custom-prop-value');
+      expect(file.getOtherProp('custom2', customNamespaces.keys.first),
+          'le-custom-prop-value2');
+      expect(file.getOtherProp('custom', customNamespaces.keys.elementAt(1)),
+          'test-custom-prop-value');
     });
   });
   group('Talk', () {
