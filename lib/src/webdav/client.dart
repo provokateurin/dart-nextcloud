@@ -254,25 +254,33 @@ class WebDavClient {
   }
 
   /// Move a file from [sourcePath] to [destinationPath]
-  Future move(String sourcePath, String destinationPath) async {
-    await _network.send(
+  ///
+  /// Throws a [RequestException] if the move operation failed.
+  Future<http.Response> move(String sourcePath, String destinationPath,
+      {bool overwrite = false}) {
+    return _network.send(
       'MOVE',
       _getUrl(sourcePath),
-      [200, 201],
+      [200, 201, 204],
       headers: {
         'Destination': _getUrl(destinationPath),
+        'Overwrite': overwrite ? 'T' : 'F',
       },
     );
   }
 
   /// Copy a file from [sourcePath] to [destinationPath]
-  Future copy(String sourcePath, String destinationPath) async {
-    await _network.send(
+  ///
+  /// Throws a [RequestException] if the copy operation failed.
+  Future<http.Response> copy(String sourcePath, String destinationPath,
+      {bool overwrite = false}) {
+    return _network.send(
       'COPY',
       _getUrl(sourcePath),
-      [200, 201],
+      [200, 201, 204],
       headers: {
         'Destination': _getUrl(destinationPath),
+        'Overwrite': overwrite ? 'T' : 'F',
       },
     );
   }

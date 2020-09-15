@@ -122,26 +122,66 @@ void main() {
       expect(file.size, data.length);
     });
     test('Copy file', () async {
-      expect(
-          await client.webDav.copy(
-            '${config.testDir}/test.txt',
-            '${config.testDir}/test2.txt',
-          ),
-          null);
+      final response = await client.webDav.copy(
+        '${config.testDir}/test.txt',
+        '${config.testDir}/test2.txt',
+      );
+      expect(response.statusCode, 201);
       final files = await client.webDav.ls(config.testDir);
       expect(files.where((f) => f.name == 'test.txt'), hasLength(1));
       expect(files.where((f) => f.name == 'test2.txt'), hasLength(1));
     });
-    test('Move file', () async {
+    test('Copy file (no overwrite)', () async {
+      final path = '${config.testDir}/copy-test.txt';
+      final data = utf8.encode('WebDAV copytest');
+      await client.webDav.upload(data, path);
+
       expect(
-          await client.webDav.move(
-            '${config.testDir}/test2.txt',
-            '${config.testDir}/test3.txt',
-          ),
-          null);
+          () => client.webDav.copy(
+              '${config.testDir}/test.txt', '${config.testDir}/copy-test.txt',
+              overwrite: false),
+          throwsA(predicate((e) => e.statusCode == 412)));
+    });
+    test('Copy file (overwrite)', () async {
+      final path = '${config.testDir}/copy-test.txt';
+      final data = utf8.encode('WebDAV copytest');
+      await client.webDav.upload(data, path);
+
+      final response = await client.webDav.copy(
+          '${config.testDir}/test.txt', '${config.testDir}/copy-test.txt',
+          overwrite: true);
+      expect(response.statusCode, 204);
+    });
+    test('Move file', () async {
+      final response = await client.webDav.move(
+        '${config.testDir}/test2.txt',
+        '${config.testDir}/test3.txt',
+      );
+      expect(response.statusCode, 201);
       final files = await client.webDav.ls(config.testDir);
       expect(files.where((f) => f.name == 'test2.txt'), isEmpty);
       expect(files.where((f) => f.name == 'test3.txt'), hasLength(1));
+    });
+    test('Move file (no overwrite)', () async {
+      final path = '${config.testDir}/move-test.txt';
+      final data = utf8.encode('WebDAV movetest');
+      await client.webDav.upload(data, path);
+
+      expect(
+          () => client.webDav.move(
+              '${config.testDir}/test.txt', '${config.testDir}/move-test.txt',
+              overwrite: false),
+          throwsA(predicate((e) => e.statusCode == 412)));
+    });
+    test('Move file (overwrite)', () async {
+      final path = '${config.testDir}/move-test.txt';
+      final data = utf8.encode('WebDAV movetest');
+      await client.webDav.upload(data, path);
+
+      final response = await client.webDav.move(
+          '${config.testDir}/test.txt', '${config.testDir}/move-test.txt',
+          overwrite: true);
+      expect(response.statusCode, 204);
     });
     test('Get file properties', () async {
       final startTime = DateTime.now().subtract(Duration(seconds: 2));
