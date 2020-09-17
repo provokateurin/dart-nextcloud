@@ -165,6 +165,7 @@ void main() {
       final path = Uri.parse(config.testDir);
       final file = await client.webDav.getProps(path.toString());
       expect(file.isDirectory, true);
+      expect(file.isCollection, true);
       expect(file.name, path.pathSegments.last);
       expect(file.lastModified, isNotNull);
       expect(file.mimeType, isNull);

@@ -15,6 +15,9 @@ class WebDavFile {
   /// The unique id for the file within the instance
   String fileId;
 
+  /// Whether this is a collection resource type
+  bool isCollection = false;
+
   // ignore: public_member_api_docs
   String mimeType;
 
@@ -56,7 +59,7 @@ class WebDavFile {
   }
 
   /// Returns if the file is a directory
-  bool get isDirectory => path.endsWith('/');
+  bool get isDirectory => path.endsWith('/') || isCollection;
 
   @override
   String toString() =>
@@ -65,7 +68,7 @@ class WebDavFile {
 }
 
 void _handleProp(xml.XmlElement prop, WebDavFile file) {
-  if (prop.text.isEmpty) {
+  if (prop.children.isEmpty && prop.text.isEmpty) {
     // Ignore empty properties
     return;
   }
@@ -80,6 +83,9 @@ void _handleProp(xml.XmlElement prop, WebDavFile file) {
     case 'd:getlastmodified':
       file.lastModified =
           DateFormat('E, d MMM yyyy HH:mm:ss', 'en_US').parseUtc(prop.text);
+      break;
+    case 'd:resourcetype':
+      file.isCollection = prop.getElement('d:collection') != null;
       break;
     case 'oc:id':
       file.id = prop.text;
