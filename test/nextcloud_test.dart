@@ -39,11 +39,15 @@ void main() {
     test('Different host urls', () {
       final urls = [
         ['http://cloud.test.com/index.php/123', 'http://cloud.test.com'],
-        ['https://cloud.test.com:80/index.php/123', 'https://cloud.test.com'],
+        [
+          'https://cloud.test.com:80/index.php/123',
+          'https://cloud.test.com:80'
+        ],
         ['cloud.test.com', 'https://cloud.test.com'],
-        ['cloud.test.com:90', 'https://cloud.test.com'],
+        ['cloud.test.com:90', 'https://cloud.test.com:90'],
         ['test.com/cloud', 'https://test.com/cloud'],
         ['test.com/cloud/index.php/any/path', 'https://test.com/cloud'],
+        ['http://localhost:8081/nextcloud', 'http://localhost:8081/nextcloud'],
       ];
 
       for (final url in urls) {
@@ -63,7 +67,11 @@ void main() {
             try {
               await client.webDav.delete(config.testDir);
               // ignore: empty_catches
-            } on RequestException {}
+            } on RequestException catch (ex) {
+              if (ex.statusCode != 404) {
+                rethrow;
+              }
+            }
           })(),
           equals(null));
     });

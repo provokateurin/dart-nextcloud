@@ -8,14 +8,14 @@ class NextCloudClient {
   NextCloudClient(
     String host,
     this.username,
-    this.password, {
-    this.port,
-  }) {
-    final prefix = host.startsWith('http://') ? 'http' : 'https';
-    final main =
-        host.replaceAll(RegExp(r'https?:\/\/|\/index.php(.+)?|:.+'), '');
-    final end = port != null ? ':$port' : '';
-    baseUrl = '$prefix://$main$end';
+    this.password,
+  ) {
+    // Default to HTTPS scheme
+    host = host.contains('://') ? host : 'https://$host';
+    // Find end of base URI
+    final end =
+        host.contains('/index.php') ? host.indexOf('/index.php') : host.length;
+    baseUrl = Uri.parse(host, 0, end).toString();
 
     _webDavClient = WebDavClient(
       baseUrl,
@@ -63,9 +63,6 @@ class NextCloudClient {
   ///
   /// For example: `cloud.example.com`
   String baseUrl;
-
-  // ignore: public_member_api_docs
-  final int port;
 
   // ignore: public_member_api_docs
   final String username;
