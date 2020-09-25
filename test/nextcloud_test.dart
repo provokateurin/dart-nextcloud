@@ -229,15 +229,15 @@ void main() {
       final id = response.headers['oc-fileid'];
 
       // Favorite file
-      await client.webDav.updateProps(path, {'oc:favorite': '1'});
+      await client.webDav.updateProps(path, {WebDavProps.ocFavorite: '1'});
 
       // Find favorites
       final files = await client.webDav.filter(config.testDir, {
-        'oc:favorite': '1',
+        WebDavProps.ocFavorite: '1',
       }, props: {
-        'oc:id',
-        'oc:fileid',
-        'oc:favorite',
+        WebDavProps.ocId,
+        WebDavProps.ocFileId,
+        WebDavProps.ocFavorite,
       });
       final file = files.singleWhere((e) => e.name == 'filter-test.txt');
       expect(file.favorite, isTrue);
@@ -247,8 +247,10 @@ void main() {
       final createdDate = DateTime.utc(1971, 2, 1);
       final createdEpoch = createdDate.millisecondsSinceEpoch / 1000;
       final path = '${config.testDir}/prop-test.txt';
-      final updated = await client.webDav.updateProps(
-          path, {'oc:favorite': '1', 'nc:creation_time': '$createdEpoch'});
+      final updated = await client.webDav.updateProps(path, {
+        WebDavProps.ocFavorite: '1',
+        WebDavProps.ncCreationTime: '$createdEpoch'
+      });
       expect(updated, isTrue);
 
       final file = await client.webDav.getProps(path);

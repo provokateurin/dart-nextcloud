@@ -30,41 +30,9 @@ class WebDavClient {
     'DAV:': 'd',
     'http://owncloud.org/ns': 'oc',
     'http://nextcloud.org/ns': 'nc',
+    'http://open-collaboration-services.org/ns': 'ocs',
+    'http://open-cloud-mesh.org/ns': 'ocm',
     'http://sabredav.org/ns': 's', // mostly used in error responses
-  };
-
-  /// All WebDAV props supported by Nextcloud, in prefix form
-  static const Set<String> allProps = {
-    'd:getlastmodified',
-    'd:getetag',
-    'd:getcontenttype',
-    'd:resourcetype',
-    'd:getcontentlength',
-    'oc:id',
-    'oc:fileid',
-    'oc:tags', // editable
-    'oc:favorite', // editable, reportable
-    'oc:systemtag', // reportable
-    'oc:circle', // reportable
-    'oc:comments-href',
-    'oc:comments-count',
-    'oc:comments-unread',
-    'oc:downloadURL',
-    'oc:owner-id',
-    'oc:owner-display-name',
-    'oc:share-types',
-    'nc:sharees',
-    'nc:note',
-    'oc:checksums',
-    'oc:size',
-    'oc:permissions',
-    'nc:data-fingerprint',
-    'nc:has-preview',
-    'nc:mount-type',
-    'nc:is-encrypted',
-    'nc:metadata_etag', // editable
-    'nc:upload_time', // editable
-    'nc:creation_time', // editable
   };
 
   /// get url from given [path]
@@ -158,11 +126,11 @@ class WebDavClient {
   /// Optionally populates the given [props] on the returned files.
   Future<List<WebDavFile>> ls(String remotePath,
       {Set<String> props = const {
-        'd:getlastmodified',
-        'd:getcontentlength',
-        'd:getcontenttype',
-        'oc:id',
-        'oc:share-types',
+        WebDavProps.davContentLength,
+        WebDavProps.davContentType,
+        WebDavProps.davLastModified,
+        WebDavProps.ocId,
+        WebDavProps.ocShareTypes,
       }}) async {
     final builder = XmlBuilder();
     builder
@@ -220,7 +188,7 @@ class WebDavClient {
   /// specified via [props].
   Future<WebDavFile> getProps(
     String remotePath, {
-    Set<String> props = WebDavClient.allProps,
+    Set<String> props = WebDavProps.all,
   }) async {
     final builder = XmlBuilder();
     builder
@@ -310,4 +278,191 @@ class WebDavStatus {
   /// DAV search and locating capabilities as advertised by the server in the
   /// 'dasl' header.
   Set<String> searchCapabilities;
+}
+
+/// Mapping of all WebDAV properties.
+class WebDavProps {
+  /// All WebDAV props supported by Nextcloud, in prefix form
+  static const all = {
+    davContentLength,
+    davContentType,
+    davETag,
+    davLastModified,
+    davResourceType,
+    ncCreationTime,
+    ncDataFingerprint,
+    ncHasPreview,
+    ncIsEncrypted,
+    ncMetadataETag,
+    ncMountType,
+    ncNote,
+    ncRichWorkspace,
+    ncShareees,
+    ncUploadTime,
+    ocChecksums,
+    ocCircle,
+    ocCommentsCount,
+    ocCommentsHref,
+    ocCommentsUnread,
+    ocDownloadURL,
+    ocFavorite,
+    ocFileId,
+    ocId,
+    ocOwnerDisplayName,
+    ocOwnerId,
+    ocPermissions,
+    ocShareTypes,
+    ocSize,
+    ocSystemTag,
+    ocTags,
+  };
+
+  /// Contains the Last-Modified header value  .
+  static const davLastModified = 'd:getlastmodified';
+
+  /// Contains the ETag header value.
+  static const davETag = 'd:getetag';
+
+  /// Contains the Content-Type header value.
+  static const davContentType = 'd:getcontenttype';
+
+  /// Specifies the nature of the resource.
+  static const davResourceType = 'd:resourcetype';
+
+  /// Contains the Content-Length header.
+  static const davContentLength = 'd:getcontentlength';
+
+  /// The fileid namespaced by the instance id, globally unique
+  static const ocId = 'oc:id';
+
+  /// The unique id for the file within the instance
+  static const ocFileId = 'oc:fileId';
+
+  /// List of user specified tags. Can be modified.
+  static const ocTags = 'oc:tags';
+
+  /// Whether a resource is tagged as favorite.
+  /// Can be modified and reported on with list-files.
+  static const ocFavorite = 'oc:favorite';
+
+  /// List of collaborative tags. Can be reported on with list-files.
+  ///
+  /// Valid system tags are:
+  /// - oc:id
+  /// - oc:display-name
+  /// - oc:user-visible
+  /// - oc:user-assignable
+  /// - oc:groups
+  /// - oc:can-assign
+  static const ocSystemTag = 'oc:systemtag';
+
+  /// Can be reported on with list-files.
+  static const ocCircle = 'oc:circle';
+
+  /// Link to the comments for this resource.
+  static const ocCommentsHref = 'oc:comments-href';
+
+  /// Number of comments.
+  static const ocCommentsCount = 'oc:comments-count';
+
+  /// Number of unread comments.
+  static const ocCommentsUnread = 'oc:comments-unread';
+
+  /// Download URL.
+  static const ocDownloadURL = 'oc:downloadURL';
+
+  /// The user id of the owner of a shared file
+  static const ocOwnerId = 'oc:owner-id';
+
+  /// The display name of the owner of a shared file
+  static const ocOwnerDisplayName = 'oc:owner-display-name';
+
+  /// Share types of this file.
+  ///
+  /// Returns a list of share-type objects where:
+  /// - 0: user share
+  /// - 1: group share
+  /// - 2: usergroup share
+  /// - 3: public link
+  /// - 4: email
+  /// - 5: contact
+  /// - 6: remote (federated cloud)
+  /// - 7: circle
+  /// - 8: guest
+  /// - 9: remote group
+  /// - 10: room (talk conversation)
+  /// - 11: userroom
+  /// See also [OCS Share API](https://docs.nextcloud.com/server/19/developer_manual/client_apis/OCS/ocs-share-api.html)
+  static const ocShareTypes = 'oc:share-types';
+
+  /// List of users this file is shared with.
+  ///
+  /// Returns a list of sharee objects with:
+  /// - id
+  /// - display-name
+  /// - type (share type)
+  static const ncShareees = 'nc:sharees';
+
+  /// Share note.
+  static const ncNote = 'nc:note';
+
+  /// Checksums as provided during upload.
+  ///
+  /// Returns a list of checksum objects.
+  static const ocChecksums = 'oc:checksums';
+
+  /// Unlike [[davContentLength]], this property also works for folders
+  /// reporting the size of everything in the folder.
+  static const ocSize = 'oc:size';
+
+  /// WebDAV permissions:
+  ///
+  /// - S: shared
+  /// - R: shareable
+  /// - M: mounted
+  /// - G: readable
+  /// - D: deletable
+  /// - NV: updateable, renameable, moveble
+  /// - W: updateable (file)
+  /// - CK: creatable
+  static const ocPermissions = 'oc:permissions';
+
+  /// Nextcloud CRUDS permissions:
+  ///
+  /// - 1: read
+  /// - 2: update
+  /// - 4: create
+  /// - 8: delete
+  /// - 16: share
+  /// - 31: all
+  static const ocsSharePermissions = 'ocs:share-permissions';
+
+  /// OCM permissions:
+  ///
+  /// - share
+  /// - read
+  /// - write
+  static const ocmSharePermissions = 'ocm:share-permissions';
+
+  /// system data-fingerprint
+  static const ncDataFingerprint = 'nc:data-fingerprint';
+
+  /// Whether a preview is available.
+  static const ncHasPreview = 'nc:has-preview';
+
+  /// Mount type, e.g. global, group, user, personal, shared, shared-root, external
+  static const ncMountType = 'nc:mount-type';
+
+  /// Is this file is encrypted, 0 for false or 1 for true.
+  static const ncIsEncrypted = 'nc:is-encrypted';
+
+  static const ncMetadataETag = 'nc:metadata_etag';
+
+  /// Date this file was uploaded.
+  static const ncUploadTime = 'nc:upload_time';
+
+  /// Creation time of the file as provided during upload.
+  static const ncCreationTime = 'nc:creation_time';
+
+  static const ncRichWorkspace = 'nc:rich-workspace';
 }

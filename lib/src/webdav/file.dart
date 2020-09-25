@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:nextcloud/nextcloud.dart';
 import 'package:xml/xml.dart' as xml;
 
 /// WebDavFile class
@@ -94,54 +95,54 @@ void _handleProp(xml.XmlElement prop, WebDavFile file) {
   }
 
   switch (prop.name.qualified) {
-    case 'd:getcontenttype':
+    case WebDavProps.davContentType:
       file.mimeType = prop.text;
       break;
-    case 'd:getcontentlength':
+    case WebDavProps.davContentLength:
       file.size = int.parse(prop.text);
       break;
-    case 'd:getlastmodified':
+    case WebDavProps.davLastModified:
       file.lastModified =
           DateFormat('E, d MMM yyyy HH:mm:ss', 'en_US').parseUtc(prop.text);
       break;
-    case 'd:resourcetype':
+    case WebDavProps.davResourceType:
       file.isCollection = prop.getElement('d:collection') != null;
       break;
-    case 'oc:id':
+    case WebDavProps.ocId:
       file.id = prop.text;
       break;
-    case 'oc:fileid':
+    case WebDavProps.ocFileId:
       file.fileId = prop.text;
       break;
-    case 'oc:favorite':
+    case WebDavProps.ocFavorite:
       file.favorite = prop.text == '1';
       break;
-    case 'oc:owner-id':
+    case WebDavProps.ocOwnerId:
       file.ownerId = prop.text;
       break;
-    case 'oc:owner-display-name':
+    case WebDavProps.ocOwnerDisplayName:
       file.ownerDisplay = prop.text;
       break;
-    case 'oc:share-types':
+    case WebDavProps.ocShareTypes:
       file.shareTypes = prop
           .findElements('oc:share-type')
           .map((element) => int.parse(element.text))
           .toList();
       break;
-    case 'nc:sharees':
+    case WebDavProps.ncShareees:
       file.sharees = prop.findAllElements('nc:id').map((e) => e.text).toList();
       break;
-    case 'oc:note':
+    case WebDavProps.ncNote:
       file.note = prop.text;
       break;
-    case 'oc:size':
+    case WebDavProps.ocSize:
       file.size = int.parse(prop.text);
       break;
-    case 'nc:creation_time':
+    case WebDavProps.ncCreationTime:
       file.createdDate =
           DateTime.fromMillisecondsSinceEpoch(int.parse(prop.text) * 1000);
       break;
-    case 'nc:upload_time':
+    case WebDavProps.ncUploadTime:
       file.uploadedDate =
           DateTime.fromMillisecondsSinceEpoch(int.parse(prop.text) * 1000);
       break;
