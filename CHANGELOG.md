@@ -1,3 +1,6 @@
+# v1.3.0
+* Additional WebDAV features: status, get properties, set properties, filter
+
 # v1.2.1
 * Fix WebDav timezone parsing
 
