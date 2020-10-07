@@ -1,3 +1,9 @@
+# v1.3.0
+* Additional WebDAV features: status, get properties, set properties, filter
+
+# v1.2.1
+* Fix WebDav timezone parsing
+
 # v1.2.0
 * Add Nextcloud Preview/Thumbnail
 
