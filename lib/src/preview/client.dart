@@ -19,36 +19,97 @@ class PreviewClient {
   final String _baseUrl;
   Network _network;
 
-  String _getPreviewUrl(String remotePath, int width, int height) {
-    return '$_baseUrl/index.php/core/preview.png?file=${Uri.encodeQueryComponent(remotePath)}&x=$width&y=$height&a=1&mode=cover&forceIcon=0';
-  }
+  /// fetch preview for [filePath] with provided [width] and [height]
+  Future<Uint8List> getPreviewByPath(String filePath, int width, int height,
+          {bool a = true,
+          String mode = 'cover',
+          bool forceIcon = false}) async =>
+      _getPreview(_createPreviewUrl(
+          filePath: filePath,
+          width: width,
+          height: height,
+          a: a,
+          mode: mode,
+          forceIcon: forceIcon));
 
-  String _getThumbnailUrl(String remotePath, int width, int height) {
-    if (!remotePath.startsWith('/')) {
-      remotePath = '/$remotePath';
-    }
-    return '$_baseUrl/index.php/apps/files/api/v1/thumbnail/$width/$height${Uri.encodeFull(remotePath)}';
-  }
+  /// fetch preview for [filePath] with provided [width] and [height] as ByteStream
+  Future<ByteStream> getPreviewStreamByPath(
+          String filePath, int width, int height,
+          {bool a = true,
+          String mode = 'cover',
+          bool forceIcon = false}) async =>
+      _getPreviewStream(_createPreviewUrl(
+          filePath: filePath,
+          width: width,
+          height: height,
+          a: a,
+          mode: mode,
+          forceIcon: forceIcon));
 
-  /// fetch preview for [remotePath] with provided [width] and [height]
-  Future<Uint8List> getPreview(String remotePath, int width, int height) async {
+  /// fetch preview for [fileId] with provided [width] and [height]
+  Future<Uint8List> getPreviewById(String fileId, int width, int height,
+          {bool a = true,
+          String mode = 'cover',
+          bool forceIcon = false}) async =>
+      _getPreview(_createPreviewUrl(
+          fileId: fileId,
+          width: width,
+          height: height,
+          a: a,
+          mode: mode,
+          forceIcon: forceIcon));
+
+  /// fetch preview for [fileId] with provided [width] and [height] as ByteStream
+  Future<ByteStream> getPreviewStreamById(String fileId, int width, int height,
+          {bool a = true,
+          String mode = 'cover',
+          bool forceIcon = false}) async =>
+      _getPreviewStream(_createPreviewUrl(
+          fileId: fileId,
+          width: width,
+          height: height,
+          a: a,
+          mode: mode,
+          forceIcon: forceIcon));
+
+  Future<Uint8List> _getPreview(String url) async {
     final response = await _network.send(
       'GET',
-      _getPreviewUrl(remotePath, width, height),
+      url,
       [200],
     );
     return response.bodyBytes;
   }
 
-  /// fetch preview for [remotePath] with provided [width] and [height] as ByteStream
-  Future<ByteStream> getPreviewStream(
-      String remotePath, int width, int height) async {
+  Future<ByteStream> _getPreviewStream(String url) async {
     final response = await _network.download(
       'GET',
-      _getPreviewUrl(remotePath, width, height),
+      url,
       [200],
     );
     return response.stream;
+  }
+
+  String _createPreviewUrl(
+      {String filePath,
+      String fileId,
+      int width,
+      int height,
+      bool a = true,
+      String mode = 'cover',
+      bool forceIcon = false}) {
+    assert(filePath != null || fileId != null,
+        'FilePath or FileId has to be specified!');
+    assert(width != null && height != null,
+        'Width and height have to be specified!');
+
+    final query = 'x=$width&y=$height&a=$a&mode=$mode&forceIcon=$forceIcon';
+
+    if (fileId != null) {
+      return '$_baseUrl/index.php/core/preview?fileId=$fileId&$query';
+    }
+
+    return '$_baseUrl/index.php/core/preview.png?file=${Uri.encodeQueryComponent(filePath)}&$query';
   }
 
   /// fetch thumbnail for [remotePath] with provided [width] and [height]
@@ -73,5 +134,12 @@ class PreviewClient {
       [200],
     );
     return response.stream;
+  }
+
+  String _getThumbnailUrl(String remotePath, int width, int height) {
+    if (!remotePath.startsWith('/')) {
+      remotePath = '/$remotePath';
+    }
+    return '$_baseUrl/index.php/apps/files/api/v1/thumbnail/$width/$height${Uri.encodeFull(remotePath)}';
   }
 }

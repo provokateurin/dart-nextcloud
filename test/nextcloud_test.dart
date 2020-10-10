@@ -459,12 +459,25 @@ void main() {
     });
   });
   group('Preview', () {
-    test('Get preview', () async {
-      expect(await client.preview.getPreview('/${config.image}', 64, 64),
+    test('Get preview by path', () async {
+      expect(await client.preview.getPreviewByPath('/${config.image}', 64, 64),
           isNotNull);
     });
-    test('Get preview stream', () async {
-      expect(await client.preview.getPreviewStream('/${config.image}', 64, 64),
+    test('Get preview by id', () async {
+      var file =
+          await client.webDav.getProps('${config.testDir}/${config.image}');
+      expect(await client.preview.getPreviewById(file.id, 64, 64), isNotNull);
+    });
+    test('Get preview stream by path', () async {
+      expect(
+          await client.preview
+              .getPreviewStreamByPath('/${config.image}', 64, 64),
+          isNotNull);
+    });
+    test('Get preview stream by id', () async {
+      var file =
+          await client.webDav.getProps('${config.testDir}/${config.image}');
+      expect(await client.preview.getPreviewStreamById(file.id, 64, 64),
           isNotNull);
     });
     test('Get thumbnail', () async {
