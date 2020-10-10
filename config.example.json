@@ -3,6 +3,5 @@
   "username": "admin",
   "password": "admin",
   "shareUser": "admin",
-  "testDir": "/files/admin/dart-nextcloud-tests",
-  "image": "Nextcloud.png"
+  "testDir": "/files/admin/dart-nextcloud-tests"
 }
