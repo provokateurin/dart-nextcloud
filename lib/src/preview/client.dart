@@ -24,13 +24,8 @@ class PreviewClient {
           {bool a = true,
           String mode = 'cover',
           bool forceIcon = false}) async =>
-      _getPreview(_createPreviewUrl(
-          filePath: filePath,
-          width: width,
-          height: height,
-          a: a,
-          mode: mode,
-          forceIcon: forceIcon));
+      _getPreview(_createPreviewUrl(width, height,
+          filePath: filePath, a: a, mode: mode, forceIcon: forceIcon));
 
   /// fetch preview for [filePath] with provided [width] and [height] as ByteStream
   Future<ByteStream> getPreviewStreamByPath(
@@ -38,39 +33,24 @@ class PreviewClient {
           {bool a = true,
           String mode = 'cover',
           bool forceIcon = false}) async =>
-      _getPreviewStream(_createPreviewUrl(
-          filePath: filePath,
-          width: width,
-          height: height,
-          a: a,
-          mode: mode,
-          forceIcon: forceIcon));
+      _getPreviewStream(_createPreviewUrl(width, height,
+          filePath: filePath, a: a, mode: mode, forceIcon: forceIcon));
 
   /// fetch preview for [fileId] with provided [width] and [height]
   Future<Uint8List> getPreviewById(String fileId, int width, int height,
           {bool a = true,
           String mode = 'cover',
           bool forceIcon = false}) async =>
-      _getPreview(_createPreviewUrl(
-          fileId: fileId,
-          width: width,
-          height: height,
-          a: a,
-          mode: mode,
-          forceIcon: forceIcon));
+      _getPreview(_createPreviewUrl(width, height,
+          fileId: fileId, a: a, mode: mode, forceIcon: forceIcon));
 
   /// fetch preview for [fileId] with provided [width] and [height] as ByteStream
   Future<ByteStream> getPreviewStreamById(String fileId, int width, int height,
           {bool a = true,
           String mode = 'cover',
           bool forceIcon = false}) async =>
-      _getPreviewStream(_createPreviewUrl(
-          fileId: fileId,
-          width: width,
-          height: height,
-          a: a,
-          mode: mode,
-          forceIcon: forceIcon));
+      _getPreviewStream(_createPreviewUrl(width, height,
+          fileId: fileId, a: a, mode: mode, forceIcon: forceIcon));
 
   Future<Uint8List> _getPreview(String url) async {
     final response = await _network.send(
@@ -90,18 +70,14 @@ class PreviewClient {
     return response.stream;
   }
 
-  String _createPreviewUrl(
+  String _createPreviewUrl(int width, int height,
       {String filePath,
       String fileId,
-      int width,
-      int height,
       bool a = true,
       String mode = 'cover',
       bool forceIcon = false}) {
     assert(filePath != null || fileId != null,
         'FilePath or FileId has to be specified!');
-    assert(width != null && height != null,
-        'Width and height have to be specified!');
 
     final query = 'x=$width&y=$height&a=$a&mode=$mode&forceIcon=$forceIcon';
 
