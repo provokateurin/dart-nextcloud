@@ -1,3 +1,6 @@
+# v1.3.1
+* Query previews using file IDs
+
 # v1.3.0
 * Additional WebDAV features: status, get properties, set properties, filter
 
