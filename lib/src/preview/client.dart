@@ -20,37 +20,76 @@ class PreviewClient {
   Network _network;
 
   /// fetch preview for [filePath] with provided [width] and [height]
-  Future<Uint8List> getPreviewByPath(String filePath, int width, int height,
-          {bool a = true,
-          String mode = 'cover',
-          bool forceIcon = false}) async =>
-      _getPreview(_createPreviewUrl(width, height,
-          filePath: filePath, a: a, mode: mode, forceIcon: forceIcon));
+  Future<Uint8List> getPreviewByPath(
+    String filePath,
+    int width,
+    int height, {
+    bool a = true,
+    String mode = 'cover',
+    bool forceIcon = false,
+  }) async =>
+      _getPreview(_createPreviewUrl(
+        width,
+        height,
+        filePath: filePath,
+        a: a,
+        mode: mode,
+        forceIcon: forceIcon,
+      ));
 
   /// fetch preview for [filePath] with provided [width] and [height] as ByteStream
   Future<ByteStream> getPreviewStreamByPath(
-          String filePath, int width, int height,
-          {bool a = true,
-          String mode = 'cover',
-          bool forceIcon = false}) async =>
-      _getPreviewStream(_createPreviewUrl(width, height,
-          filePath: filePath, a: a, mode: mode, forceIcon: forceIcon));
+    String filePath,
+    int width,
+    int height, {
+    bool a = true,
+    String mode = 'cover',
+    bool forceIcon = false,
+  }) async =>
+      _getPreviewStream(_createPreviewUrl(
+        width,
+        height,
+        filePath: filePath,
+        a: a,
+        mode: mode,
+        forceIcon: forceIcon,
+      ));
 
   /// fetch preview for [fileId] with provided [width] and [height]
-  Future<Uint8List> getPreviewById(String fileId, int width, int height,
-          {bool a = true,
-          String mode = 'cover',
-          bool forceIcon = false}) async =>
-      _getPreview(_createPreviewUrl(width, height,
-          fileId: fileId, a: a, mode: mode, forceIcon: forceIcon));
+  Future<Uint8List> getPreviewById(
+    String fileId,
+    int width,
+    int height, {
+    bool a = true,
+    String mode = 'cover',
+    bool forceIcon = false,
+  }) async =>
+      _getPreview(_createPreviewUrl(
+        width,
+        height,
+        fileId: fileId,
+        a: a,
+        mode: mode,
+        forceIcon: forceIcon,
+      ));
 
   /// fetch preview for [fileId] with provided [width] and [height] as ByteStream
-  Future<ByteStream> getPreviewStreamById(String fileId, int width, int height,
-          {bool a = true,
-          String mode = 'cover',
-          bool forceIcon = false}) async =>
-      _getPreviewStream(_createPreviewUrl(width, height,
-          fileId: fileId, a: a, mode: mode, forceIcon: forceIcon));
+  Future<ByteStream> getPreviewStreamById(
+    String fileId,
+    int width,
+    int height, {
+    bool a = true,
+    String mode = 'cover',
+    bool forceIcon = false,
+  }) async =>
+      _getPreviewStream(_createPreviewUrl(
+        width,
+        height,
+        fileId: fileId,
+        a: a,
+        mode: mode,
+        forceIcon: forceIcon,
+      ));
 
   Future<Uint8List> _getPreview(String url) async {
     final response = await _network.send(
@@ -70,12 +109,15 @@ class PreviewClient {
     return response.stream;
   }
 
-  String _createPreviewUrl(int width, int height,
-      {String filePath,
-      String fileId,
-      bool a = true,
-      String mode = 'cover',
-      bool forceIcon = false}) {
+  String _createPreviewUrl(
+    int width,
+    int height, {
+    String filePath,
+    String fileId,
+    bool a = true,
+    String mode = 'cover',
+    bool forceIcon = false,
+  }) {
     assert(filePath != null || fileId != null,
         'FilePath or FileId has to be specified!');
 
@@ -91,7 +133,10 @@ class PreviewClient {
   /// fetch thumbnail for [remotePath] with provided [width] and [height]
   /// thumbnail will crop your image if you want resized images use preview
   Future<Uint8List> getThumbnail(
-      String remotePath, int width, int height) async {
+    String remotePath,
+    int width,
+    int height,
+  ) async {
     final response = await _network.send(
       'GET',
       _getThumbnailUrl(remotePath, width, height),
@@ -103,7 +148,10 @@ class PreviewClient {
   /// fetch thumbnail for [remotePath] with provided [width] and [height] as ByteStream
   /// thumbnail will crop your image if you want resized images use preview
   Future<ByteStream> getThumbnailStream(
-      String remotePath, int width, int height) async {
+    String remotePath,
+    int width,
+    int height,
+  ) async {
     final response = await _network.download(
       'GET',
       _getThumbnailUrl(remotePath, width, height),

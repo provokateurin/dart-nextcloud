@@ -455,7 +455,7 @@ void main() {
     final rootWithoutUser =
         config.testDir.split('/files/${config.username}')[1];
     final imageRootPath = '$rootWithoutUser/preview.png';
-    var previewFile;
+    WebDavFile previewFile;
 
     setUpAll(() async {
       await client.webDav

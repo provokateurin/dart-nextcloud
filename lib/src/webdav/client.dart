@@ -58,8 +58,10 @@ class WebDavClient {
     final response = await _network.send('OPTIONS', _getUrl('/'), [200]);
     final davCapabilities = response.headers['dav'] ?? '';
     final davSearchCapabilities = response.headers['dasl'] ?? '';
-    return WebDavStatus(davCapabilities.split(',').map((e) => e.trim()).toSet(),
-        davSearchCapabilities.split(',').map((e) => e.trim()).toSet());
+    return WebDavStatus(
+      davCapabilities.split(',').map((e) => e.trim()).toSet(),
+      davSearchCapabilities.split(',').map((e) => e.trim()).toSet(),
+    );
   }
 
   /// make a dir with [path] under current dir
@@ -71,7 +73,11 @@ class WebDavClient {
         405,
       ],
     ];
-    return _network.send('MKCOL', _getUrl(path), expectedCodes);
+    return _network.send(
+      'MKCOL',
+      _getUrl(path),
+      expectedCodes,
+    );
   }
 
   /// just like mkdir -p
@@ -91,11 +97,19 @@ class WebDavClient {
   }
 
   /// remove dir with given [path]
-  Future delete(String path) => _network.send('DELETE', _getUrl(path), [204]);
+  Future delete(String path) => _network.send(
+        'DELETE',
+        _getUrl(path),
+        [204],
+      );
 
   /// upload a new file with [localData] as content to [remotePath]
-  Future upload(Uint8List localData, String remotePath) => _network
-      .send('PUT', _getUrl(remotePath), [200, 201, 204], data: localData);
+  Future upload(Uint8List localData, String remotePath) => _network.send(
+        'PUT',
+        _getUrl(remotePath),
+        [200, 201, 204],
+        data: localData,
+      );
 
   /// download [remotePath] and store the response file contents to String
   Future<Uint8List> download(String remotePath) async =>
@@ -177,8 +191,12 @@ class WebDavClient {
           });
       });
     final data = utf8.encode(builder.buildDocument().toString());
-    final response = await _network
-        .send('REPORT', _getUrl(remotePath), [200, 207], data: data);
+    final response = await _network.send(
+      'REPORT',
+      _getUrl(remotePath),
+      [200, 207],
+      data: data,
+    );
     return treeFromWebDavXml(response.body);
   }
 
@@ -201,8 +219,12 @@ class WebDavClient {
       });
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
-        'PROPFIND', _getUrl(remotePath), [200, 207],
-        data: data, headers: {'Depth': '0'});
+      'PROPFIND',
+      _getUrl(remotePath),
+      [200, 207],
+      data: data,
+      headers: {'Depth': '0'},
+    );
     return fileFromWebDavXml(response.body);
   }
 
@@ -226,42 +248,50 @@ class WebDavClient {
         });
       });
     final data = utf8.encode(builder.buildDocument().toString());
-    final response = await _network
-        .send('PROPPATCH', _getUrl(remotePath), [200, 207], data: data);
+    final response = await _network.send(
+      'PROPPATCH',
+      _getUrl(remotePath),
+      [200, 207],
+      data: data,
+    );
     return checkUpdateFromWebDavXml(response.body);
   }
 
   /// Move a file from [sourcePath] to [destinationPath]
   ///
   /// Throws a [RequestException] if the move operation failed.
-  Future<http.Response> move(String sourcePath, String destinationPath,
-      {bool overwrite = false}) {
-    return _network.send(
-      'MOVE',
-      _getUrl(sourcePath),
-      [200, 201, 204],
-      headers: {
-        'Destination': _getUrl(destinationPath),
-        'Overwrite': overwrite ? 'T' : 'F',
-      },
-    );
-  }
+  Future<http.Response> move(
+    String sourcePath,
+    String destinationPath, {
+    bool overwrite = false,
+  }) =>
+      _network.send(
+        'MOVE',
+        _getUrl(sourcePath),
+        [200, 201, 204],
+        headers: {
+          'Destination': _getUrl(destinationPath),
+          'Overwrite': overwrite ? 'T' : 'F',
+        },
+      );
 
   /// Copy a file from [sourcePath] to [destinationPath]
   ///
   /// Throws a [RequestException] if the copy operation failed.
-  Future<http.Response> copy(String sourcePath, String destinationPath,
-      {bool overwrite = false}) {
-    return _network.send(
-      'COPY',
-      _getUrl(sourcePath),
-      [200, 201, 204],
-      headers: {
-        'Destination': _getUrl(destinationPath),
-        'Overwrite': overwrite ? 'T' : 'F',
-      },
-    );
-  }
+  Future<http.Response> copy(
+    String sourcePath,
+    String destinationPath, {
+    bool overwrite = false,
+  }) =>
+      _network.send(
+        'COPY',
+        _getUrl(sourcePath),
+        [200, 201, 204],
+        headers: {
+          'Destination': _getUrl(destinationPath),
+          'Overwrite': overwrite ? 'T' : 'F',
+        },
+      );
 }
 
 /// WebDAV server status.
@@ -456,6 +486,7 @@ class WebDavProps {
   /// Is this file is encrypted, 0 for false or 1 for true.
   static const ncIsEncrypted = 'nc:is-encrypted';
 
+  // ignore: public_member_api_docs
   static const ncMetadataETag = 'nc:metadata_etag';
 
   /// Date this file was uploaded.
@@ -464,5 +495,6 @@ class WebDavProps {
   /// Creation time of the file as provided during upload.
   static const ncCreationTime = 'nc:creation_time';
 
+  // ignore: public_member_api_docs
   static const ncRichWorkspace = 'nc:rich-workspace';
 }
