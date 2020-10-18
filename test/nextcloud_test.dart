@@ -5,14 +5,8 @@ import 'package:nextcloud/nextcloud.dart';
 import 'package:test/test.dart';
 
 class Config {
-  const Config({
-    this.host,
-    this.username,
-    this.password,
-    this.shareUser,
-    this.testDir,
-    this.image,
-  });
+  const Config(
+      {this.host, this.username, this.password, this.shareUser, this.testDir});
 
   factory Config.fromJson(Map<String, dynamic> json) => Config(
       host: json['host'],
@@ -22,15 +16,13 @@ class Config {
       // normalised path (remove trailing slash)
       testDir: json['testDir'].endsWith('/')
           ? json['testDir'].substring(0, json['testDir'].length - 1)
-          : json['testDir'],
-      image: json['image']);
+          : json['testDir']);
 
   final String host;
   final String username;
   final String password;
   final String shareUser;
   final String testDir;
-  final String image;
 }
 
 // TODO: add more tests
@@ -459,21 +451,40 @@ void main() {
     });
   });
   group('Preview', () {
-    test('Get preview', () async {
-      expect(await client.preview.getPreview('/${config.image}', 64, 64),
+    final fullImagePath = '${config.testDir}/preview.png';
+    final rootWithoutUser =
+        config.testDir.split('/files/${config.username}')[1];
+    final imageRootPath = '$rootWithoutUser/preview.png';
+    var previewFile;
+
+    setUpAll(() async {
+      await client.webDav
+          .upload(File('test/files/test.png').readAsBytesSync(), fullImagePath);
+      previewFile = await client.webDav.getProps(fullImagePath);
+    });
+
+    test('Get preview by path', () async {
+      expect(await client.preview.getPreviewByPath(imageRootPath, 64, 64),
           isNotNull);
     });
-    test('Get preview stream', () async {
-      expect(await client.preview.getPreviewStream('/${config.image}', 64, 64),
+    test('Get preview by id', () async {
+      expect(await client.preview.getPreviewById(previewFile.id, 64, 64),
+          isNotNull);
+    });
+    test('Get preview stream by path', () async {
+      expect(await client.preview.getPreviewStreamByPath(imageRootPath, 64, 64),
+          isNotNull);
+    });
+    test('Get preview stream by id', () async {
+      expect(await client.preview.getPreviewStreamById(previewFile.id, 64, 64),
           isNotNull);
     });
     test('Get thumbnail', () async {
-      expect(await client.preview.getThumbnail('/${config.image}', 64, 64),
-          isNotNull);
+      expect(
+          await client.preview.getThumbnail(imageRootPath, 64, 64), isNotNull);
     });
     test('Get thumbnail stream', () async {
-      expect(
-          await client.preview.getThumbnailStream('/${config.image}', 64, 64),
+      expect(await client.preview.getThumbnailStream(imageRootPath, 64, 64),
           isNotNull);
     });
   });
