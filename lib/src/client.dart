@@ -22,6 +22,11 @@ class NextCloudClient {
       username,
       password,
     );
+    _userClient = UserClient(
+      baseUrl,
+      username,
+      password,
+    );
     _usersClient = UsersClient(
       baseUrl,
       username,
@@ -71,6 +76,7 @@ class NextCloudClient {
   final String password;
 
   WebDavClient _webDavClient;
+  UserClient _userClient;
   UsersClient _usersClient;
   SharesClient _sharesClient;
   ShareesClient _shareesClient;
@@ -81,6 +87,9 @@ class NextCloudClient {
 
   // ignore: public_member_api_docs
   WebDavClient get webDav => _webDavClient;
+
+  // ignore: public_member_api_docs
+  UserClient get user => _userClient;
 
   // ignore: public_member_api_docs
   UsersClient get users => _usersClient;

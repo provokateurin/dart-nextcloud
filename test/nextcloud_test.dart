@@ -5,24 +5,36 @@ import 'package:nextcloud/nextcloud.dart';
 import 'package:test/test.dart';
 
 class Config {
-  const Config(
-      {this.host, this.username, this.password, this.shareUser, this.testDir});
+  const Config({
+    this.host,
+    this.username,
+    this.password,
+    this.shareUser,
+    this.testDir,
+    this.email,
+    this.storageLocation,
+  });
 
   factory Config.fromJson(Map<String, dynamic> json) => Config(
-      host: json['host'],
-      username: json['username'],
-      password: json['password'],
-      shareUser: json['shareUser'],
-      // normalised path (remove trailing slash)
-      testDir: json['testDir'].endsWith('/')
-          ? json['testDir'].substring(0, json['testDir'].length - 1)
-          : json['testDir']);
+        host: json['host'],
+        username: json['username'],
+        password: json['password'],
+        shareUser: json['shareUser'],
+        // normalised path (remove trailing slash)
+        testDir: json['testDir'].endsWith('/')
+            ? json['testDir'].substring(0, json['testDir'].length - 1)
+            : json['testDir'],
+        email: json['email'],
+        storageLocation: json['storageLocation'],
+      );
 
   final String host;
   final String username;
   final String password;
   final String shareUser;
   final String testDir;
+  final String email;
+  final String storageLocation;
 }
 
 // TODO: add more tests
@@ -486,6 +498,15 @@ void main() {
     test('Get thumbnail stream', () async {
       expect(await client.preview.getThumbnailStream(imageRootPath, 64, 64),
           isNotNull);
+    });
+  });
+  group('User', () {
+    test('Get user data', () async {
+      final userdata = await client.user.getUser();
+      expect(userdata.id, equals(config.username));
+      expect(userdata.displayName, equals(config.username));
+      expect(userdata.email, equals(config.email));
+      expect(userdata.storageLocation, equals(config.storageLocation));
     });
   });
 }
