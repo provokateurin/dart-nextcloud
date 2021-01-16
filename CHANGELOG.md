@@ -1,3 +1,6 @@
+# v1.4.0
+* Add support for OCS user endpoint
+
 # v1.3.1
 * Query previews using file IDs
 
