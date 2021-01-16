@@ -16,6 +16,8 @@ export 'src/talk/guests.dart';
 export 'src/talk/messages.dart';
 export 'src/talk/signaling.dart';
 export 'src/talk/talk.dart';
+export 'src/user/client.dart';
+export 'src/user/userdata.dart';
 export 'src/users/client.dart';
 export 'src/users/client.dart';
 export 'src/users/metadata.dart';
