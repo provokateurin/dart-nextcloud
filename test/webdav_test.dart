@@ -10,6 +10,17 @@ void main() {
   final client = getClient();
 
   group('WebDav', () {
+    setUpAll(() async {
+      try {
+        await client.webDav.delete(Config.testDir);
+        // ignore: empty_catches
+      } on RequestException catch (ex) {
+        if (ex.statusCode != 404) {
+          rethrow;
+        }
+      }
+    });
+    
     test('Get status', () async {
       final status = await client.webDav.status();
       expect(status.capabilities, containsAll(['1', '3', 'access-control']));
