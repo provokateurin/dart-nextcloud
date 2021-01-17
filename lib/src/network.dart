@@ -8,7 +8,10 @@ import 'http_client/http_client.dart';
 /// Http client with the correct authentication and header
 class NextCloudHttpClient extends HttpClient {
   // ignore: public_member_api_docs
-  NextCloudHttpClient(this._authString, this._language) : _inner = HttpClient();
+  NextCloudHttpClient(
+    this._authString,
+    this._language,
+  ) : _inner = HttpClient();
 
   /// Constructs a new [NextCloudHttpClient] which will use the provided [username]
   /// and [password] for all subsequent requests.
@@ -68,7 +71,10 @@ class NextCloudHttpClient extends HttpClient {
 /// RequestException class
 class RequestException implements Exception {
   // ignore: public_member_api_docs
-  RequestException(this.body, this.statusCode);
+  RequestException(
+    this.body,
+    this.statusCode,
+  );
 
   // ignore: public_member_api_docs
   String body;
@@ -109,7 +115,10 @@ class Network {
     Uint8List data,
     Map<String, String> headers,
   }) async {
-    final response = await _client.send(http.Request(method, Uri.parse(url))
+    final response = await _client.send(http.Request(
+      method,
+      Uri.parse(url),
+    )
       ..followRedirects = false
       ..persistentConnection = true
       ..bodyBytes = data ?? Uint8List(0)

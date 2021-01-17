@@ -10,30 +10,66 @@ class NextCloudClient {
   ) {
     // Default to HTTPS scheme
     if (host.scheme.isEmpty) {
-      host = Uri.https(host.authority, Uri.decodeComponent(host.path));
+      host = Uri.https(
+        host.authority,
+        Uri.decodeComponent(host.path),
+      );
     }
 
     baseUrl = host.toString();
 
     // Normalize URI
     if (baseUrl.endsWith('/')) {
-      baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+      baseUrl = baseUrl.substring(
+        0,
+        baseUrl.length - 1,
+      );
     }
 
     final network = Network(
       httpClient,
     );
 
-    _webDavClient = WebDavClient(baseUrl, network);
-    _userClient = UserClient(baseUrl, network);
-    _usersClient = UsersClient(baseUrl, network);
-    _sharesClient = SharesClient(baseUrl, network);
-    _shareesClient = ShareesClient(baseUrl, network);
-    _talkClient = TalkClient(baseUrl, network);
-    _avatarClient = AvatarClient(baseUrl, network);
-    _autocompleteClient = AutocompleteClient(baseUrl, network);
-    _previewClient = PreviewClient(baseUrl, network);
-    _login = LoginClient(baseUrl, network);
+    _webDavClient = WebDavClient(
+      baseUrl,
+      network,
+    );
+    _userClient = UserClient(
+      baseUrl,
+      network,
+    );
+    _usersClient = UsersClient(
+      baseUrl,
+      network,
+    );
+    _sharesClient = SharesClient(
+      baseUrl,
+      network,
+    );
+    _shareesClient = ShareesClient(
+      baseUrl,
+      network,
+    );
+    _talkClient = TalkClient(
+      baseUrl,
+      network,
+    );
+    _avatarClient = AvatarClient(
+      baseUrl,
+      network,
+    );
+    _autocompleteClient = AutocompleteClient(
+      baseUrl,
+      network,
+    );
+    _previewClient = PreviewClient(
+      baseUrl,
+      network,
+    );
+    _login = LoginClient(
+      baseUrl,
+      network,
+    );
   }
 
   /// Constructs a new [NextCloudClient] which will use the provided [username]

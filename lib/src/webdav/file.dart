@@ -59,13 +59,19 @@ class WebDavFile {
   final Map<String, String> _otherNamespaces = {};
 
   /// Add an additional property by [name] and [value]
-  void addOtherProp(xml.XmlName name, String value) {
+  void addOtherProp(
+    xml.XmlName name,
+    String value,
+  ) {
     _otherNamespaces[name.namespaceUri] = name.prefix;
     _otherProps[name.qualified] = value;
   }
 
   /// Lookup an additional property by [name] and [namespaceUri]
-  String getOtherProp(String name, String namespaceUri) {
+  String getOtherProp(
+    String name,
+    String namespaceUri,
+  ) {
     final localName = xml.XmlName.fromString(name).local;
     // find correct prefix
     final prefix = _otherNamespaces[namespaceUri];
@@ -76,14 +82,21 @@ class WebDavFile {
   String get name {
     // normalised path (remove trailing slash)
     final end = path.endsWith('/') ? path.length - 1 : path.length;
-    return Uri.parse(path, 0, end).pathSegments.last;
+    return Uri.parse(
+      path,
+      0,
+      end,
+    ).pathSegments.last;
   }
 
   /// Returns if the file is a directory
   bool get isDirectory => path.endsWith('/') || isCollection;
 }
 
-void _handleProp(xml.XmlElement prop, WebDavFile file) {
+void _handleProp(
+  xml.XmlElement prop,
+  WebDavFile file,
+) {
   if (prop.children.isEmpty && prop.text.isEmpty) {
     // Ignore empty properties
     return;
@@ -97,8 +110,10 @@ void _handleProp(xml.XmlElement prop, WebDavFile file) {
       file.size = int.parse(prop.text);
       break;
     case WebDavProps.davLastModified:
-      file.lastModified =
-          DateFormat('E, d MMM yyyy HH:mm:ss', 'en_US').parseUtc(prop.text);
+      file.lastModified = DateFormat(
+        'E, d MMM yyyy HH:mm:ss',
+        'en_US',
+      ).parseUtc(prop.text);
       break;
     case WebDavProps.davResourceType:
       file.isCollection = prop.getElement('d:collection') != null;
@@ -143,14 +158,20 @@ void _handleProp(xml.XmlElement prop, WebDavFile file) {
       break;
     default:
       // store with fully qualified name
-      file.addOtherProp(prop.name, prop.text);
+      file.addOtherProp(
+        prop.name,
+        prop.text,
+      );
   }
 }
 
 /// Converts a single d:response to a [WebDavFile]
 WebDavFile _fromWebDavXml(xml.XmlElement response) {
   final davItemName = response.findElements('d:href').single.text;
-  final path = davItemName.replaceAll(RegExp('remote.php/(web)?dav/'), '');
+  final path = davItemName.replaceAll(
+    RegExp('remote.php/(web)?dav/'),
+    '',
+  );
   final file = WebDavFile(path);
 
   final propStatElements = response.findElements('d:propstat');
@@ -163,7 +184,10 @@ WebDavFile _fromWebDavXml(xml.XmlElement response) {
       continue;
     }
     for (final prop in props.nodes.whereType<xml.XmlElement>()) {
-      _handleProp(prop, file);
+      _handleProp(
+        prop,
+        file,
+      );
     }
   }
 

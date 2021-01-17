@@ -7,7 +7,10 @@ import '../network.dart';
 /// All the talk functions for conversation management
 class ConversationManagement {
   // ignore: public_member_api_docs
-  ConversationManagement(Network network, String url) {
+  ConversationManagement(
+    Network network,
+    String url,
+  ) {
     _network = network;
     _baseUrl = url;
   }
@@ -19,10 +22,14 @@ class ConversationManagement {
 
   /// Returns all conversations of the current user
   Future<List<Conversation>> getUserConversations() async {
-    final result = await _network.send('GET', _getUrl('room'), [200]);
+    final result = await _network.send(
+      'GET',
+      _getUrl('room'),
+      [200],
+    );
     return Room.fromJson(
-            json.decode(result.body)['ocs']['data'] as List<dynamic>)
-        .conversations;
+      json.decode(result.body)['ocs']['data'] as List<dynamic>,
+    ).conversations;
   }
 
   /// Creates a new conversation of the given [type] and returns the created conversation token
@@ -58,7 +65,10 @@ class ConversationManagement {
     final result = await _network.send(
       'POST',
       _getUrl('room'),
-      [200, 201],
+      [
+        200,
+        201,
+      ],
       data: Uint8List.fromList(utf8.encode(json.encode({
         'roomType': type.index + 1,
         'invite': invite,
@@ -73,9 +83,14 @@ class ConversationManagement {
   ///
   /// This is also possible for guest users
   Future<Conversation> getConversation(String token) async {
-    final result = await _network.send('GET', _getUrl('room/$token'), [200]);
+    final result = await _network.send(
+      'GET',
+      _getUrl('room/$token'),
+      [200],
+    );
     return Conversation.fromJson(
-        json.decode(result.body)['ocs']['data'] as Map<String, dynamic>);
+      json.decode(result.body)['ocs']['data'] as Map<String, dynamic>,
+    );
   }
 
   /// Renames the [Conversation] with the given [token] to the given [name]
@@ -83,7 +98,10 @@ class ConversationManagement {
   /// The function will have an 400 status code if the name is too long, empty or
   /// the conversation is of the type [ConversationType.oneToOne]
   /// and an 403 status code if the user is not allowed to rename the conversation
-  Future renameConversation(String token, String name) async {
+  Future renameConversation(
+    String token,
+    String name,
+  ) async {
     await _network.send(
       'PUT',
       _getUrl('room/$token'),
@@ -163,7 +181,10 @@ class ConversationManagement {
   ///
   /// The user have to be the moderator/owner and the conversation must be public
   /// otherwise a 403 error will be thrown
-  Future setReadOnly(String token, ReadOnlyState state) async {
+  Future setReadOnly(
+    String token,
+    ReadOnlyState state,
+  ) async {
     await _network.send(
       'PUT',
       _getUrl('room/$token/read-only'),
@@ -178,7 +199,10 @@ class ConversationManagement {
   ///
   /// The user have to be the moderator/owner and the conversation must be public
   /// otherwise a 403 error will be thrown
-  Future setPassword(String token, String password) async {
+  Future setPassword(
+    String token,
+    String password,
+  ) async {
     await _network.send(
       'PUT',
       _getUrl('room/$token/password'),
@@ -192,7 +216,10 @@ class ConversationManagement {
   /// Set the notification level for a conversation
   ///
   /// This can only do non-guests (401 error)
-  Future setNotificationLevel(String token, NotificationLevel level) async {
+  Future setNotificationLevel(
+    String token,
+    NotificationLevel level,
+  ) async {
     await _network.send(
       'POST',
       _getUrl('room/$token/notify'),
@@ -251,7 +278,10 @@ class ConversationManagement {
   /// and there must be at least one owner or moderator left (400/403 error)
   ///
   /// The [participant] must be a user
-  Future deleteParticipant(String token, String participant) async {
+  Future deleteParticipant(
+    String token,
+    String participant,
+  ) async {
     await _network.send(
       'DELETE',
       _getUrl('room/$token/participants'),
@@ -280,7 +310,10 @@ class ConversationManagement {
   /// (403 error)
   ///
   /// The function returns the session id after joining a conversation
-  Future<String> joinConversation(String token, {String password}) async {
+  Future<String> joinConversation(
+    String token, {
+    String password,
+  }) async {
     final result = await _network.send(
       'POST',
       _getUrl('room/$token/participants/active'),
@@ -298,7 +331,10 @@ class ConversationManagement {
   /// have a username to identify
   ///
   /// The function returns the session id after joining a conversation
-  Future removeGuest(String token, String sessionId) async {
+  Future removeGuest(
+    String token,
+    String sessionId,
+  ) async {
     await _network.send(
       'DELETE',
       _getUrl('room/$token/participants/guests'),
@@ -314,7 +350,10 @@ class ConversationManagement {
   /// The [participant] have to be of the type [ParticipantType.user] (400 error)
   ///
   /// This can only do owners/moderators (403 error)
-  Future promoteUserToModerator(String token, String participant) async {
+  Future promoteUserToModerator(
+    String token,
+    String participant,
+  ) async {
     await _network.send(
       'POST',
       _getUrl('room/$token/moderators'),
@@ -330,7 +369,10 @@ class ConversationManagement {
   /// The user with the [sessionId] have to be of the type [ParticipantType.guest] (400 error)
   ///
   /// This can only do owners/moderators (403 error)
-  Future promoteGuestToModerator(String token, String sessionId) async {
+  Future promoteGuestToModerator(
+    String token,
+    String sessionId,
+  ) async {
     await _network.send(
       'POST',
       _getUrl('room/$token/moderators'),
@@ -346,7 +388,10 @@ class ConversationManagement {
   /// The [participant] have to be of the type [ParticipantType.moderator] (400 error)
   ///
   /// This can only do owners/moderators (403 error)
-  Future demoteUserFromModerator(String token, String participant) async {
+  Future demoteUserFromModerator(
+    String token,
+    String participant,
+  ) async {
     await _network.send(
       'DELETE',
       _getUrl('room/$token/moderators'),
@@ -363,7 +408,10 @@ class ConversationManagement {
   /// (400 error)
   ///
   /// This can only do owners/moderators (403 error)
-  Future demoteGuestFromModerator(String token, String sessionId) async {
+  Future demoteGuestFromModerator(
+    String token,
+    String sessionId,
+  ) async {
     await _network.send(
       'DELETE',
       _getUrl('room/$token/moderators'),

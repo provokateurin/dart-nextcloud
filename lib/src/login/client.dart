@@ -58,7 +58,11 @@ class LoginClient {
 // ignore: public_member_api_docs
 class LoginFlowInit {
   // ignore: public_member_api_docs
-  LoginFlowInit(this.token, this.endpoint, this.login);
+  LoginFlowInit(
+    this.token,
+    this.endpoint,
+    this.login,
+  );
 
   // ignore: public_member_api_docs
   final String token;
@@ -73,7 +77,11 @@ class LoginFlowInit {
 // ignore: public_member_api_docs
 class LoginFlowResult {
   // ignore: public_member_api_docs
-  LoginFlowResult(this.server, this.loginName, this.appPassword);
+  LoginFlowResult(
+    this.server,
+    this.loginName,
+    this.appPassword,
+  );
 
   // ignore: public_member_api_docs
   final String server;

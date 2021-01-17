@@ -7,7 +7,10 @@ import '../network.dart';
 /// All the talk functions for messages management
 class MessageManagement {
   // ignore: public_member_api_docs
-  MessageManagement(Network network, String url) {
+  MessageManagement(
+    Network network,
+    String url,
+  ) {
     _network = network;
     _baseUrl = url;
   }
@@ -39,7 +42,10 @@ class MessageManagement {
     bool automaticMarkRead = true,
     bool includeLastKnownMessageId = false,
   }) async {
-    assert(max <= 200, 'The max count must not be more than 200 hundred!');
+    assert(
+      max <= 200,
+      'The max count must not be more than 200 hundred!',
+    );
 
     final result = await _network.send(
       'GET',
@@ -59,7 +65,11 @@ class MessageManagement {
   }
 
   /// Mark a chat as read
-  Future markAsRead(String token, int lastReadMessageId) => _network.send(
+  Future markAsRead(
+    String token,
+    int lastReadMessageId,
+  ) =>
+      _network.send(
         'POST',
         _getUrl('chat/$token/read'),
         [200],
@@ -94,10 +104,18 @@ class MessageManagement {
     bool automaticMarkRead = true,
     bool includeLastKnownMessageId = false,
   }) async {
-    assert(max <= 200, 'The max count must not be more than 200 hundred!');
-    assert(timeout.inSeconds <= 60, 'The max timeout is 60 seconds!');
-    assert(false,
-        'This function does not work jet, please implement it and create a PR');
+    assert(
+      max <= 200,
+      'The max count must not be more than 200 hundred!',
+    );
+    assert(
+      timeout.inSeconds <= 60,
+      'The max timeout is 60 seconds!',
+    );
+    assert(
+      false,
+      'This function does not work jet, please implement it and create a PR',
+    );
 
     final result = await _network.download(
       'GET',
@@ -148,7 +166,8 @@ class MessageManagement {
       }))),
     );
     return Message.fromJson(
-        json.decode(result.body)['ocs']['data'] as Map<String, String>);
+      json.decode(result.body)['ocs']['data'] as Map<String, String>,
+    );
   }
 
   /// Returns all possible mentions for the given [search] string
@@ -162,7 +181,10 @@ class MessageManagement {
     String search, {
     int max = 20,
   }) async {
-    assert(search.isNotEmpty, 'The search string must not be empty!');
+    assert(
+      search.isNotEmpty,
+      'The search string must not be empty!',
+    );
 
     final result = await _network.send(
       'GET',

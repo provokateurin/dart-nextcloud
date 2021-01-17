@@ -17,8 +17,13 @@ class UserClient {
 
   /// Get the meta data of a user
   Future<UserData> getUser() async {
-    final response = await _network.send('GET', _baseUrl, [200]);
+    final response = await _network.send(
+      'GET',
+      _baseUrl,
+      [200],
+    );
     return UserData.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 }

@@ -6,7 +6,10 @@ import '../network.dart';
 /// All the talk functions for guest management
 class GuestManagement {
   // ignore: public_member_api_docs
-  GuestManagement(Network network, String url) {
+  GuestManagement(
+    Network network,
+    String url,
+  ) {
     _network = network;
     _baseUrl = url;
   }
@@ -19,7 +22,10 @@ class GuestManagement {
   /// Set the display name as a guest
   ///
   /// The current use have to be a guest (403 error)
-  Future setGuestDisplayName(String sessionId, String displayName) async {
+  Future setGuestDisplayName(
+    String sessionId,
+    String displayName,
+  ) async {
     await _network.send(
       'POST',
       _getUrl('guest/$sessionId/name'),

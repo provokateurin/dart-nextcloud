@@ -24,7 +24,11 @@ class ShareesClient {
     if (itemType != null) {
       url += '&itemType=$itemType';
     }
-    final response = await _network.send('GET', url, [200]);
+    final response = await _network.send(
+      'GET',
+      url,
+      [200],
+    );
     return shareesFromShareesXml(response.body);
   }
 
@@ -35,7 +39,11 @@ class ShareesClient {
     String itemType, {
     bool lookup = false,
   }) async =>
-      (await getSharees(search, perPage, itemType))
+      (await getSharees(
+        search,
+        perPage,
+        itemType,
+      ))
           .where((sharee) => sharee.shareType == ShareTypes.group)
           .toList();
 
@@ -46,7 +54,11 @@ class ShareesClient {
     String itemType, {
     bool lookup = false,
   }) async =>
-      (await getSharees(search, perPage, itemType))
+      (await getSharees(
+        search,
+        perPage,
+        itemType,
+      ))
           .where((sharee) => sharee.shareType == ShareTypes.user)
           .toList();
 }

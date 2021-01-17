@@ -6,7 +6,10 @@ import '../network.dart';
 /// All the talk functions for guest management
 class SignalingManagement {
   // ignore: public_member_api_docs
-  SignalingManagement(Network network, String url) {
+  SignalingManagement(
+    Network network,
+    String url,
+  ) {
     _network = network;
     _baseUrl = url;
   }
@@ -24,6 +27,7 @@ class SignalingManagement {
       [200],
     );
     return SignalingSettings.fromJson(
-        json.decode(result.body)['ocs']['data'] as Map<String, dynamic>);
+      json.decode(result.body)['ocs']['data'] as Map<String, dynamic>,
+    );
   }
 }

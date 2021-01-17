@@ -1,4 +1,8 @@
-T _toEnumValue<T>(List<T> values, int index, {int first = 1}) {
+T _toEnumValue<T>(
+  List<T> values,
+  int index, {
+  int first = 1,
+}) {
   if (index != null) {
     index -= first;
     return values[index];
@@ -6,7 +10,11 @@ T _toEnumValue<T>(List<T> values, int index, {int first = 1}) {
   return null;
 }
 
-List<String> _actors = ['guests', 'users', 'bots'];
+List<String> _actors = [
+  'guests',
+  'users',
+  'bots',
+];
 
 ActorType _toActorType(String type) => ActorType.values[_actors.indexOf(type)];
 
@@ -238,7 +246,11 @@ class Message {
 /// A mention suggestion
 class Suggestion {
   // ignore: public_member_api_docs
-  Suggestion({this.id, this.displayName, this.type});
+  Suggestion({
+    this.id,
+    this.displayName,
+    this.type,
+  });
 
   // ignore: public_member_api_docs
   factory Suggestion.fromJson(Map<String, dynamic> json) => Suggestion(
@@ -352,8 +364,10 @@ class Conversation {
           json['participantType'] as int,
         ),
         readOnlyState: _toEnumValue(
-            ReadOnlyState.values, json['readOnly'] as int,
-            first: 0),
+          ReadOnlyState.values,
+          json['readOnly'] as int,
+          first: 0,
+        ),
         userCount: json['count'] as int,
         guestCount: json['numGuests'] as int,
         lastPing: DateTime.fromMillisecondsSinceEpoch(
@@ -382,8 +396,9 @@ class Conversation {
         unreadMessages: json['unreadMessages'] as int,
         unreadMention: json['unreadMention'] as bool,
         lastReadMessage: json['lastReadMessage'] as int,
-        lastMessage:
-            Message.fromJson(json['lastMessage'] as Map<String, dynamic>),
+        lastMessage: Message.fromJson(
+          json['lastMessage'] as Map<String, dynamic>,
+        ),
         objectType: json['objectType'] as String,
         objectId: json['objectId'] as String,
       );

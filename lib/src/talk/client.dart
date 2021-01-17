@@ -9,10 +9,22 @@ class TalkClient {
     Network network,
   ) {
     final _baseUrl = '$baseUrl/ocs/v2.php/apps/spreed/api/v1';
-    _conversationManagement = ConversationManagement(network, _baseUrl);
-    _guestManagement = GuestManagement(network, _baseUrl);
-    _messageManagement = MessageManagement(network, _baseUrl);
-    _signalingManagement = SignalingManagement(network, _baseUrl);
+    _conversationManagement = ConversationManagement(
+      network,
+      _baseUrl,
+    );
+    _guestManagement = GuestManagement(
+      network,
+      _baseUrl,
+    );
+    _messageManagement = MessageManagement(
+      network,
+      _baseUrl,
+    );
+    _signalingManagement = SignalingManagement(
+      network,
+      _baseUrl,
+    );
   }
 
   ConversationManagement _conversationManagement;

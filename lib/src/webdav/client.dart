@@ -37,7 +37,10 @@ class WebDavClient {
 
     // Remove the trailing slash if needed
     if (path.startsWith('/')) {
-      path = path.substring(1, path.length);
+      path = path.substring(
+        1,
+        path.length,
+      );
     }
 
     return '$_baseUrl/remote.php/dav/$path';
@@ -46,12 +49,22 @@ class WebDavClient {
   /// Registers a custom namespace for properties.
   ///
   /// Requires a unique [namespaceUri] and [prefix].
-  void registerNamespace(String namespaceUri, String prefix) =>
-      namespaces.putIfAbsent(namespaceUri, () => prefix);
+  void registerNamespace(
+    String namespaceUri,
+    String prefix,
+  ) =>
+      namespaces.putIfAbsent(
+        namespaceUri,
+        () => prefix,
+      );
 
   /// returns the WebDAV capabilities of the server
   Future<WebDavStatus> status() async {
-    final response = await _network.send('OPTIONS', _getUrl('/'), [200]);
+    final response = await _network.send(
+      'OPTIONS',
+      _getUrl('/'),
+      [200],
+    );
     final davCapabilities = response.headers['dav'] ?? '';
     final davSearchCapabilities = response.headers['dasl'] ?? '';
     return WebDavStatus(
@@ -61,7 +74,10 @@ class WebDavClient {
   }
 
   /// make a dir with [path] under current dir
-  Future<http.Response> mkdir(String path, [bool safe = true]) {
+  Future<http.Response> mkdir(
+    String path, [
+    bool safe = true,
+  ]) {
     final expectedCodes = [
       201,
       if (safe) ...[
@@ -100,26 +116,47 @@ class WebDavClient {
       );
 
   /// upload a new file with [localData] as content to [remotePath]
-  Future upload(Uint8List localData, String remotePath) => _network.send(
+  Future upload(
+    Uint8List localData,
+    String remotePath,
+  ) =>
+      _network.send(
         'PUT',
         _getUrl(remotePath),
-        [200, 201, 204],
+        [
+          200,
+          201,
+          204,
+        ],
         data: localData,
       );
 
   /// download [remotePath] and store the response file contents to String
-  Future<Uint8List> download(String remotePath) async =>
-      (await _network.send('GET', _getUrl(remotePath), [200])).bodyBytes;
+  Future<Uint8List> download(String remotePath) async => (await _network.send(
+        'GET',
+        _getUrl(remotePath),
+        [200],
+      ))
+          .bodyBytes;
 
   /// download [remotePath] and store the response file contents to ByteStream
   Future<http.ByteStream> downloadStream(String remotePath) async =>
-      (await _network.download('GET', _getUrl(remotePath), [200])).stream;
+      (await _network.download(
+        'GET',
+        _getUrl(remotePath),
+        [200],
+      ))
+          .stream;
 
   /// download [remotePath] and returns the received bytes
   Future<Uint8List> downloadDirectoryAsZip(String remotePath) async {
     final url =
         '$_baseUrl/index.php/apps/files/ajax/download.php?dir=$remotePath';
-    final result = await _network.send('GET', url, [200]);
+    final result = await _network.send(
+      'GET',
+      url,
+      [200],
+    );
     return result.bodyBytes;
   }
 
@@ -128,7 +165,12 @@ class WebDavClient {
       String remotePath) async {
     final url =
         '$_baseUrl/index.php/apps/files/ajax/download.php?dir=$remotePath';
-    return (await _network.download('GET', url, [200])).stream;
+    return (await _network.download(
+      'GET',
+      url,
+      [200],
+    ))
+        .stream;
   }
 
   /// list the directories and files under given [remotePath].
@@ -144,17 +186,32 @@ class WebDavClient {
       }}) async {
     final builder = XmlBuilder();
     builder
-      ..processing('xml', 'version="1.0"')
-      ..element('d:propfind', nest: () {
-        namespaces.forEach(builder.namespace);
-        builder.element('d:prop', nest: () {
-          props.forEach(builder.element);
-        });
-      });
+      ..processing(
+        'xml',
+        'version="1.0"',
+      )
+      ..element(
+        'd:propfind',
+        nest: () {
+          namespaces.forEach(builder.namespace);
+          builder.element(
+            'd:prop',
+            nest: () {
+              props.forEach(builder.element);
+            },
+          );
+        },
+      );
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
-        'PROPFIND', _getUrl(remotePath), [207, 301],
-        data: Uint8List.fromList(data));
+      'PROPFIND',
+      _getUrl(remotePath),
+      [
+        207,
+        301,
+      ],
+      data: Uint8List.fromList(data),
+    );
     if (response.statusCode == 301) {
       return ls(response.headers['location']);
     }
@@ -172,26 +229,49 @@ class WebDavClient {
   }) async {
     final builder = XmlBuilder();
     builder
-      ..processing('xml', 'version="1.0"')
-      ..element('oc:filter-files', nest: () {
-        namespaces.forEach(builder.namespace);
-        builder
-          ..element('oc:filter-rules', nest: () {
-            propFilters.forEach((key, value) {
-              builder.element(key, nest: () {
-                builder.text(value);
-              });
-            });
-          })
-          ..element('d:prop', nest: () {
-            props.forEach(builder.element);
-          });
-      });
+      ..processing(
+        'xml',
+        'version="1.0"',
+      )
+      ..element(
+        'oc:filter-files',
+        nest: () {
+          namespaces.forEach(builder.namespace);
+          builder
+            ..element(
+              'oc:filter-rules',
+              nest: () {
+                propFilters.forEach(
+                  (
+                    key,
+                    value,
+                  ) {
+                    builder.element(
+                      key,
+                      nest: () {
+                        builder.text(value);
+                      },
+                    );
+                  },
+                );
+              },
+            )
+            ..element(
+              'd:prop',
+              nest: () {
+                props.forEach(builder.element);
+              },
+            );
+        },
+      );
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
       'REPORT',
       _getUrl(remotePath),
-      [200, 207],
+      [
+        200,
+        207,
+      ],
       data: Uint8List.fromList(data),
     );
     return treeFromWebDavXml(response.body);
@@ -207,20 +287,34 @@ class WebDavClient {
   }) async {
     final builder = XmlBuilder();
     builder
-      ..processing('xml', 'version="1.0"')
-      ..element('d:propfind', nest: () {
-        namespaces.forEach(builder.namespace);
-        builder.element('d:prop', nest: () {
-          props.forEach(builder.element);
-        });
-      });
+      ..processing(
+        'xml',
+        'version="1.0"',
+      )
+      ..element(
+        'd:propfind',
+        nest: () {
+          namespaces.forEach(builder.namespace);
+          builder.element(
+            'd:prop',
+            nest: () {
+              props.forEach(builder.element);
+            },
+          );
+        },
+      );
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
       'PROPFIND',
       _getUrl(remotePath),
-      [200, 207],
+      [
+        200,
+        207,
+      ],
       data: Uint8List.fromList(data),
-      headers: {'Depth': '0'},
+      headers: {
+        'Depth': '0',
+      },
     );
     return fileFromWebDavXml(response.body);
   }
@@ -228,27 +322,53 @@ class WebDavClient {
   /// Update (string) properties of the given [remotePath].
   ///
   /// Returns true if the update was successful.
-  Future<bool> updateProps(String remotePath, Map<String, String> props) async {
+  Future<bool> updateProps(
+    String remotePath,
+    Map<String, String> props,
+  ) async {
     final builder = XmlBuilder();
     builder
-      ..processing('xml', 'version="1.0"')
-      ..element('d:propertyupdate', nest: () {
-        namespaces.forEach(builder.namespace);
-        builder.element('d:set', nest: () {
-          builder.element('d:prop', nest: () {
-            props.forEach((key, value) {
-              builder.element(key, nest: () {
-                builder.text(value);
-              });
-            });
-          });
-        });
-      });
+      ..processing(
+        'xml',
+        'version="1.0"',
+      )
+      ..element(
+        'd:propertyupdate',
+        nest: () {
+          namespaces.forEach(builder.namespace);
+          builder.element(
+            'd:set',
+            nest: () {
+              builder.element(
+                'd:prop',
+                nest: () {
+                  props.forEach(
+                    (
+                      key,
+                      value,
+                    ) {
+                      builder.element(
+                        key,
+                        nest: () {
+                          builder.text(value);
+                        },
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          );
+        },
+      );
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
       'PROPPATCH',
       _getUrl(remotePath),
-      [200, 207],
+      [
+        200,
+        207,
+      ],
       data: Uint8List.fromList(data),
     );
     return checkUpdateFromWebDavXml(response.body);
@@ -265,7 +385,11 @@ class WebDavClient {
       _network.send(
         'MOVE',
         _getUrl(sourcePath),
-        [200, 201, 204],
+        [
+          200,
+          201,
+          204,
+        ],
         headers: {
           'Destination': _getUrl(destinationPath),
           'Overwrite': overwrite ? 'T' : 'F',
@@ -283,7 +407,11 @@ class WebDavClient {
       _network.send(
         'COPY',
         _getUrl(sourcePath),
-        [200, 201, 204],
+        [
+          200,
+          201,
+          204,
+        ],
         headers: {
           'Destination': _getUrl(destinationPath),
           'Overwrite': overwrite ? 'T' : 'F',

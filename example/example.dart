@@ -11,16 +11,26 @@ Future main() async {
       'myuser',
       'mypassword',
     );
-    await client.webDav
-        .upload(File('example/test.png').readAsBytesSync(), '/test.png');
+    await client.webDav.upload(
+      File('example/test.png').readAsBytesSync(),
+      '/test.png',
+    );
     File('example/bla.png')
         .writeAsBytesSync(await client.webDav.download('/test.png'));
-    await client.webDav
-        .upload(Uint8List.fromList(utf8.encode('Test file')), '/test.txt');
+    await client.webDav.upload(
+      Uint8List.fromList(utf8.encode('Test file')),
+      '/test.txt',
+    );
     await listFiles(client);
-    await client.webDav.move('/test.txt', '/abc.txt');
+    await client.webDav.move(
+      '/test.txt',
+      '/abc.txt',
+    );
     await listFiles(client);
-    await client.webDav.copy('/abc.txt', '/test.txt');
+    await client.webDav.copy(
+      '/abc.txt',
+      '/test.txt',
+    );
     await listFiles(client);
 
     final userData = await client.users.getMetaData('otheruser');
@@ -29,12 +39,21 @@ Future main() async {
 
     // Sharing example
     print('Share file:');
-    final share = await client.shares.shareWithUser('/test.txt', 'USER',
-        permissions: Permissions([Permission.read, Permission.update]));
+    final share = await client.shares.shareWithUser(
+      '/test.txt',
+      'USER',
+      permissions: Permissions([
+        Permission.read,
+        Permission.update,
+      ]),
+    );
     print(share);
     print('List shared files');
     print((await client.shares.getShares(path: '/test.txt')).join('\n'));
-    await client.shares.updateShareNote(share.id, 'Test notice');
+    await client.shares.updateShareNote(
+      share.id,
+      'Test notice',
+    );
     print('New note:');
     print(await client.shares.getShare(share.id));
     print('Delete share');
@@ -59,7 +78,11 @@ Future main() async {
     await client.webDav.delete('/abc.txt');
 
     print('List all sharees:');
-    print(await client.sharees.getSharees('', 1000, 'file'));
+    print(await client.sharees.getSharees(
+      '',
+      1000,
+      'file',
+    ));
   } on RequestException catch (e, stacktrace) {
     print(e.statusCode);
     print(e.body);

@@ -114,8 +114,10 @@ class PreviewClient {
     String mode = 'cover',
     bool forceIcon = false,
   }) {
-    assert(filePath != null || fileId != null,
-        'FilePath or FileId has to be specified!');
+    assert(
+      filePath != null || fileId != null,
+      'FilePath or FileId has to be specified!',
+    );
 
     final query = 'x=$width&y=$height&a=$a&mode=$mode&forceIcon=$forceIcon';
 
@@ -135,7 +137,11 @@ class PreviewClient {
   ) async {
     final response = await _network.send(
       'GET',
-      _getThumbnailUrl(remotePath, width, height),
+      _getThumbnailUrl(
+        remotePath,
+        width,
+        height,
+      ),
       [200],
     );
     return response.bodyBytes;
@@ -150,13 +156,21 @@ class PreviewClient {
   ) async {
     final response = await _network.download(
       'GET',
-      _getThumbnailUrl(remotePath, width, height),
+      _getThumbnailUrl(
+        remotePath,
+        width,
+        height,
+      ),
       [200],
     );
     return response.stream;
   }
 
-  String _getThumbnailUrl(String remotePath, int width, int height) {
+  String _getThumbnailUrl(
+    String remotePath,
+    int width,
+    int height,
+  ) {
     if (!remotePath.startsWith('/')) {
       remotePath = '/$remotePath';
     }
