@@ -1,4 +1,5 @@
-# v1.5.0
+# v2.0.0
+* Change host param from string to URI
 * Add support for login flow v2
 
 # v1.4.0
