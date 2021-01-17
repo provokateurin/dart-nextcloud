@@ -1,9 +1,0 @@
-{
-  "host": "http://localhost:8080",
-  "username": "admin",
-  "password": "admin",
-  "shareUser": "admin",
-  "testDir": "/files/admin/dart-nextcloud-tests",
-  "email": "admin@test.com",
-  "storageLocation": "/var/www/html/data/admin"
-}

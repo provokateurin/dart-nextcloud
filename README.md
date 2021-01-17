@@ -1,7 +1,9 @@
 # nextcloud
+
 A Nextcloud client for dart
 
 ## Features
+
 * Creating directories, removing directories and files
 * Uploading and downloading files
 * Directory listing
@@ -14,21 +16,19 @@ A Nextcloud client for dart
 * Get the avatar image of a user
 
 ## Usage/Example
+
 [https://github.com/Viktoriaschule/dart-nextcloud/blob/master/example/example.dart](https://github.com/Viktoriaschule/dart-nextcloud/blob/master/example/example.dart)
 
 ## Development
 
-To get started you need a running Nextcloud test instance with the Talk app
-enabled.
+You can create a Docker development instance of Nextcloud using `./scripts/run.sh`.  
+It already has everything that is necessary installed.  
+The username is `admin` and the password is `password`.
 
-Then configure and run the tests:
+## Testing
 
-* Copy `config.example.json` to `config.json`
-* Configure details in `config.json`
-  * `host`: host of the Nextcloud instance
-  * `username`: user for tests
-  * `password`: user's password
-  * `shareUser`: user to share test file with
-  * `testDir`: full webdav path to directory for tests, writeable by the user
-  * `image`: relatuve path to test image based on user's root
-* Run tests with `pub run test` or your IDE
+The testing should also be done using the Docker development instance of Nextcloud.
+
+Then run the tests using `./scripts/test.sh`.  
+If you only want to run a subset of tests, pass the file names of the tests like this:  
+`./scripts/test.sh test/webdav_test.dart test/talk_test.dart`
