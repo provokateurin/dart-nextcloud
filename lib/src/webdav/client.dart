@@ -88,7 +88,7 @@ class WebDavClient {
       dirs[0] = '/${dirs[0]}';
     }
     for (final dir in dirs) {
-      await mkdir(dir, true);
+      await mkdir(dir);
     }
   }
 
@@ -152,8 +152,9 @@ class WebDavClient {
         });
       });
     final data = utf8.encode(builder.buildDocument().toString());
-    final response = await _network
-        .send('PROPFIND', _getUrl(remotePath), [207, 301], data: data);
+    final response = await _network.send(
+        'PROPFIND', _getUrl(remotePath), [207, 301],
+        data: Uint8List.fromList(data));
     if (response.statusCode == 301) {
       return ls(response.headers['location']);
     }
@@ -191,7 +192,7 @@ class WebDavClient {
       'REPORT',
       _getUrl(remotePath),
       [200, 207],
-      data: data,
+      data: Uint8List.fromList(data),
     );
     return treeFromWebDavXml(response.body);
   }
@@ -218,7 +219,7 @@ class WebDavClient {
       'PROPFIND',
       _getUrl(remotePath),
       [200, 207],
-      data: data,
+      data: Uint8List.fromList(data),
       headers: {'Depth': '0'},
     );
     return fileFromWebDavXml(response.body);
@@ -248,7 +249,7 @@ class WebDavClient {
       'PROPPATCH',
       _getUrl(remotePath),
       [200, 207],
-      data: data,
+      data: Uint8List.fromList(data),
     );
     return checkUpdateFromWebDavXml(response.body);
   }

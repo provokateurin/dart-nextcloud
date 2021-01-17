@@ -8,8 +8,8 @@ class MetaData {
 
   // ignore: public_member_api_docs
   factory MetaData.fromJson(Map<String, dynamic> json) => MetaData(
-        json['ocs']['data']['displayname'],
-        json['ocs']['data']['groups'].cast<String>(),
+        json['ocs']['data']['displayname'] as String,
+        json['ocs']['data']['groups'] as List<String>,
       );
 
   // ignore: public_member_api_docs

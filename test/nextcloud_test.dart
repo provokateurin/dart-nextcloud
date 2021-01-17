@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:browser_launcher/browser_launcher.dart';
 import 'package:nextcloud/nextcloud.dart';
@@ -17,16 +18,16 @@ class Config {
   });
 
   factory Config.fromJson(Map<String, dynamic> json) => Config(
-        host: Uri.parse(json['host']),
-        username: json['username'],
-        password: json['password'],
-        shareUser: json['shareUser'],
+        host: Uri.parse(json['host'] as String),
+        username: json['username'] as String,
+        password: json['password'] as String,
+        shareUser: json['shareUser'] as String,
         // normalised path (remove trailing slash)
-        testDir: json['testDir'].endsWith('/')
-            ? json['testDir'].substring(0, json['testDir'].length - 1)
-            : json['testDir'],
-        email: json['email'],
-        storageLocation: json['storageLocation'],
+        testDir: (json['testDir'] as String).endsWith('/')
+            ? json['testDir'].substring(0, json['testDir'].length - 1) as String
+            : json['testDir'] as String,
+        email: json['email'] as String,
+        storageLocation: json['storageLocation'] as String,
       );
 
   final Uri host;
@@ -40,46 +41,29 @@ class Config {
 
 // TODO: add more tests
 void main() {
-  final config =
-      Config.fromJson(json.decode(File('config.json').readAsStringSync()));
+  final config = Config.fromJson(json
+      .decode(File('config.json').readAsStringSync()) as Map<String, dynamic>);
   final client = NextCloudClient.withCredentials(
       config.host, config.username, config.password);
   group('Nextcloud connection', () {
     test('Different host urls', () {
-      final urls = [
-        [
-          Uri.parse('http://cloud.test.com/'),
-          'http://cloud.test.com',
-        ],
-        [
-          Uri.parse('https://cloud.test.com:80/'),
-          'https://cloud.test.com:80',
-        ],
-        [
-          Uri(host: 'cloud.test.com'),
-          'https://cloud.test.com',
-        ],
-        [
-          Uri(host: 'cloud.test.com', port: 90),
-          'https://cloud.test.com:90',
-        ],
-        [
-          Uri(host: 'test.com', path: 'cloud'),
-          'https://test.com/cloud',
-        ],
-        [
-          Uri.parse('http://localhost:8081/nextcloud'),
-          'http://localhost:8081/nextcloud',
-        ],
-      ];
+      final Map<Uri, String> urls = {
+        Uri.parse('http://cloud.test.com/'): 'http://cloud.test.com',
+        Uri.parse('https://cloud.test.com:80/'): 'https://cloud.test.com:80',
+        Uri(host: 'cloud.test.com'): 'https://cloud.test.com',
+        Uri(host: 'cloud.test.com', port: 90): 'https://cloud.test.com:90',
+        Uri(host: 'test.com', path: 'cloud'): 'https://test.com/cloud',
+        Uri.parse('http://localhost:8081/nextcloud'):
+            'http://localhost:8081/nextcloud',
+      };
 
-      for (final url in urls) {
+      for (final uri in urls.keys) {
         final client = NextCloudClient.withCredentials(
-          url[0],
+          uri,
           config.username,
           config.password,
         );
-        expect(client.baseUrl, equals(url[1]));
+        expect(client.baseUrl, equals(urls[uri]));
       }
     });
   });
@@ -94,7 +78,6 @@ void main() {
           await (() async {
             try {
               await client.webDav.delete(config.testDir);
-              // ignore: empty_catches
             } on RequestException catch (ex) {
               if (ex.statusCode != 404) {
                 rethrow;
@@ -133,10 +116,10 @@ void main() {
     test('List directory with properties', () async {
       final startTime = DateTime.now()
           // lastmodified is second-precision only
-          .subtract(Duration(seconds: 2));
+          .subtract(const Duration(seconds: 2));
       final path = '${config.testDir}/list-test.txt';
       final data = utf8.encode('WebDAV list-test');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       final files = await client.webDav.ls(config.testDir);
       final file = files.singleWhere((f) => f.name == 'list-test.txt');
@@ -162,18 +145,17 @@ void main() {
     test('Copy file (no overwrite)', () async {
       final path = '${config.testDir}/copy-test.txt';
       final data = utf8.encode('WebDAV copytest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       expect(
           () => client.webDav.copy(
-              '${config.testDir}/test.txt', '${config.testDir}/copy-test.txt',
-              overwrite: false),
+              '${config.testDir}/test.txt', '${config.testDir}/copy-test.txt'),
           throwsA(predicate((e) => e.statusCode == 412)));
     });
     test('Copy file (overwrite)', () async {
       final path = '${config.testDir}/copy-test.txt';
       final data = utf8.encode('WebDAV copytest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       final response = await client.webDav.copy(
           '${config.testDir}/test.txt', '${config.testDir}/copy-test.txt',
@@ -193,18 +175,17 @@ void main() {
     test('Move file (no overwrite)', () async {
       final path = '${config.testDir}/move-test.txt';
       final data = utf8.encode('WebDAV movetest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       expect(
           () => client.webDav.move(
-              '${config.testDir}/test.txt', '${config.testDir}/move-test.txt',
-              overwrite: false),
+              '${config.testDir}/test.txt', '${config.testDir}/move-test.txt'),
           throwsA(predicate((e) => e.statusCode == 412)));
     });
     test('Move file (overwrite)', () async {
       final path = '${config.testDir}/move-test.txt';
       final data = utf8.encode('WebDAV movetest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       final response = await client.webDav.move(
           '${config.testDir}/test.txt', '${config.testDir}/move-test.txt',
@@ -212,10 +193,10 @@ void main() {
       expect(response.statusCode, 204);
     });
     test('Get file properties', () async {
-      final startTime = DateTime.now().subtract(Duration(seconds: 2));
+      final startTime = DateTime.now().subtract(const Duration(seconds: 2));
       final path = '${config.testDir}/prop-test.txt';
       final data = utf8.encode('WebDAV proptest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       final file = await client.webDav.getProps(path);
       expect(file.isDirectory, false);
@@ -253,7 +234,8 @@ void main() {
     test('Filter files', () async {
       final path = '${config.testDir}/filter-test.txt';
       final data = utf8.encode('WebDAV filtertest');
-      final response = await client.webDav.upload(data, path);
+      final response =
+          await client.webDav.upload(Uint8List.fromList(data), path);
       final id = response.headers['oc-fileid'];
 
       // Favorite file
@@ -272,7 +254,7 @@ void main() {
       expect(file.id, id);
     });
     test('Set properties', () async {
-      final createdDate = DateTime.utc(1971, 2, 1);
+      final createdDate = DateTime.utc(1971, 2);
       final createdEpoch = createdDate.millisecondsSinceEpoch / 1000;
       final path = '${config.testDir}/prop-test.txt';
       final updated = await client.webDav.updateProps(path, {
@@ -527,8 +509,9 @@ void main() {
   });
   group('Login', () {
     test('Login flow works', () async {
-      final config =
-          Config.fromJson(json.decode(File('config.json').readAsStringSync()));
+      final config = Config.fromJson(
+          json.decode(File('config.json').readAsStringSync())
+              as Map<String, dynamic>);
       var client = NextCloudClient.withoutLogin(config.host);
       final init = await client.login.initLoginFlow();
       // Linux users might need to create a link: https://github.com/dart-lang/browser_launcher/issues/16
@@ -548,9 +531,8 @@ void main() {
             print(stacktrace);
             fail('Could not read from server after connection!');
           }
-          // ignore: empty_catches, avoid_catches_without_on_clauses
         } catch (e) {
-          await Future.delayed(Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 500));
         }
       }
     });

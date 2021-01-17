@@ -84,7 +84,6 @@ class WebDavFile {
 
   @override
   String toString() =>
-      // ignore: lines_longer_than_80_chars
       'WebDavFile{name: $name, id: $id, isDirectory: $isDirectory, path: $path, mimeType: $mimeType, size: $size, modificationTime: $lastModified, shareTypes: $shareTypes}';
 }
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import '../../nextcloud.dart';
 import '../network.dart';
@@ -19,7 +20,9 @@ class ConversationManagement {
   /// Returns all conversations of the current user
   Future<List<Conversation>> getUserConversations() async {
     final result = await _network.send('GET', _getUrl('room'), [200]);
-    return Room.fromJson(json.decode(result.body)['ocs']['data']).conversations;
+    return Room.fromJson(
+            json.decode(result.body)['ocs']['data'] as List<dynamic>)
+        .conversations;
   }
 
   /// Creates a new conversation of the given [type] and returns the created conversation token
@@ -56,14 +59,14 @@ class ConversationManagement {
       'POST',
       _getUrl('room'),
       [200, 201],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'roomType': type.index + 1,
         'invite': invite,
         'source': source.value,
         'roomName': name,
-      })),
+      }))),
     );
-    return json.decode(result.body)['ocs']['data']['token'];
+    return json.decode(result.body)['ocs']['data']['token'] as String;
   }
 
   /// Returns a single [Conversation] with the given [token]
@@ -71,7 +74,8 @@ class ConversationManagement {
   /// This is also possible for guest users
   Future<Conversation> getConversation(String token) async {
     final result = await _network.send('GET', _getUrl('room/$token'), [200]);
-    return Conversation.fromJson(json.decode(result.body)['ocs']['data']);
+    return Conversation.fromJson(
+        json.decode(result.body)['ocs']['data'] as Map<String, dynamic>);
   }
 
   /// Renames the [Conversation] with the given [token] to the given [name]
@@ -84,9 +88,9 @@ class ConversationManagement {
       'PUT',
       _getUrl('room/$token'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'roomName': name,
-      })),
+      }))),
     );
   }
 
@@ -164,9 +168,9 @@ class ConversationManagement {
       'PUT',
       _getUrl('room/$token/read-only'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'state': state.index,
-      })),
+      }))),
     );
   }
 
@@ -179,9 +183,9 @@ class ConversationManagement {
       'PUT',
       _getUrl('room/$token/password'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'password': password,
-      })),
+      }))),
     );
   }
 
@@ -193,9 +197,9 @@ class ConversationManagement {
       'POST',
       _getUrl('room/$token/notify'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'level': level.index + 1,
-      })),
+      }))),
     );
   }
 
@@ -208,9 +212,9 @@ class ConversationManagement {
       _getUrl('room/$token/participants'),
       [200],
     );
-    return json
-        .decode(result.body)['ocs']['data']
-        .map<Participant>((json) => Participant.fromJson(json))
+    return (json.decode(result.body)['ocs']['data'] as List)
+        .map<Participant>(
+            (json) => Participant.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
@@ -234,10 +238,10 @@ class ConversationManagement {
       'POST',
       _getUrl('room/$token/participants'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'newParticipant': participant,
         'source': source.value,
-      })),
+      }))),
     );
   }
 
@@ -252,9 +256,9 @@ class ConversationManagement {
       'DELETE',
       _getUrl('room/$token/participants'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'participant': participant,
-      })),
+      }))),
     );
   }
 
@@ -281,11 +285,11 @@ class ConversationManagement {
       'POST',
       _getUrl('room/$token/participants/active'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'password': password,
-      })),
+      }))),
     );
-    return json.decode(result.body)['ocs']['data']['sessionId'];
+    return json.decode(result.body)['ocs']['data']['sessionId'] as String;
   }
 
   /// Removes a guest from a conversation
@@ -299,9 +303,9 @@ class ConversationManagement {
       'DELETE',
       _getUrl('room/$token/participants/guests'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'participant': sessionId,
-      })),
+      }))),
     );
   }
 
@@ -315,9 +319,9 @@ class ConversationManagement {
       'POST',
       _getUrl('room/$token/moderators'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'participant': participant,
-      })),
+      }))),
     );
   }
 
@@ -331,9 +335,9 @@ class ConversationManagement {
       'POST',
       _getUrl('room/$token/moderators'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'sessionId': sessionId,
-      })),
+      }))),
     );
   }
 
@@ -347,9 +351,9 @@ class ConversationManagement {
       'DELETE',
       _getUrl('room/$token/moderators'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'participant': participant,
-      })),
+      }))),
     );
   }
 
@@ -364,9 +368,9 @@ class ConversationManagement {
       'DELETE',
       _getUrl('room/$token/moderators'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'sessionId': sessionId,
-      })),
+      }))),
     );
   }
 
@@ -378,11 +382,11 @@ class ConversationManagement {
       'GET',
       _getUrl('file/$fileId'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'fileId': fileId,
-      })),
+      }))),
     );
-    return json.decode(result.body)['ocs']['data']['token'];
+    return json.decode(result.body)['ocs']['data']['token'] as String;
   }
 
   /// Returns a conversation token for a given [shareToken]
@@ -393,10 +397,10 @@ class ConversationManagement {
       'GET',
       _getUrl('publicshare/$shareToken'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'shareToken': shareToken,
-      })),
+      }))),
     );
-    return json.decode(result.body)['ocs']['data']['token'];
+    return json.decode(result.body)['ocs']['data']['token'] as String;
   }
 }

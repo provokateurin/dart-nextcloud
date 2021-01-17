@@ -119,7 +119,7 @@ class SharesClient {
     if ((shareType == ShareTypes.user || shareType == ShareTypes.group) &&
         shareWith == null) {
       throw RequestException(
-        'When the share type is \'user\' or \'group\' then the share with attribute must not be null',
+        "When the share type is 'user' or 'group' then the share with attribute must not be null",
         -1,
       );
     }
