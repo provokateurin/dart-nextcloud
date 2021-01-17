@@ -17,10 +17,9 @@ class UsersClient {
 
   /// Get the meta data of a user
   Future<MetaData> getMetaData(String username) async {
-    final url = '$_baseUrl/$username';
     final response = await _network.send(
       'GET',
-      url,
+      '$_baseUrl/$username',
       [200],
     );
     return MetaData.fromJson(

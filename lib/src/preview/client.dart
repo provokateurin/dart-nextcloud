@@ -87,23 +87,20 @@ class PreviewClient {
         forceIcon: forceIcon,
       ));
 
-  Future<Uint8List> _getPreview(String url) async {
-    final response = await _network.send(
-      'GET',
-      url,
-      [200],
-    );
-    return response.bodyBytes;
-  }
+  Future<Uint8List> _getPreview(String url) async => (await _network.send(
+        'GET',
+        url,
+        [200],
+      ))
+          .bodyBytes;
 
-  Future<ByteStream> _getPreviewStream(String url) async {
-    final response = await _network.download(
-      'GET',
-      url,
-      [200],
-    );
-    return response.stream;
-  }
+  Future<ByteStream> _getPreviewStream(String url) async =>
+      (await _network.download(
+        'GET',
+        url,
+        [200],
+      ))
+          .stream;
 
   String _createPreviewUrl(
     int width,
@@ -134,18 +131,17 @@ class PreviewClient {
     String remotePath,
     int width,
     int height,
-  ) async {
-    final response = await _network.send(
-      'GET',
-      _getThumbnailUrl(
-        remotePath,
-        width,
-        height,
-      ),
-      [200],
-    );
-    return response.bodyBytes;
-  }
+  ) async =>
+      (await _network.send(
+        'GET',
+        _getThumbnailUrl(
+          remotePath,
+          width,
+          height,
+        ),
+        [200],
+      ))
+          .bodyBytes;
 
   /// fetch thumbnail for [remotePath] with provided [width] and [height] as ByteStream
   /// thumbnail will crop your image if you want resized images use preview
@@ -153,18 +149,17 @@ class PreviewClient {
     String remotePath,
     int width,
     int height,
-  ) async {
-    final response = await _network.download(
-      'GET',
-      _getThumbnailUrl(
-        remotePath,
-        width,
-        height,
-      ),
-      [200],
-    );
-    return response.stream;
-  }
+  ) async =>
+      (await _network.download(
+        'GET',
+        _getThumbnailUrl(
+          remotePath,
+          width,
+          height,
+        ),
+        [200],
+      ))
+          .stream;
 
   String _getThumbnailUrl(
     String remotePath,

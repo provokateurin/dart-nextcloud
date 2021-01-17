@@ -56,34 +56,29 @@ class SharesClient {
 
   /// Get a share by [id]
   Future<Share> getShare(int id) async {
-    final url = _getUrl('/shares/$id');
     final response = await _network.send(
       'GET',
-      url,
+      _getUrl('/shares/$id'),
       [200],
     );
     return sharesFromSharesXml(response.body).single;
   }
 
   /// Get a share by [id]
-  Future deleteShare(int id) async {
-    final url = _getUrl('/shares/$id');
-    await _network.send(
-      'DELETE',
-      url,
-      [200],
-    );
-  }
+  Future deleteShare(int id) => _network.send(
+        'DELETE',
+        _getUrl('/shares/$id'),
+        [200],
+      );
 
   /// Updates the permissions of a share
   Future<Share> updateSharePermissions(
     int id,
     Permissions permissions,
   ) async {
-    final url = _getUrl('/shares/$id?permissions=${permissions.toInt()}');
     final response = await _network.send(
       'PUT',
-      url,
+      _getUrl('/shares/$id?permissions=${permissions.toInt()}'),
       [200],
     );
     return shareFromRequestResponseXml(response.body);
@@ -94,10 +89,9 @@ class SharesClient {
     int id,
     String password,
   ) async {
-    final url = _getUrl('/shares/$id?password=$password');
     final response = await _network.send(
       'PUT',
-      url,
+      _getUrl('/shares/$id?password=$password'),
       [200],
     );
     return shareFromRequestResponseXml(response.body);
@@ -108,10 +102,9 @@ class SharesClient {
     int id,
     bool publicUpload,
   ) async {
-    final url = _getUrl('/shares/$id?publicUpload=$publicUpload');
     final response = await _network.send(
       'PUT',
-      url,
+      _getUrl('/shares/$id?publicUpload=$publicUpload'),
       [200],
     );
     return shareFromRequestResponseXml(response.body);
@@ -122,11 +115,10 @@ class SharesClient {
     int id,
     DateTime expireDate,
   ) async {
-    final url = _getUrl(
-        '/shares/$id?expireDate=${expireDate.year}-${expireDate.month}-${expireDate.day}');
     final response = await _network.send(
       'PUT',
-      url,
+      _getUrl(
+          '/shares/$id?expireDate=${expireDate.year}-${expireDate.month}-${expireDate.day}'),
       [200],
     );
     return shareFromRequestResponseXml(response.body);
@@ -137,10 +129,9 @@ class SharesClient {
     int id,
     String note,
   ) async {
-    final url = _getUrl('/shares/$id?note=$note');
     final response = await _network.send(
       'PUT',
-      url,
+      _getUrl('/shares/$id?note=$note'),
       [200],
     );
     return shareFromRequestResponseXml(response.body);

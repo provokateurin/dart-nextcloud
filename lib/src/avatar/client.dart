@@ -19,10 +19,9 @@ class AvatarClient {
     String name,
     int size,
   ) async {
-    final url = '$_baseUrl$name/$size';
     final response = await _network.send(
       'GET',
-      url,
+      '$_baseUrl$name/$size',
       [
         200,
         201,
