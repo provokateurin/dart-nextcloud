@@ -41,7 +41,8 @@ class Config {
 void main() {
   final config =
       Config.fromJson(json.decode(File('config.json').readAsStringSync()));
-  final client = NextCloudClient(config.host, config.username, config.password);
+  final client = NextCloudClient.withCredentials(
+      config.host, config.username, config.password);
   group('Nextcloud connection', () {
     test('Different host urls', () {
       final urls = [
@@ -58,7 +59,7 @@ void main() {
       ];
 
       for (final url in urls) {
-        final client = NextCloudClient(
+        final client = NextCloudClient.withCredentials(
           url[0],
           config.username,
           config.password,

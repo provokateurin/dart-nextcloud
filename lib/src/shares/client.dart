@@ -6,17 +6,12 @@ class SharesClient {
   // ignore: public_member_api_docs
   SharesClient(
     String baseUrl,
-    String username,
-    String password,
-  ) {
-    _baseUrl = '$baseUrl/ocs/v2.php/apps/files_sharing/api/v1/';
-    final client = NextCloudHttpClient(username, password);
-    _network = Network(client);
-  }
+    this._network,
+  ) : _baseUrl = '$baseUrl/ocs/v2.php/apps/files_sharing/api/v1/';
 
-  String _baseUrl;
+  final String _baseUrl;
 
-  Network _network;
+  final Network _network;
 
   /// get url from given [path]
   String _getUrl(String path) {

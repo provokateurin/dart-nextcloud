@@ -12,16 +12,12 @@ class WebDavClient {
   // ignore: public_member_api_docs
   WebDavClient(
     this._baseUrl,
-    String username,
-    String password,
-  ) {
-    final client = NextCloudHttpClient(username, password);
-    _network = Network(client);
-  }
+    this._network,
+  );
 
   final String _baseUrl;
 
-  Network _network;
+  final Network _network;
 
   /// XML namespaces supported by this client.
   ///

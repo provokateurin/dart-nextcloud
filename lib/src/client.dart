@@ -1,14 +1,12 @@
-import 'package:nextcloud/src/preview/client.dart';
-
 import '../nextcloud.dart';
+import 'network.dart';
 
 /// NextCloudClient class
 class NextCloudClient {
   // ignore: public_member_api_docs
   NextCloudClient(
     String host,
-    this.username,
-    this.password,
+    NextCloudHttpClient httpClient,
   ) {
     // Default to HTTPS scheme
     host = host.contains('://') ? host : 'https://$host';
@@ -16,64 +14,70 @@ class NextCloudClient {
     final end =
         host.contains('/index.php') ? host.indexOf('/index.php') : host.length;
     baseUrl = Uri.parse(host, 0, end).toString();
+    final network = Network(
+      httpClient,
+    );
 
-    _webDavClient = WebDavClient(
-      baseUrl,
-      username,
-      password,
-    );
-    _userClient = UserClient(
-      baseUrl,
-      username,
-      password,
-    );
-    _usersClient = UsersClient(
-      baseUrl,
-      username,
-      password,
-    );
-    _sharesClient = SharesClient(
-      baseUrl,
-      username,
-      password,
-    );
-    _shareesClient = ShareesClient(
-      baseUrl,
-      username,
-      password,
-    );
-    _talkClient = TalkClient(
-      baseUrl,
-      username,
-      password,
-    );
-    _avatarClient = AvatarClient(
-      baseUrl,
-      username,
-      password,
-    );
-    _autocompleteClient = AutocompleteClient(
-      baseUrl,
-      username,
-      password,
-    );
-    _previewClient = PreviewClient(
-      baseUrl,
-      username,
-      password,
-    );
+    _webDavClient = WebDavClient(baseUrl, network);
+    _userClient = UserClient(baseUrl, network);
+    _usersClient = UsersClient(baseUrl, network);
+    _sharesClient = SharesClient(baseUrl, network);
+    _shareesClient = ShareesClient(baseUrl, network);
+    _talkClient = TalkClient(baseUrl, network);
+    _avatarClient = AvatarClient(baseUrl, network);
+    _autocompleteClient = AutocompleteClient(baseUrl, network);
+    _previewClient = PreviewClient(baseUrl, network);
   }
+
+  /// Constructs a new [NextCloudClient] which will use the provided [username]
+  /// and [password] for all subsequent requests.
+  factory NextCloudClient.withCredentials(
+    String host,
+    String username,
+    String password, {
+    String language,
+  }) =>
+      NextCloudClient(
+        host,
+        NextCloudHttpClient.withCredentials(
+          username,
+          password,
+          language,
+        ),
+      );
+
+  /// Constructs a new [NextCloudClient] which will use the provided
+  /// [appPassword] for all subsequent requests.
+  factory NextCloudClient.withAppPassword(
+    String host,
+    String appPassword, {
+    String language,
+  }) =>
+      NextCloudClient(
+        host,
+        NextCloudHttpClient.withAppPassword(
+          appPassword,
+          language,
+        ),
+      );
+
+  /// Constructs a new [NextCloudClient] without login data.
+  /// May only be useful for app password login setup
+  factory NextCloudClient.withoutLogin(
+    String host, {
+    String language,
+  }) =>
+      NextCloudClient(
+        host,
+        NextCloudHttpClient.withoutLogin(
+          language,
+        ),
+      );
 
   /// The host of the cloud
   ///
   /// For example: `cloud.example.com`
   String baseUrl;
-
-  // ignore: public_member_api_docs
-  final String username;
-
-  // ignore: public_member_api_docs
-  final String password;
 
   WebDavClient _webDavClient;
   UserClient _userClient;
