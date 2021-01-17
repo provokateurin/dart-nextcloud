@@ -9,10 +9,8 @@ void main() {
   final client = getClient();
 
   group('Preview', () {
-    final fullImagePath = '${Config.testDir}/preview.png';
-    final rootWithoutUser =
-        Config.testDir.split('/files/${Config.username}')[1];
-    final imageRootPath = '$rootWithoutUser/preview.png';
+    const imageName = 'preview.png';
+    final fullImagePath = '/files/${Config.username}/$imageName';
     WebDavFile previewFile;
 
     setUpAll(() async {
@@ -22,15 +20,15 @@ void main() {
     });
 
     test('Get preview by path', () async {
-      expect(await client.preview.getPreviewByPath(imageRootPath, 64, 64),
-          isNotNull);
+      expect(
+          await client.preview.getPreviewByPath(imageName, 64, 64), isNotNull);
     });
     test('Get preview by id', () async {
       expect(await client.preview.getPreviewById(previewFile.id, 64, 64),
           isNotNull);
     });
     test('Get preview stream by path', () async {
-      expect(await client.preview.getPreviewStreamByPath(imageRootPath, 64, 64),
+      expect(await client.preview.getPreviewStreamByPath(imageName, 64, 64),
           isNotNull);
     });
     test('Get preview stream by id', () async {
@@ -38,11 +36,10 @@ void main() {
           isNotNull);
     });
     test('Get thumbnail', () async {
-      expect(
-          await client.preview.getThumbnail(imageRootPath, 64, 64), isNotNull);
+      expect(await client.preview.getThumbnail(imageName, 64, 64), isNotNull);
     });
     test('Get thumbnail stream', () async {
-      expect(await client.preview.getThumbnailStream(imageRootPath, 64, 64),
+      expect(await client.preview.getThumbnailStream(imageName, 64, 64),
           isNotNull);
     });
   });

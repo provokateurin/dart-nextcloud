@@ -20,7 +20,7 @@ void main() {
             _result.appPassword,
           );
           try {
-            await client.webDav.ls(Config.testDir);
+            await client.user.getUser();
             // ignore: avoid_catches_without_on_clauses
           } catch (e, stacktrace) {
             print(e);

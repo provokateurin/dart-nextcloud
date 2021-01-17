@@ -15,20 +15,6 @@ void main() {
       expect(status.capabilities, containsAll(['1', '3', 'access-control']));
       expect(status.searchCapabilities, contains('<DAV:basicsearch>'));
     });
-    test('Clean test environment', () async {
-      expect(
-          await (() async {
-            try {
-              await client.webDav.delete(Config.testDir);
-              // ignore: empty_catches
-            } on RequestException catch (ex) {
-              if (ex.statusCode != 404) {
-                rethrow;
-              }
-            }
-          })(),
-          equals(null));
-    });
     test('Create directory', () async {
       expect(
           (await client.webDav.mkdir(Config.testDir)).statusCode, equals(201));
