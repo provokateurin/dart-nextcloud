@@ -246,7 +246,7 @@ List<Share> sharesFromSharesXml(String xmlStr) {
   for (final response in xmlDocument.findAllElements('element')) {
     tree.add(shareFromShareXml(response));
   }
-  return tree.cast<Share>();
+  return tree as List<Share>;
 }
 
 /// Converts the shares xml to a list of share objects

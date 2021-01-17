@@ -32,7 +32,7 @@ List<Sharee> shareesFromShareesXml(String xmlStr) {
   // parse the xml using the xml.XmlDocument.parse method
   final xmlDocument = xml.XmlDocument.parse(xmlStr);
   final usersElements = xmlDocument.findAllElements('element');
-  return usersElements.map(shareeFromShareeXml).toList().cast<Sharee>();
+  return usersElements.map(shareeFromShareeXml).toList();
 }
 
 /// Extract a sharee from the sharee xml

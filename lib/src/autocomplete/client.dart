@@ -24,8 +24,6 @@ class AutocompleteClient {
     final response = await _network.send('GET', url, [200]);
     return (json.decode(response.body)['ocs']['data'] as List)
         .map((user) => User.fromJson(user as Map<String, dynamic>))
-        .toList()
-        .cast<User>()
         .toList();
   }
 }
