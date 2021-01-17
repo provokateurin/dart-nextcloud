@@ -1,3 +1,6 @@
+# v1.5.0
+* Add support for login flow v2
+
 # v1.4.0
 * Add support for OCS user endpoint
 
