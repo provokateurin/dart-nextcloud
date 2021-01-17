@@ -517,6 +517,7 @@ void main() {
           Config.fromJson(json.decode(File('config.json').readAsStringSync()));
       var client = NextCloudClient.withoutLogin(config.host);
       final init = await client.login.initLoginFlow();
+      // Linux users might need to create a link: https://github.com/dart-lang/browser_launcher/issues/16
       await Chrome.start([init.login]);
       LoginFlowResult _result;
       while (_result == null) {
@@ -526,6 +527,13 @@ void main() {
             config.host,
             _result.appPassword,
           );
+          try {
+            await client.webDav.ls(config.testDir);
+          } catch (e, stacktrace) {
+            print(e);
+            print(stacktrace);
+            fail('Could not read from server after connection!');
+          }
           // ignore: empty_catches, avoid_catches_without_on_clauses
         } catch (e) {
           await Future.delayed(Duration(milliseconds: 500));
