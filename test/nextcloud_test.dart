@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:browser_launcher/browser_launcher.dart';
 import 'package:nextcloud/nextcloud.dart';
 import 'package:test/test.dart';
 
@@ -508,6 +509,28 @@ void main() {
       expect(userdata.displayName, equals(config.username));
       expect(userdata.email, equals(config.email));
       expect(userdata.storageLocation, equals(config.storageLocation));
+    });
+  });
+  group('Login', () {
+    test('Login flow works', () async {
+      final config =
+          Config.fromJson(json.decode(File('config.json').readAsStringSync()));
+      var client = NextCloudClient.withoutLogin(config.host);
+      final init = await client.login.initLoginFlow();
+      await Chrome.start([init.login]);
+      LoginFlowResult _result;
+      while (_result == null) {
+        try {
+          _result = await client.login.pollLogin(init);
+          client = NextCloudClient.withAppPassword(
+            config.host,
+            _result.appPassword,
+          );
+          // ignore: empty_catches, avoid_catches_without_on_clauses
+        } catch (e) {
+          await Future.delayed(Duration(milliseconds: 500));
+        }
+      }
     });
   });
 }

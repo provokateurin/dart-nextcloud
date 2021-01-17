@@ -27,6 +27,7 @@ class NextCloudClient {
     _avatarClient = AvatarClient(baseUrl, network);
     _autocompleteClient = AutocompleteClient(baseUrl, network);
     _previewClient = PreviewClient(baseUrl, network);
+    _login = LoginClient(baseUrl, network);
   }
 
   /// Constructs a new [NextCloudClient] which will use the provided [username]
@@ -88,6 +89,7 @@ class NextCloudClient {
   AvatarClient _avatarClient;
   AutocompleteClient _autocompleteClient;
   PreviewClient _previewClient;
+  LoginClient _login;
 
   // ignore: public_member_api_docs
   WebDavClient get webDav => _webDavClient;
@@ -115,4 +117,7 @@ class NextCloudClient {
 
   // ignore: public_member_api_docs
   PreviewClient get preview => _previewClient;
+
+  // ignore: public_member_api_docs
+  LoginClient get login => _login;
 }
