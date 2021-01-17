@@ -6,16 +6,13 @@ class TalkClient {
   // ignore: public_member_api_docs
   TalkClient(
     String baseUrl,
-    String username,
-    String password,
+    Network network,
   ) {
     final _baseUrl = '$baseUrl/ocs/v2.php/apps/spreed/api/v1';
-    final client = NextCloudHttpClient(username, password, useJson: true);
-    final _network = Network(client);
-    _conversationManagement = ConversationManagement(_network, _baseUrl);
-    _guestManagement = GuestManagement(_network, _baseUrl);
-    _messageManagement = MessageManagement(_network, _baseUrl);
-    _signalingManagement = SignalingManagement(_network, _baseUrl);
+    _conversationManagement = ConversationManagement(network, _baseUrl);
+    _guestManagement = GuestManagement(network, _baseUrl);
+    _messageManagement = MessageManagement(network, _baseUrl);
+    _signalingManagement = SignalingManagement(network, _baseUrl);
   }
 
   ConversationManagement _conversationManagement;

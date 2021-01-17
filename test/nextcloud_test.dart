@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:browser_launcher/browser_launcher.dart';
 import 'package:nextcloud/nextcloud.dart';
 import 'package:test/test.dart';
 
@@ -16,7 +17,7 @@ class Config {
   });
 
   factory Config.fromJson(Map<String, dynamic> json) => Config(
-        host: json['host'],
+        host: Uri.parse(json['host']),
         username: json['username'],
         password: json['password'],
         shareUser: json['shareUser'],
@@ -28,7 +29,7 @@ class Config {
         storageLocation: json['storageLocation'],
       );
 
-  final String host;
+  final Uri host;
   final String username;
   final String password;
   final String shareUser;
@@ -41,24 +42,39 @@ class Config {
 void main() {
   final config =
       Config.fromJson(json.decode(File('config.json').readAsStringSync()));
-  final client = NextCloudClient(config.host, config.username, config.password);
+  final client = NextCloudClient.withCredentials(
+      config.host, config.username, config.password);
   group('Nextcloud connection', () {
     test('Different host urls', () {
       final urls = [
-        ['http://cloud.test.com/index.php/123', 'http://cloud.test.com'],
         [
-          'https://cloud.test.com:80/index.php/123',
-          'https://cloud.test.com:80'
+          Uri.parse('http://cloud.test.com/'),
+          'http://cloud.test.com',
         ],
-        ['cloud.test.com', 'https://cloud.test.com'],
-        ['cloud.test.com:90', 'https://cloud.test.com:90'],
-        ['test.com/cloud', 'https://test.com/cloud'],
-        ['test.com/cloud/index.php/any/path', 'https://test.com/cloud'],
-        ['http://localhost:8081/nextcloud', 'http://localhost:8081/nextcloud'],
+        [
+          Uri.parse('https://cloud.test.com:80/'),
+          'https://cloud.test.com:80',
+        ],
+        [
+          Uri(host: 'cloud.test.com'),
+          'https://cloud.test.com',
+        ],
+        [
+          Uri(host: 'cloud.test.com', port: 90),
+          'https://cloud.test.com:90',
+        ],
+        [
+          Uri(host: 'test.com', path: 'cloud'),
+          'https://test.com/cloud',
+        ],
+        [
+          Uri.parse('http://localhost:8081/nextcloud'),
+          'http://localhost:8081/nextcloud',
+        ],
       ];
 
       for (final url in urls) {
-        final client = NextCloudClient(
+        final client = NextCloudClient.withCredentials(
           url[0],
           config.username,
           config.password,
@@ -507,6 +523,36 @@ void main() {
       expect(userdata.displayName, equals(config.username));
       expect(userdata.email, equals(config.email));
       expect(userdata.storageLocation, equals(config.storageLocation));
+    });
+  });
+  group('Login', () {
+    test('Login flow works', () async {
+      final config =
+          Config.fromJson(json.decode(File('config.json').readAsStringSync()));
+      var client = NextCloudClient.withoutLogin(config.host);
+      final init = await client.login.initLoginFlow();
+      // Linux users might need to create a link: https://github.com/dart-lang/browser_launcher/issues/16
+      await Chrome.start([init.login]);
+      LoginFlowResult _result;
+      while (_result == null) {
+        try {
+          _result = await client.login.pollLogin(init);
+          client = NextCloudClient.withAppPassword(
+            config.host,
+            _result.appPassword,
+          );
+          try {
+            await client.webDav.ls(config.testDir);
+          } catch (e, stacktrace) {
+            print(e);
+            print(stacktrace);
+            fail('Could not read from server after connection!');
+          }
+          // ignore: empty_catches, avoid_catches_without_on_clauses
+        } catch (e) {
+          await Future.delayed(Duration(milliseconds: 500));
+        }
+      }
     });
   });
 }

@@ -6,17 +6,12 @@ class ShareesClient {
   // ignore: public_member_api_docs
   ShareesClient(
     String baseUrl,
-    String username,
-    String password,
-  ) {
-    _baseUrl = '$baseUrl/ocs/v1.php/apps/files_sharing/api/v1/sharees';
-    final _httpClient = NextCloudHttpClient(username, password);
-    _network = Network(_httpClient);
-  }
+    this._network,
+  ) : _baseUrl = '$baseUrl/ocs/v1.php/apps/files_sharing/api/v1/sharees';
 
-  String _baseUrl;
+  final String _baseUrl;
 
-  Network _network;
+  final Network _network;
 
   /// Get a list of sharees
   Future<List<Sharee>> getSharees(

@@ -8,17 +8,12 @@ class UserClient {
   // ignore: public_member_api_docs
   UserClient(
     String baseUrl,
-    String username,
-    String password,
-  ) {
-    _baseUrl = '$baseUrl/ocs/v1.php/cloud/user';
-    final client = NextCloudHttpClient(username, password, useJson: true);
-    _network = Network(client);
-  }
+    this._network,
+  ) : _baseUrl = '$baseUrl/ocs/v1.php/cloud/user';
 
-  String _baseUrl;
+  final String _baseUrl;
 
-  Network _network;
+  final Network _network;
 
   /// Get the meta data of a user
   Future<UserData> getUser() async {
