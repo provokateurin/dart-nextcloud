@@ -5,15 +5,21 @@ import 'network.dart';
 class NextCloudClient {
   // ignore: public_member_api_docs
   NextCloudClient(
-    String host,
+    Uri host,
     NextCloudHttpClient httpClient,
   ) {
     // Default to HTTPS scheme
-    host = host.contains('://') ? host : 'https://$host';
-    // Find end of base URI
-    final end =
-        host.contains('/index.php') ? host.indexOf('/index.php') : host.length;
-    baseUrl = Uri.parse(host, 0, end).toString();
+    if (host.scheme.isEmpty) {
+      host = Uri.https(host.authority, Uri.decodeComponent(host.path));
+    }
+
+    baseUrl = host.toString();
+
+    // Normalize URI
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+    }
+
     final network = Network(
       httpClient,
     );
@@ -33,7 +39,7 @@ class NextCloudClient {
   /// Constructs a new [NextCloudClient] which will use the provided [username]
   /// and [password] for all subsequent requests.
   factory NextCloudClient.withCredentials(
-    String host,
+    Uri host,
     String username,
     String password, {
     String language,
@@ -50,7 +56,7 @@ class NextCloudClient {
   /// Constructs a new [NextCloudClient] which will use the provided
   /// [appPassword] for all subsequent requests.
   factory NextCloudClient.withAppPassword(
-    String host,
+    Uri host,
     String appPassword, {
     String language,
   }) =>
@@ -65,7 +71,7 @@ class NextCloudClient {
   /// Constructs a new [NextCloudClient] without login data.
   /// May only be useful for app password login setup
   factory NextCloudClient.withoutLogin(
-    String host, {
+    Uri host, {
     String language,
   }) =>
       NextCloudClient(

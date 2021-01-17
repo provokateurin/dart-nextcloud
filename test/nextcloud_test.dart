@@ -17,7 +17,7 @@ class Config {
   });
 
   factory Config.fromJson(Map<String, dynamic> json) => Config(
-        host: json['host'],
+        host: Uri.parse(json['host']),
         username: json['username'],
         password: json['password'],
         shareUser: json['shareUser'],
@@ -29,7 +29,7 @@ class Config {
         storageLocation: json['storageLocation'],
       );
 
-  final String host;
+  final Uri host;
   final String username;
   final String password;
   final String shareUser;
@@ -47,16 +47,30 @@ void main() {
   group('Nextcloud connection', () {
     test('Different host urls', () {
       final urls = [
-        ['http://cloud.test.com/index.php/123', 'http://cloud.test.com'],
         [
-          'https://cloud.test.com:80/index.php/123',
-          'https://cloud.test.com:80'
+          Uri.parse('http://cloud.test.com/'),
+          'http://cloud.test.com',
         ],
-        ['cloud.test.com', 'https://cloud.test.com'],
-        ['cloud.test.com:90', 'https://cloud.test.com:90'],
-        ['test.com/cloud', 'https://test.com/cloud'],
-        ['test.com/cloud/index.php/any/path', 'https://test.com/cloud'],
-        ['http://localhost:8081/nextcloud', 'http://localhost:8081/nextcloud'],
+        [
+          Uri.parse('https://cloud.test.com:80/'),
+          'https://cloud.test.com:80',
+        ],
+        [
+          Uri(host: 'cloud.test.com'),
+          'https://cloud.test.com',
+        ],
+        [
+          Uri(host: 'cloud.test.com', port: 90),
+          'https://cloud.test.com:90',
+        ],
+        [
+          Uri(host: 'test.com', path: 'cloud'),
+          'https://test.com/cloud',
+        ],
+        [
+          Uri.parse('http://localhost:8081/nextcloud'),
+          'http://localhost:8081/nextcloud',
+        ],
       ];
 
       for (final url in urls) {
