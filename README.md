@@ -23,12 +23,11 @@ A Nextcloud client for dart
 
 You can create a Docker development instance of Nextcloud using `./scripts/run.sh`.  
 It already has everything that is necessary installed.  
-For credentials and everything else look into the `config.example.json` file.
+The username is `admin` and the password is `password`.
 
 ## Testing
 
-The testing should also be done using the Docker development instance of Nextcloud.  
-Copy the `config.example.json` file to `config.json`.
+The testing should also be done using the Docker development instance of Nextcloud.
 
 Then run the tests using `./scripts/test.sh`.  
 If you only want to run a subset of tests, pass the file names of the tests like this:  

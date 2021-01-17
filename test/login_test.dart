@@ -5,11 +5,9 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 void main() {
-  final config = getConfig();
-
   group('Login', () {
     test('Login flow works', () async {
-      var client = NextCloudClient.withoutLogin(config.host);
+      var client = NextCloudClient.withoutLogin(Config.host);
       final init = await client.login.initLoginFlow();
       // Linux users might need to create a link: https://github.com/dart-lang/browser_launcher/issues/16
       await Chrome.start([init.login]);
@@ -18,11 +16,11 @@ void main() {
         try {
           _result = await client.login.pollLogin(init);
           client = NextCloudClient.withAppPassword(
-            config.host,
+            Config.host,
             _result.appPassword,
           );
           try {
-            await client.webDav.ls(config.testDir);
+            await client.webDav.ls(Config.testDir);
             // ignore: avoid_catches_without_on_clauses
           } catch (e, stacktrace) {
             print(e);

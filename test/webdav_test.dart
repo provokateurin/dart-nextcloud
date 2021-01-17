@@ -7,8 +7,7 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 void main() {
-  final config = getConfig();
-  final client = getClient(config);
+  final client = getClient();
 
   group('WebDav', () {
     test('Get status', () async {
@@ -20,7 +19,7 @@ void main() {
       expect(
           await (() async {
             try {
-              await client.webDav.delete(config.testDir);
+              await client.webDav.delete(Config.testDir);
               // ignore: empty_catches
             } on RequestException catch (ex) {
               if (ex.statusCode != 404) {
@@ -32,25 +31,25 @@ void main() {
     });
     test('Create directory', () async {
       expect(
-          (await client.webDav.mkdir(config.testDir)).statusCode, equals(201));
+          (await client.webDav.mkdir(Config.testDir)).statusCode, equals(201));
     });
     test('List directory', () async {
-      expect((await client.webDav.ls(config.testDir)).length, equals(0));
+      expect((await client.webDav.ls(Config.testDir)).length, equals(0));
     });
     test('Upload files', () async {
       expect(
           (await client.webDav.upload(
                   File('test/files/test.png').readAsBytesSync(),
-                  '${config.testDir}/test.png'))
+                  '${Config.testDir}/test.png'))
               .statusCode,
           equals(201));
       expect(
           (await client.webDav.upload(
                   File('test/files/test.txt').readAsBytesSync(),
-                  '${config.testDir}/test.txt'))
+                  '${Config.testDir}/test.txt'))
               .statusCode,
           equals(201));
-      final files = await client.webDav.ls(config.testDir);
+      final files = await client.webDav.ls(Config.testDir);
       expect(files.length, equals(2));
       expect(files.singleWhere((f) => f.name == 'test.png', orElse: () => null),
           isNotNull);
@@ -61,11 +60,11 @@ void main() {
       final startTime = DateTime.now()
           // lastmodified is second-precision only
           .subtract(Duration(seconds: 2));
-      final path = '${config.testDir}/list-test.txt';
+      final path = '${Config.testDir}/list-test.txt';
       final data = utf8.encode('WebDAV list-test');
       await client.webDav.upload(data, path);
 
-      final files = await client.webDav.ls(config.testDir);
+      final files = await client.webDav.ls(Config.testDir);
       final file = files.singleWhere((f) => f.name == 'list-test.txt');
       expect(file.isDirectory, false);
       expect(file.name, 'list-test.txt');
@@ -78,69 +77,69 @@ void main() {
     });
     test('Copy file', () async {
       final response = await client.webDav.copy(
-        '${config.testDir}/test.txt',
-        '${config.testDir}/test2.txt',
+        '${Config.testDir}/test.txt',
+        '${Config.testDir}/test2.txt',
       );
       expect(response.statusCode, 201);
-      final files = await client.webDav.ls(config.testDir);
+      final files = await client.webDav.ls(Config.testDir);
       expect(files.where((f) => f.name == 'test.txt'), hasLength(1));
       expect(files.where((f) => f.name == 'test2.txt'), hasLength(1));
     });
     test('Copy file (no overwrite)', () async {
-      final path = '${config.testDir}/copy-test.txt';
+      final path = '${Config.testDir}/copy-test.txt';
       final data = utf8.encode('WebDAV copytest');
       await client.webDav.upload(data, path);
 
       expect(
           () => client.webDav.copy(
-              '${config.testDir}/test.txt', '${config.testDir}/copy-test.txt',
+              '${Config.testDir}/test.txt', '${Config.testDir}/copy-test.txt',
               overwrite: false),
           throwsA(predicate((e) => e.statusCode == 412)));
     });
     test('Copy file (overwrite)', () async {
-      final path = '${config.testDir}/copy-test.txt';
+      final path = '${Config.testDir}/copy-test.txt';
       final data = utf8.encode('WebDAV copytest');
       await client.webDav.upload(data, path);
 
       final response = await client.webDav.copy(
-          '${config.testDir}/test.txt', '${config.testDir}/copy-test.txt',
+          '${Config.testDir}/test.txt', '${Config.testDir}/copy-test.txt',
           overwrite: true);
       expect(response.statusCode, 204);
     });
     test('Move file', () async {
       final response = await client.webDav.move(
-        '${config.testDir}/test2.txt',
-        '${config.testDir}/test3.txt',
+        '${Config.testDir}/test2.txt',
+        '${Config.testDir}/test3.txt',
       );
       expect(response.statusCode, 201);
-      final files = await client.webDav.ls(config.testDir);
+      final files = await client.webDav.ls(Config.testDir);
       expect(files.where((f) => f.name == 'test2.txt'), isEmpty);
       expect(files.where((f) => f.name == 'test3.txt'), hasLength(1));
     });
     test('Move file (no overwrite)', () async {
-      final path = '${config.testDir}/move-test.txt';
+      final path = '${Config.testDir}/move-test.txt';
       final data = utf8.encode('WebDAV movetest');
       await client.webDav.upload(data, path);
 
       expect(
           () => client.webDav.move(
-              '${config.testDir}/test.txt', '${config.testDir}/move-test.txt',
+              '${Config.testDir}/test.txt', '${Config.testDir}/move-test.txt',
               overwrite: false),
           throwsA(predicate((e) => e.statusCode == 412)));
     });
     test('Move file (overwrite)', () async {
-      final path = '${config.testDir}/move-test.txt';
+      final path = '${Config.testDir}/move-test.txt';
       final data = utf8.encode('WebDAV movetest');
       await client.webDav.upload(data, path);
 
       final response = await client.webDav.move(
-          '${config.testDir}/test.txt', '${config.testDir}/move-test.txt',
+          '${Config.testDir}/test.txt', '${Config.testDir}/move-test.txt',
           overwrite: true);
       expect(response.statusCode, 204);
     });
     test('Get file properties', () async {
       final startTime = DateTime.now().subtract(Duration(seconds: 2));
-      final path = '${config.testDir}/prop-test.txt';
+      final path = '${Config.testDir}/prop-test.txt';
       final data = utf8.encode('WebDAV proptest');
       await client.webDav.upload(data, path);
 
@@ -157,7 +156,7 @@ void main() {
       expect(file.size, data.length);
     });
     test('Get directory properties', () async {
-      final path = Uri.parse(config.testDir);
+      final path = Uri.parse(Config.testDir);
       final file = await client.webDav.getProps(path.toString());
       expect(file.isDirectory, true);
       expect(file.isCollection, true);
@@ -169,7 +168,7 @@ void main() {
       expect(file.size, greaterThan(0));
     });
     test('Get additional properties', () async {
-      final path = '${config.testDir}/prop-test.txt';
+      final path = '${Config.testDir}/prop-test.txt';
       final file = await client.webDav.getProps(path);
 
       expect(file.getOtherProp('oc:comments-count', 'http://owncloud.org/ns'),
@@ -178,7 +177,7 @@ void main() {
           'true');
     });
     test('Filter files', () async {
-      final path = '${config.testDir}/filter-test.txt';
+      final path = '${Config.testDir}/filter-test.txt';
       final data = utf8.encode('WebDAV filtertest');
       final response = await client.webDav.upload(data, path);
       final id = response.headers['oc-fileid'];
@@ -187,7 +186,7 @@ void main() {
       await client.webDav.updateProps(path, {WebDavProps.ocFavorite: '1'});
 
       // Find favorites
-      final files = await client.webDav.filter(config.testDir, {
+      final files = await client.webDav.filter(Config.testDir, {
         WebDavProps.ocFavorite: '1',
       }, props: {
         WebDavProps.ocId,
@@ -201,7 +200,7 @@ void main() {
     test('Set properties', () async {
       final createdDate = DateTime.utc(1971, 2, 1);
       final createdEpoch = createdDate.millisecondsSinceEpoch / 1000;
-      final path = '${config.testDir}/prop-test.txt';
+      final path = '${Config.testDir}/prop-test.txt';
       final updated = await client.webDav.updateProps(path, {
         WebDavProps.ocFavorite: '1',
         WebDavProps.ncCreationTime: '$createdEpoch'
@@ -219,7 +218,7 @@ void main() {
         'http://leonhardt.co.nz/ns': 'le',
         'http://test/ns': 'test'
       };
-      final path = '${config.testDir}/prop-test.txt';
+      final path = '${Config.testDir}/prop-test.txt';
 
       customNamespaces
           .forEach((ns, prefix) => client.webDav.registerNamespace(ns, prefix));

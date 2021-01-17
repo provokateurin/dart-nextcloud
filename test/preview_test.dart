@@ -6,13 +6,12 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 void main() {
-  final config = getConfig();
-  final client = getClient(config);
+  final client = getClient();
 
   group('Preview', () {
-    final fullImagePath = '${config.testDir}/preview.png';
+    final fullImagePath = '${Config.testDir}/preview.png';
     final rootWithoutUser =
-        config.testDir.split('/files/${config.username}')[1];
+        Config.testDir.split('/files/${Config.username}')[1];
     final imageRootPath = '$rootWithoutUser/preview.png';
     WebDavFile previewFile;
 

@@ -4,8 +4,6 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 void main() {
-  final config = getConfig();
-
   group('Nextcloud connection', () {
     test('Different host urls', () {
       final urls = [
@@ -38,8 +36,8 @@ void main() {
       for (final url in urls) {
         final client = NextCloudClient.withCredentials(
           url[0],
-          config.username,
-          config.password,
+          Config.username,
+          Config.password,
         );
         expect(client.baseUrl, equals(url[1]));
       }

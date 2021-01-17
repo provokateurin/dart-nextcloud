@@ -1,48 +1,20 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:nextcloud/nextcloud.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class Config {
-  const Config({
-    this.host,
-    this.username,
-    this.password,
-    this.shareUser,
-    this.testDir,
-    this.email,
-    this.storageLocation,
-  });
-
-  factory Config.fromJson(Map<String, dynamic> json) => Config(
-        host: Uri.parse(json['host']),
-        username: json['username'],
-        password: json['password'],
-        shareUser: json['shareUser'],
-        // normalised path (remove trailing slash)
-        testDir: json['testDir'].endsWith('/')
-            ? json['testDir'].substring(0, json['testDir'].length - 1)
-            : json['testDir'],
-        email: json['email'],
-        storageLocation: json['storageLocation'],
-      );
-
-  final Uri host;
-  final String username;
-  final String password;
-  final String shareUser;
-  final String testDir;
-  final String email;
-  final String storageLocation;
+  static Uri host = Uri.parse('http://localhost:8080');
+  static String username = 'admin';
+  static String password = 'password';
+  static String shareUser = 'test';
+  static String testDir = '/files/admin/dart-nextcloud-tests';
+  static String email = 'admin@example.com';
+  static String storageLocation = '/usr/src/nextcloud/data/admin';
 }
 
-Config getConfig() =>
-    Config.fromJson(json.decode(File('config.json').readAsStringSync()));
-
-NextCloudClient getClient(Config config) => NextCloudClient.withCredentials(
-      config.host,
-      config.username,
-      config.password,
+NextCloudClient getClient() => NextCloudClient.withCredentials(
+      Config.host,
+      Config.username,
+      Config.password,
     );
 
 void main() {

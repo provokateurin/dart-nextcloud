@@ -4,8 +4,7 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 void main() {
-  final config = getConfig();
-  final client = getClient(config);
+  final client = getClient();
 
   group('Talk', () {
     test('Signaling', () async {
@@ -95,25 +94,25 @@ void main() {
         (await client.talk.conversationManagement.getParticipants(token))
             .first
             .userId,
-        equals(config.username),
+        equals(Config.username),
       );
     });
     test('Add participant', () async {
       expect(
         await client.talk.conversationManagement
-            .addParticipant(token, config.shareUser),
+            .addParticipant(token, Config.shareUser),
         isNull,
       );
     });
     test('Set moderator', () async {
       expect(
         await client.talk.conversationManagement
-            .promoteUserToModerator(token, config.shareUser),
+            .promoteUserToModerator(token, Config.shareUser),
         isNull,
       );
       expect(
         await client.talk.conversationManagement
-            .demoteUserFromModerator(token, config.shareUser),
+            .demoteUserFromModerator(token, Config.shareUser),
         isNull,
       );
     });
@@ -148,7 +147,7 @@ void main() {
       expect(
         await client.talk.messageManagement.getMentionSuggestions(
           message.token,
-          config.shareUser.substring(0, 2),
+          Config.shareUser.substring(0, 2),
         ),
         isNotEmpty,
       );
@@ -156,7 +155,7 @@ void main() {
     test('Delete participant', () async {
       expect(
         await client.talk.conversationManagement
-            .deleteParticipant(token, config.shareUser),
+            .deleteParticipant(token, Config.shareUser),
         isNull,
       );
     });
