@@ -81,10 +81,6 @@ class WebDavFile {
 
   /// Returns if the file is a directory
   bool get isDirectory => path.endsWith('/') || isCollection;
-
-  @override
-  String toString() =>
-      'WebDavFile{name: $name, id: $id, isDirectory: $isDirectory, path: $path, mimeType: $mimeType, size: $size, modificationTime: $lastModified, shareTypes: $shareTypes}';
 }
 
 void _handleProp(xml.XmlElement prop, WebDavFile file) {

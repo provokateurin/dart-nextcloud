@@ -17,7 +17,4 @@ class MetaData {
 
   // ignore: public_member_api_docs
   final List<String> groups;
-
-  @override
-  String toString() => 'MetaData{fullName: $fullName ,groups: $groups}}';
 }

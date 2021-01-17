@@ -21,10 +21,6 @@ class Sharee {
 
   // ignore: public_member_api_docs
   final int shareType;
-
-  @override
-  String toString() =>
-      'Sharee{label: $label, uuid: $uuid, name: $name, shareType: $shareType}';
 }
 
 /// Extract the sharees from the sharees xml

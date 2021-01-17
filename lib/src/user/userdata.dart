@@ -27,7 +27,4 @@ class UserData {
 
   // ignore: public_member_api_docs
   final String email;
-
-  @override
-  String toString() => 'UserData{id: $id, displayName: $displayName}}';
 }

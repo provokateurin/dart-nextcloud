@@ -119,10 +119,6 @@ class Share {
 
   /// Returns if the file is a directory
   bool get isDirectory => itemType == 'folder';
-
-  @override
-  String toString() =>
-      'Share{path: $path, id: $id owner: $displaynameOwner, shareWith: $shareWith, permissions: $permissions, url: $url, ...}';
 }
 
 /// Defines all possible share types
@@ -212,9 +208,6 @@ class Permissions {
 
   /// Returns the separated permissions as list
   List<int> get permissions => _permissions;
-
-  @override
-  String toString() => '${toInt()}: $_permissions';
 }
 
 /// Parse a nullable value with given parser
