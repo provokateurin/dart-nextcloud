@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
@@ -8,58 +9,78 @@ import 'http_client/http_client.dart';
 /// Http client with the correct authentication and header
 class NextCloudHttpClient extends HttpClient {
   // ignore: public_member_api_docs
-  NextCloudHttpClient(this._authString, this._language) : _inner = HttpClient();
+  NextCloudHttpClient(
+    this._authString,
+    this._language,
+    this._defaultHeaders,
+  ) : _inner = HttpClient();
 
   /// Constructs a new [NextCloudHttpClient] which will use the provided [username]
   /// and [password] for all subsequent requests.
   factory NextCloudHttpClient.withCredentials(
     String username,
     String password,
-    String language,
-  ) =>
+    String language, {
+    Map<String, String> defaultHeaders,
+  }) =>
       NextCloudHttpClient(
         'Basic ${base64.encode(utf8.encode('$username:$password')).trim()}',
         language,
+        defaultHeaders,
       );
 
   /// Constructs a new [NextCloudHttpClient] which will use the provided
   /// [appPassword] for all subsequent requests.
   factory NextCloudHttpClient.withAppPassword(
     String appPassword,
-    String language,
-  ) =>
+    String language, {
+    Map<String, String> defaultHeaders,
+  }) =>
       NextCloudHttpClient(
         'Bearer $appPassword',
         language,
+        defaultHeaders,
       );
 
   /// Constructs a new [NextCloudHttpClient] without login data.
   /// May only be useful for app password login setup
   factory NextCloudHttpClient.withoutLogin(
-    String language,
-  ) =>
+    String language, {
+    Map<String, String> defaultHeaders,
+  }) =>
       NextCloudHttpClient(
         '',
         language,
+        defaultHeaders,
       );
 
   final http.Client _inner;
   final String _authString;
   final String _language;
+  final Map<String, String> _defaultHeaders;
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    request.headers['Authorization'] = _authString;
+    request.headers[HttpHeaders.authorizationHeader] = _authString;
     request.headers['OCS-APIRequest'] = 'true';
 
-    if (request.headers['Content-Type'] == null) {
-      request.headers['Content-Type'] = 'application/json';
-    }
-    request.headers['Accept'] = 'application/json';
+    request.headers.putIfAbsent(
+      HttpHeaders.contentTypeHeader,
+      () => ContentType.json.value,
+    );
+
+    request.headers[HttpHeaders.acceptHeader] = ContentType.json.value;
 
     if (_language != null) {
-      request.headers['Accept-Language'] = _language;
+      request.headers[HttpHeaders.acceptLanguageHeader] = _language;
     }
+
+    _defaultHeaders?.forEach(
+      (key, value) => request.headers.putIfAbsent(
+        key.toLowerCase(),
+        () => value,
+      ),
+    );
 
     return _inner.send(request);
   }
