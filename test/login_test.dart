@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:browser_launcher/browser_launcher.dart';
 import 'package:nextcloud/nextcloud.dart';
 import 'package:test/test.dart';
@@ -7,7 +9,10 @@ import 'config.dart';
 void main() {
   group('Login', () {
     test('Login flow works', () async {
-      var client = NextCloudClient.withoutLogin(Config.host);
+      var client = NextCloudClient.withoutLogin(
+        Config.host,
+        defaultHeaders: {HttpHeaders.userAgentHeader: 'dart-nextcloud'},
+      );
       final init = await client.login.initLoginFlow();
       // Linux users might need to create a link: https://github.com/dart-lang/browser_launcher/issues/16
       await Chrome.start([init.login]);

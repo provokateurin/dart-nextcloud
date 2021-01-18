@@ -43,6 +43,7 @@ class NextCloudClient {
     String username,
     String password, {
     String language,
+    Map<String, String> defaultHeaders,
   }) =>
       NextCloudClient(
         host,
@@ -50,6 +51,7 @@ class NextCloudClient {
           username,
           password,
           language,
+          defaultHeaders: defaultHeaders,
         ),
       );
 
@@ -59,12 +61,14 @@ class NextCloudClient {
     Uri host,
     String appPassword, {
     String language,
+    Map<String, String> defaultHeaders,
   }) =>
       NextCloudClient(
         host,
         NextCloudHttpClient.withAppPassword(
           appPassword,
           language,
+          defaultHeaders: defaultHeaders,
         ),
       );
 
@@ -73,11 +77,13 @@ class NextCloudClient {
   factory NextCloudClient.withoutLogin(
     Uri host, {
     String language,
+    Map<String, String> defaultHeaders,
   }) =>
       NextCloudClient(
         host,
         NextCloudHttpClient.withoutLogin(
           language,
+          defaultHeaders: defaultHeaders,
         ),
       );
 
