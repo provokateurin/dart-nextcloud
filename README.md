@@ -17,7 +17,7 @@ A Nextcloud client for dart
 
 ## Usage/Example
 
-[https://github.com/Viktoriaschule/dart-nextcloud/blob/master/example/example.dart](https://github.com/Viktoriaschule/dart-nextcloud/blob/master/example/example.dart)
+[https://github.com/jld3103/dart-nextcloud/blob/master/example/example.dart](https://github.com/jld3103/dart-nextcloud/blob/master/example/example.dart)
 
 ## Development
 
