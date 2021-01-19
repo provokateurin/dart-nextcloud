@@ -11,7 +11,7 @@ void main() {
       expect(userdata.id, equals(Config.username));
       expect(userdata.displayName, equals(Config.username));
       expect(userdata.email, equals(Config.email));
-      expect(userdata.storageLocation, equals(Config.storageLocation));
+      expect(userdata.storageLocation, equals('/usr/src/nextcloud/data/admin'));
     });
   });
 }

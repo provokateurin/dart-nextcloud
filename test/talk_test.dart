@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 void main() {
+  const shareUser = 'test';
   final client = getClient();
 
   group('Talk', () {
@@ -100,19 +101,19 @@ void main() {
     test('Add participant', () async {
       expect(
         await client.talk.conversationManagement
-            .addParticipant(token, Config.shareUser),
+            .addParticipant(token, shareUser),
         isNull,
       );
     });
     test('Set moderator', () async {
       expect(
         await client.talk.conversationManagement
-            .promoteUserToModerator(token, Config.shareUser),
+            .promoteUserToModerator(token, shareUser),
         isNull,
       );
       expect(
         await client.talk.conversationManagement
-            .demoteUserFromModerator(token, Config.shareUser),
+            .demoteUserFromModerator(token, shareUser),
         isNull,
       );
     });
@@ -147,7 +148,7 @@ void main() {
       expect(
         await client.talk.messageManagement.getMentionSuggestions(
           message.token,
-          Config.shareUser.substring(0, 2),
+          shareUser.substring(0, 2),
         ),
         isNotEmpty,
       );
@@ -155,7 +156,7 @@ void main() {
     test('Delete participant', () async {
       expect(
         await client.talk.conversationManagement
-            .deleteParticipant(token, Config.shareUser),
+            .deleteParticipant(token, shareUser),
         isNull,
       );
     });
