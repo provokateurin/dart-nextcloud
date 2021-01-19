@@ -38,11 +38,13 @@ class NextCloudClient {
 
   /// Constructs a new [NextCloudClient] which will use the provided [username]
   /// and [password] for all subsequent requests.
+  ///
+  /// [defaultHeaders] can be used to pass aditional request headers to the library.
+  /// This headers will then be added to every request. Common examples are User-Agent and Accept-Language.
   factory NextCloudClient.withCredentials(
     Uri host,
     String username,
     String password, {
-    String language,
     Map<String, String> defaultHeaders,
   }) =>
       NextCloudClient(
@@ -50,39 +52,40 @@ class NextCloudClient {
         NextCloudHttpClient.withCredentials(
           username,
           password,
-          language,
           defaultHeaders: defaultHeaders,
         ),
       );
 
   /// Constructs a new [NextCloudClient] which will use the provided
   /// [appPassword] for all subsequent requests.
+  ///
+  /// [defaultHeaders] can be used to pass aditional request headers to the library.
+  /// This headers will then be added to every request. Common examples are User-Agent and Accept-Language.
   factory NextCloudClient.withAppPassword(
     Uri host,
     String appPassword, {
-    String language,
     Map<String, String> defaultHeaders,
   }) =>
       NextCloudClient(
         host,
         NextCloudHttpClient.withAppPassword(
           appPassword,
-          language,
           defaultHeaders: defaultHeaders,
         ),
       );
 
   /// Constructs a new [NextCloudClient] without login data.
   /// May only be useful for app password login setup
+  ///
+  /// [defaultHeaders] can be used to pass aditional request headers to the library.
+  /// This headers will then be added to every request. Common examples are User-Agent and Accept-Language.
   factory NextCloudClient.withoutLogin(
     Uri host, {
-    String language,
     Map<String, String> defaultHeaders,
   }) =>
       NextCloudClient(
         host,
         NextCloudHttpClient.withoutLogin(
-          language,
           defaultHeaders: defaultHeaders,
         ),
       );

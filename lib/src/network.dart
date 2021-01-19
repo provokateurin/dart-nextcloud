@@ -11,19 +11,16 @@ class NextCloudHttpClient extends HttpClient {
   // ignore: public_member_api_docs
   NextCloudHttpClient(
     this._authString,
-    this._language,
     this._defaultHeaders,
     this._inner,
   );
 
   factory NextCloudHttpClient.defaultClient(
     String authString,
-    String language,
     Map<String, String> defaultHeaders,
   ) =>
       NextCloudHttpClient(
         authString,
-        language,
         defaultHeaders,
         HttpClient(),
       );
@@ -32,44 +29,37 @@ class NextCloudHttpClient extends HttpClient {
   /// and [password] for all subsequent requests.
   factory NextCloudHttpClient.withCredentials(
     String username,
-    String password,
-    String language, {
+    String password, {
     Map<String, String> defaultHeaders,
   }) =>
       NextCloudHttpClient.defaultClient(
         'Basic ${base64.encode(utf8.encode('$username:$password')).trim()}',
-        language,
         defaultHeaders,
       );
 
   /// Constructs a new [NextCloudHttpClient] which will use the provided
   /// [appPassword] for all subsequent requests.
   factory NextCloudHttpClient.withAppPassword(
-    String appPassword,
-    String language, {
+    String appPassword, {
     Map<String, String> defaultHeaders,
   }) =>
       NextCloudHttpClient.defaultClient(
         'Bearer $appPassword',
-        language,
         defaultHeaders,
       );
 
   /// Constructs a new [NextCloudHttpClient] without login data.
   /// May only be useful for app password login setup
-  factory NextCloudHttpClient.withoutLogin(
-    String language, {
+  factory NextCloudHttpClient.withoutLogin({
     Map<String, String> defaultHeaders,
   }) =>
       NextCloudHttpClient.defaultClient(
         '',
-        language,
         defaultHeaders,
       );
 
   final http.Client _inner;
   final String _authString;
-  final String _language;
   final Map<String, String> _defaultHeaders;
 
   @override
@@ -83,10 +73,6 @@ class NextCloudHttpClient extends HttpClient {
     );
 
     request.headers[HttpHeaders.acceptHeader] = ContentType.json.value;
-
-    if (_language != null) {
-      request.headers[HttpHeaders.acceptLanguageHeader] = _language;
-    }
 
     _defaultHeaders?.forEach(
       (key, value) => request.headers.putIfAbsent(
