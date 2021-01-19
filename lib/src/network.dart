@@ -64,22 +64,35 @@ class NextCloudHttpClient extends HttpClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    request.headers[HttpHeaders.authorizationHeader] = _authString;
-    request.headers['OCS-APIRequest'] = 'true';
+    final coreHeaders = <String, String>{};
+    coreHeaders[HttpHeaders.authorizationHeader] = _authString;
+    coreHeaders['OCS-APIRequest'] = 'true';
+    coreHeaders[HttpHeaders.acceptHeader] = ContentType.json.value;
+
+    coreHeaders.forEach((key, value) {
+      assert(
+        !request.headers.containsKey(key) &&
+            (_defaultHeaders == null || !_defaultHeaders.containsKey(key)),
+        'Overriding library core header ($key) is not allowed!',
+      );
+    });
+
+    request.headers.addAll(coreHeaders);
 
     request.headers.putIfAbsent(
       HttpHeaders.contentTypeHeader,
       () => ContentType.json.value,
     );
 
-    request.headers[HttpHeaders.acceptHeader] = ContentType.json.value;
-
-    _defaultHeaders?.forEach(
-      (key, value) => request.headers.putIfAbsent(
+    _defaultHeaders?.forEach((key, value) {
+      //keep in mind that specific requests can pass request level headers
+      //there is no guarantee that a sub client does not publish the option to add request specific headers
+      //header priority: coreHeaders > requestHeaders > defaultHeaders
+      request.headers.putIfAbsent(
         key,
         () => value,
-      ),
-    );
+      );
+    });
 
     return _inner.send(request);
   }

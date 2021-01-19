@@ -24,6 +24,8 @@ void main() {
       );
     });
 
+    setUp(httpRequest.headers.clear);
+
     test('should add defaultHeaders to request', () async {
       final network = NextCloudHttpClient(
         authString,
@@ -47,13 +49,14 @@ void main() {
         httpClientMock,
       );
 
-      await network.send(httpRequest);
-
-      expect(httpRequest.headers[HttpHeaders.authorizationHeader], authString);
+      expect(
+        () async => network.send(httpRequest),
+        throwsA(isA<AssertionError>()),
+      );
     });
 
     test('should ignore case-sensitivity of defaultHeader keys', () async {
-      const authKey = 'AUTHORIZATION';
+      final authKey = HttpHeaders.userAgentHeader.toUpperCase();
       final network = NextCloudHttpClient(
         authString,
         {
@@ -62,9 +65,13 @@ void main() {
         httpClientMock,
       );
 
+      httpRequest.headers[HttpHeaders.userAgentHeader] = userAgent;
+
       await network.send(httpRequest);
 
-      expect(httpRequest.headers[HttpHeaders.authorizationHeader], authString);
+      //default implementation of map is not case sensitive
+      //this test will catch if someone replaces map with a case sensitve map
+      expect(httpRequest.headers[authKey], userAgent);
     });
   });
 }
