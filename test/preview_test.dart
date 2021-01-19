@@ -10,13 +10,13 @@ void main() {
 
   group('Preview', () {
     const imageName = 'preview.png';
-    final fullImagePath = '/files/${Config.username}/$imageName';
     WebDavFile previewFile;
 
     setUpAll(() async {
+      await client.webDav.status();
       await client.webDav
-          .upload(File('test/files/test.png').readAsBytesSync(), fullImagePath);
-      previewFile = await client.webDav.getProps(fullImagePath);
+          .upload(File('test/files/test.png').readAsBytesSync(), imageName);
+      previewFile = await client.webDav.getProps(imageName);
     });
 
     test('Get preview by path', () async {
