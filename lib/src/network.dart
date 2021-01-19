@@ -1,10 +1,27 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
 import 'http_client/http_client.dart';
+
+// ignore: avoid_classes_with_only_static_members
+class _HttpHeaders {
+  static String authorizationHeader = 'authorization';
+  static String acceptHeader = 'accept';
+  static String contentTypeHeader = 'content-type';
+}
+
+// ignore: avoid_classes_with_only_static_members
+class _ContentType {
+  static final json = _MimeType('application/json');
+}
+
+class _MimeType {
+  _MimeType(this.value);
+
+  final String value;
+}
 
 /// Http client with the correct authentication and header
 class NextCloudHttpClient extends HttpClient {
@@ -15,6 +32,7 @@ class NextCloudHttpClient extends HttpClient {
     this._inner,
   );
 
+  // ignore: public_member_api_docs
   factory NextCloudHttpClient.defaultClient(
     String authString,
     Map<String, String> defaultHeaders,
@@ -65,9 +83,9 @@ class NextCloudHttpClient extends HttpClient {
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     final coreHeaders = <String, String>{};
-    coreHeaders[HttpHeaders.authorizationHeader] = _authString;
+    coreHeaders[_HttpHeaders.authorizationHeader] = _authString;
     coreHeaders['OCS-APIRequest'] = 'true';
-    coreHeaders[HttpHeaders.acceptHeader] = ContentType.json.value;
+    coreHeaders[_HttpHeaders.acceptHeader] = _ContentType.json.value;
 
     coreHeaders.forEach((key, value) {
       assert(
@@ -80,8 +98,8 @@ class NextCloudHttpClient extends HttpClient {
     request.headers.addAll(coreHeaders);
 
     request.headers.putIfAbsent(
-      HttpHeaders.contentTypeHeader,
-      () => ContentType.json.value,
+      _HttpHeaders.contentTypeHeader,
+      () => _ContentType.json.value,
     );
 
     _defaultHeaders?.forEach((key, value) {
