@@ -13,7 +13,20 @@ class NextCloudHttpClient extends HttpClient {
     this._authString,
     this._language,
     this._defaultHeaders,
-  ) : _inner = HttpClient();
+    this._inner,
+  );
+
+  factory NextCloudHttpClient.defaultClient(
+    String authString,
+    String language,
+    Map<String, String> defaultHeaders,
+  ) =>
+      NextCloudHttpClient(
+        authString,
+        language,
+        defaultHeaders,
+        HttpClient(),
+      );
 
   /// Constructs a new [NextCloudHttpClient] which will use the provided [username]
   /// and [password] for all subsequent requests.
@@ -23,7 +36,7 @@ class NextCloudHttpClient extends HttpClient {
     String language, {
     Map<String, String> defaultHeaders,
   }) =>
-      NextCloudHttpClient(
+      NextCloudHttpClient.defaultClient(
         'Basic ${base64.encode(utf8.encode('$username:$password')).trim()}',
         language,
         defaultHeaders,
@@ -36,7 +49,7 @@ class NextCloudHttpClient extends HttpClient {
     String language, {
     Map<String, String> defaultHeaders,
   }) =>
-      NextCloudHttpClient(
+      NextCloudHttpClient.defaultClient(
         'Bearer $appPassword',
         language,
         defaultHeaders,
@@ -48,7 +61,7 @@ class NextCloudHttpClient extends HttpClient {
     String language, {
     Map<String, String> defaultHeaders,
   }) =>
-      NextCloudHttpClient(
+      NextCloudHttpClient.defaultClient(
         '',
         language,
         defaultHeaders,
@@ -77,7 +90,7 @@ class NextCloudHttpClient extends HttpClient {
 
     _defaultHeaders?.forEach(
       (key, value) => request.headers.putIfAbsent(
-        key.toLowerCase(),
+        key,
         () => value,
       ),
     );
