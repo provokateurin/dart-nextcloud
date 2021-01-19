@@ -7,12 +7,13 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 void main() {
-  const testDir = '/files/admin/dart-nextcloud-tests';
+  const testDir = 'dart-nextcloud-tests';
   final client = getClient();
 
   group('WebDav', () {
     setUpAll(() async {
       try {
+        await client.webDav.status();
         await client.webDav.delete(testDir);
         // ignore: empty_catches
       } on RequestException catch (ex) {

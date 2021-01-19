@@ -116,13 +116,11 @@ class SharesClient {
     Permissions permissions,
   }) async {
     // For sharing with user or group the user or group must be defined
-    if ((shareType == ShareTypes.user || shareType == ShareTypes.group) &&
-        shareWith == null) {
-      throw RequestException(
-        'When the share type is \'user\' or \'group\' then the share with attribute must not be null',
-        -1,
-      );
-    }
+    assert(
+      (shareType != ShareTypes.user && shareType != ShareTypes.group) ||
+          shareWith != null,
+      'When the share type is \'user\' or \'group\' then the share with attribute must not be null',
+    );
     // For public shares the default permission is one
     if (shareType == ShareTypes.publicLink && permissions == null) {
       permissions = Permissions([Permission.read]);

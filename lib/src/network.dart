@@ -119,13 +119,24 @@ class NextCloudHttpClient extends HttpClient {
 /// RequestException class
 class RequestException implements Exception {
   // ignore: public_member_api_docs
-  RequestException(this.body, this.statusCode);
+  RequestException(
+    this.body,
+    this.statusCode,
+    this.url,
+    this.method,
+  );
 
   // ignore: public_member_api_docs
   String body;
 
   // ignore: public_member_api_docs
   int statusCode;
+
+  // ignore: public_member_api_docs
+  String url;
+
+  // ignore: public_member_api_docs
+  String method;
 }
 
 /// Organizes the requests
@@ -172,6 +183,8 @@ class Network {
       throw RequestException(
         r.body,
         r.statusCode,
+        url,
+        method,
       );
     }
     return response;

@@ -7,8 +7,8 @@ class WebDavFile {
   /// Creates a new WebDavFile object with the given path
   WebDavFile(this.path);
 
-  // ignore: public_member_api_docs
-  final String path;
+  /// The path of file
+  String path;
 
   /// The fileid namespaced by the instance id, globally unique
   String id;
