@@ -13,7 +13,6 @@ void main() {
     final httpClientMock = HttpClientMock();
     final httpRequest = Request('GET', Uri.https('test', ''));
     const authString = 'authString';
-    const language = 'language';
     const userAgent = 'dart-nextcloud';
 
     setUpAll(() {
@@ -28,8 +27,9 @@ void main() {
     test('should add defaultHeaders to request', () async {
       final network = NextCloudHttpClient(
         authString,
-        language,
-        {HttpHeaders.userAgentHeader: userAgent},
+        {
+          HttpHeaders.userAgentHeader: userAgent,
+        },
         httpClientMock,
       );
 
@@ -41,7 +41,6 @@ void main() {
     test('should not override library headers', () async {
       final network = NextCloudHttpClient(
         authString,
-        language,
         {
           HttpHeaders.authorizationHeader: 'wrong',
         },
@@ -57,7 +56,6 @@ void main() {
       const authKey = 'AUTHORIZATION';
       final network = NextCloudHttpClient(
         authString,
-        language,
         {
           authKey: 'wrong',
         },
