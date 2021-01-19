@@ -1,3 +1,6 @@
+# v2.1.0
+* Allow passing defaul headers for requests
+
 # v2.0.0
 * Change host param from string to URI
 * Add support for login flow v2
