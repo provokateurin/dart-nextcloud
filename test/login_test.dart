@@ -8,6 +8,15 @@ import 'config.dart';
 
 void main() {
   group('Login', () {
+    test('Login with email works', () async {
+      final client = NextCloudClient.withCredentials(
+        Config.host,
+        Config.email,
+        Config.password,
+      );
+      final userdata = await client.user.getUser();
+      expect(userdata.id, equals(Config.username));
+    });
     test('Login flow works', () async {
       var client = NextCloudClient.withoutLogin(
         Config.host,
