@@ -36,14 +36,9 @@ class WebDavClient {
   };
 
   /// get url from given [path]
-  String _getUrl(String path) {
+  Future<String> _getUrl(String path) async {
     path = path.trim();
-
-    // Remove the trailing slash if needed
-    if (path.startsWith('/')) {
-      path = path.substring(1, path.length);
-    }
-
+    path = await _addFilesPath(path);
     return '$_baseUrl/remote.php/dav/$path';
   }
 
@@ -77,7 +72,8 @@ class WebDavClient {
 
   /// returns the WebDAV capabilities of the server
   Future<WebDavStatus> status() async {
-    final response = await _network.send('OPTIONS', _getUrl('/'), [200]);
+    final response =
+        await _network.send('OPTIONS', '$_baseUrl/remote.php/dav', [200]);
     final davCapabilities = response.headers['dav'] ?? '';
     final davSearchCapabilities = response.headers['dasl'] ?? '';
     return WebDavStatus(
@@ -97,7 +93,7 @@ class WebDavClient {
     ];
     return _network.send(
       'MKCOL',
-      _getUrl(await _addFilesPath(path)),
+      await _getUrl(path),
       expectedCodes,
     );
   }
@@ -121,14 +117,14 @@ class WebDavClient {
   /// remove dir with given [path]
   Future delete(String path) async => _network.send(
         'DELETE',
-        _getUrl(await _addFilesPath(path)),
+        await _getUrl(path),
         [204],
       );
 
   /// upload a new file with [localData] as content to [remotePath]
   Future upload(Uint8List localData, String remotePath) async => _network.send(
         'PUT',
-        _getUrl(await _addFilesPath(remotePath)),
+        await _getUrl(remotePath),
         [200, 201, 204],
         data: localData,
       );
@@ -136,7 +132,7 @@ class WebDavClient {
   /// download [remotePath] and store the response file contents to String
   Future<Uint8List> download(String remotePath) async => (await _network.send(
         'GET',
-        _getUrl(await _addFilesPath(remotePath)),
+        await _getUrl(remotePath),
         [200],
       ))
           .bodyBytes;
@@ -145,7 +141,7 @@ class WebDavClient {
   Future<http.ByteStream> downloadStream(String remotePath) async =>
       (await _network.download(
         'GET',
-        _getUrl(await _addFilesPath(remotePath)),
+        await _getUrl(remotePath),
         [200],
       ))
           .stream;
@@ -198,7 +194,7 @@ class WebDavClient {
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
       'PROPFIND',
-      _getUrl(await _addFilesPath(remotePath)),
+      await _getUrl(remotePath),
       [207, 301],
       data: data,
     );
@@ -241,7 +237,7 @@ class WebDavClient {
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
       'REPORT',
-      _getUrl(await _addFilesPath(remotePath)),
+      await _getUrl(remotePath),
       [200, 207],
       data: data,
     );
@@ -272,7 +268,7 @@ class WebDavClient {
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
       'PROPFIND',
-      _getUrl(await _addFilesPath(remotePath)),
+      await _getUrl(remotePath),
       [200, 207],
       data: data,
       headers: {'Depth': '0'},
@@ -303,7 +299,7 @@ class WebDavClient {
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _network.send(
       'PROPPATCH',
-      _getUrl(await _addFilesPath(remotePath)),
+      await _getUrl(remotePath),
       [200, 207],
       data: data,
     );
@@ -320,10 +316,10 @@ class WebDavClient {
   }) async =>
       _network.send(
         'MOVE',
-        _getUrl(await _addFilesPath(sourcePath)),
+        await _getUrl(sourcePath),
         [200, 201, 204],
         headers: {
-          'Destination': _getUrl(await _addFilesPath(destinationPath)),
+          'Destination': await _getUrl(destinationPath),
           'Overwrite': overwrite ? 'T' : 'F',
         },
       );
@@ -338,10 +334,10 @@ class WebDavClient {
   }) async =>
       _network.send(
         'COPY',
-        _getUrl(await _addFilesPath(sourcePath)),
+        await _getUrl(sourcePath),
         [200, 201, 204],
         headers: {
-          'Destination': _getUrl(await _addFilesPath(destinationPath)),
+          'Destination': await _getUrl(destinationPath),
           'Overwrite': overwrite ? 'T' : 'F',
         },
       );
