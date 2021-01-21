@@ -13,9 +13,10 @@ class WebDavClient {
   WebDavClient(
     this._baseUrl,
     this._network,
-  );
+  ) : _davUrl = '$_baseUrl/remote.php/dav';
 
   final String _baseUrl;
+  final String _davUrl;
 
   final Network _network;
 
@@ -39,7 +40,7 @@ class WebDavClient {
   Future<String> _getUrl(String path) async {
     path = path.trim();
     path = await _addFilesPath(path);
-    return '$_baseUrl/remote.php/dav/$path';
+    return '$_davUrl/$path';
   }
 
   Future<String> _addFilesPath(String path) async {
@@ -72,8 +73,7 @@ class WebDavClient {
 
   /// returns the WebDAV capabilities of the server
   Future<WebDavStatus> status() async {
-    final response =
-        await _network.send('OPTIONS', '$_baseUrl/remote.php/dav', [200]);
+    final response = await _network.send('OPTIONS', _davUrl, [200]);
     final davCapabilities = response.headers['dav'] ?? '';
     final davSearchCapabilities = response.headers['dasl'] ?? '';
     return WebDavStatus(
