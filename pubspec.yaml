@@ -1,5 +1,5 @@
 name: nextcloud
-version: 2.1.0
+version: 2.1.1
 description: A Nextcloud client for dart which can use several official Nextcloud APIs
 homepage: https://github.com/jld3103/dart-nextcloud
 

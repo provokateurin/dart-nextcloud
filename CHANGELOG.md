@@ -1,3 +1,6 @@
+# v2.1.1
+* Improve path handeling in WebDAV (backwards compatibility preserved)
+
 # v2.1.0
 * Allow passing defaul headers for requests
 
