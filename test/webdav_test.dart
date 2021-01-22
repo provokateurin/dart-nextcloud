@@ -244,4 +244,33 @@ void main() {
           'test-custom-prop-value');
     });
   });
+
+  group('WebDavFile', () {
+    String _getXmlForFilePath(String xmlPath) {
+      return '<?xml version="1.0"?><d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns"><d:response><d:href>$xmlPath</d:href><d:propstat><d:prop><d:getlastmodified>Fri, 22 Jan 2021 08:02:09 GMT</d:getlastmodified><oc:id>00000054oc8kuawfom6a</oc:id><oc:share-types/></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat><d:propstat><d:prop><d:getcontentlength/><d:getcontenttype/></d:prop><d:status>HTTP/1.1 404 Not Found</d:status></d:propstat></d:response></d:multistatus>';
+    }
+
+    test('correct parsing of path with simple Nextcloud host', () async {
+      // https://cloud.com this is the host address
+      const expectedPath = '/files/admin/dart-nextcloud-tests/';
+      const xmlPath = '/remote.php/dav$expectedPath';
+
+      final files = treeFromWebDavXml(_getXmlForFilePath(xmlPath));
+
+      expect(files.length, 1);
+      expect(files[0].path, expectedPath);
+    });
+
+    test('correct parsing of path with Nextcloud host behind subpath',
+        () async {
+      // https://cloud.com/nc this is the host address
+      const expectedPath = '/files/admin/dart-nextcloud-tests/';
+      const xmlPath = '/nc/remote.php/dav$expectedPath';
+
+      final files = treeFromWebDavXml(_getXmlForFilePath(xmlPath));
+
+      expect(files.length, 1);
+      expect(files[0].path, expectedPath);
+    });
+  });
 }
