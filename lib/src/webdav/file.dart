@@ -155,8 +155,13 @@ void _handleProp(xml.XmlElement prop, WebDavFile file) {
 /// Converts a single d:response to a [WebDavFile]
 WebDavFile _fromWebDavXml(xml.XmlElement response) {
   final davItemName = response.findElements('d:href').single.text;
-  final path = davItemName.replaceAll(RegExp('remote.php/(web)?dav/'), '');
-  final file = WebDavFile(path);
+  //this makes sure that path parts that belong to the server location are filtered out
+  final pathMath = RegExp(
+    r'^.*remote.php/(?:web)?dav(.+)$',
+  ).firstMatch(davItemName);
+  //group(0) is always the whole string
+  //group(1) is the group we need
+  final file = WebDavFile(pathMath.group(1));
 
   final propStatElements = response.findElements('d:propstat');
   for (final propStat in propStatElements) {
