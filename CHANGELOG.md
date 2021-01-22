@@ -1,3 +1,6 @@
+# v2.1.2
+* Fix WebDAV path parsing
+
 # v2.1.1
 * Improve path handeling in WebDAV (backwards compatibility preserved)
 
