@@ -65,6 +65,23 @@ class WebDavClient {
     return path.replaceFirst('/files/$_username/', '');
   }
 
+  Future<http.Response> _send(
+    String method,
+    String url,
+    List<int> expectedCodes, {
+    Uint8List data,
+    Map<String, String> headers,
+  }) {
+    headers[HttpHeaders.contentTypeHeader] = ContentType.xml.value;
+    return _network.send(
+      method,
+      url,
+      expectedCodes,
+      data: data,
+      headers: headers,
+    );
+  }
+
   /// Registers a custom namespace for properties.
   ///
   /// Requires a unique [namespaceUri] and [prefix].
@@ -73,7 +90,7 @@ class WebDavClient {
 
   /// returns the WebDAV capabilities of the server
   Future<WebDavStatus> status() async {
-    final response = await _network.send('OPTIONS', _davUrl, [200]);
+    final response = await _send('OPTIONS', _davUrl, [200]);
     final davCapabilities = response.headers['dav'] ?? '';
     final davSearchCapabilities = response.headers['dasl'] ?? '';
     return WebDavStatus(
@@ -91,7 +108,7 @@ class WebDavClient {
         405,
       ],
     ];
-    return _network.send(
+    return _send(
       'MKCOL',
       await _getUrl(path),
       expectedCodes,
@@ -115,14 +132,14 @@ class WebDavClient {
   }
 
   /// remove dir with given [path]
-  Future delete(String path) async => _network.send(
+  Future delete(String path) async => _send(
         'DELETE',
         await _getUrl(path),
         [204],
       );
 
   /// upload a new file with [localData] as content to [remotePath]
-  Future upload(Uint8List localData, String remotePath) async => _network.send(
+  Future upload(Uint8List localData, String remotePath) async => _send(
         'PUT',
         await _getUrl(remotePath),
         [200, 201, 204],
@@ -130,7 +147,7 @@ class WebDavClient {
       );
 
   /// download [remotePath] and store the response file contents to String
-  Future<Uint8List> download(String remotePath) async => (await _network.send(
+  Future<Uint8List> download(String remotePath) async => (await _send(
         'GET',
         await _getUrl(remotePath),
         [200],
@@ -150,7 +167,7 @@ class WebDavClient {
   Future<Uint8List> downloadDirectoryAsZip(String remotePath) async {
     final url =
         '$_baseUrl/index.php/apps/files/ajax/download.php?dir=$remotePath';
-    final result = await _network.send(
+    final result = await _send(
       'GET',
       url,
       [200],
@@ -192,7 +209,7 @@ class WebDavClient {
         });
       });
     final data = utf8.encode(builder.buildDocument().toString());
-    final response = await _network.send(
+    final response = await _send(
       'PROPFIND',
       await _getUrl(remotePath),
       [207, 301],
@@ -235,7 +252,7 @@ class WebDavClient {
           });
       });
     final data = utf8.encode(builder.buildDocument().toString());
-    final response = await _network.send(
+    final response = await _send(
       'REPORT',
       await _getUrl(remotePath),
       [200, 207],
@@ -266,7 +283,7 @@ class WebDavClient {
         });
       });
     final data = utf8.encode(builder.buildDocument().toString());
-    final response = await _network.send(
+    final response = await _send(
       'PROPFIND',
       await _getUrl(remotePath),
       [200, 207],
@@ -297,7 +314,7 @@ class WebDavClient {
         });
       });
     final data = utf8.encode(builder.buildDocument().toString());
-    final response = await _network.send(
+    final response = await _send(
       'PROPPATCH',
       await _getUrl(remotePath),
       [200, 207],
@@ -314,7 +331,7 @@ class WebDavClient {
     String destinationPath, {
     bool overwrite = false,
   }) async =>
-      _network.send(
+      _send(
         'MOVE',
         await _getUrl(sourcePath),
         [200, 201, 204],
@@ -332,7 +349,7 @@ class WebDavClient {
     String destinationPath, {
     bool overwrite = false,
   }) async =>
-      _network.send(
+      _send(
         'COPY',
         await _getUrl(sourcePath),
         [200, 201, 204],
