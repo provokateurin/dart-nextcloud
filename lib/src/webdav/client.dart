@@ -72,6 +72,7 @@ class WebDavClient {
     Uint8List data,
     Map<String, String> headers,
   }) {
+    headers = headers ?? {};
     headers[HttpHeaders.contentTypeHeader] = ContentType.xml.value;
     return _network.send(
       method,
