@@ -1,3 +1,7 @@
+# v2.1.4
+* Update dependencies
+* Update analysis options
+
 # v2.1.3
 * Fix WebDAV content-type header
 
