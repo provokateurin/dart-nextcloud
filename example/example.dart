@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:nextcloud/nextcloud.dart';
 
@@ -14,7 +15,8 @@ Future main() async {
         .upload(File('example/test.png').readAsBytesSync(), '/test.png');
     File('example/bla.png')
         .writeAsBytesSync(await client.webDav.download('/test.png'));
-    await client.webDav.upload(utf8.encode('Test file'), '/test.txt');
+    await client.webDav
+        .upload(Uint8List.fromList(utf8.encode('Test file')), '/test.txt');
     await listFiles(client);
     await client.webDav.move('/test.txt', '/abc.txt');
     await listFiles(client);
@@ -31,15 +33,14 @@ Future main() async {
         permissions: Permissions([Permission.read, Permission.update]));
     print(share);
     print('List shared files');
-    print((await client.shares.getShares(path: '/test.txt', reshares: false))
-        .join('\n'));
+    print((await client.shares.getShares(path: '/test.txt')).join('\n'));
     await client.shares.updateShareNote(share.id, 'Test notice');
     print('New note:');
     print(await client.shares.getShare(share.id));
     print('Delete share');
     await client.shares.deleteShare(share.id);
     print(
-        'List shared files: ${(await client.shares.getShares(path: '/test.txt', reshares: false)).length}');
+        'List shared files: ${(await client.shares.getShares(path: '/test.txt')).length}');
 
     print('Download /test.txt ...');
     final downloadedData = await client.webDav.downloadStream('/test.txt');

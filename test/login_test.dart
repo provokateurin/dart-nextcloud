@@ -43,7 +43,7 @@ void main() {
           }
           // ignore: empty_catches, avoid_catches_without_on_clauses
         } catch (e) {
-          await Future.delayed(Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 500));
         }
       }
     });

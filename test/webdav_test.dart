@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:nextcloud/nextcloud.dart';
 import 'package:test/test.dart';
@@ -38,13 +39,13 @@ void main() {
       expect(
           (await client.webDav.upload(
                   File('test/files/test.png').readAsBytesSync(),
-                  '${testDir}/test.png'))
+                  '$testDir/test.png'))
               .statusCode,
           equals(201));
       expect(
           (await client.webDav.upload(
                   File('test/files/test.txt').readAsBytesSync(),
-                  '${testDir}/test.txt'))
+                  '$testDir/test.txt'))
               .statusCode,
           equals(201));
       final files = await client.webDav.ls(testDir);
@@ -57,10 +58,10 @@ void main() {
     test('List directory with properties', () async {
       final startTime = DateTime.now()
           // lastmodified is second-precision only
-          .subtract(Duration(seconds: 2));
-      final path = '${testDir}/list-test.txt';
+          .subtract(const Duration(seconds: 2));
+      const path = '$testDir/list-test.txt';
       final data = utf8.encode('WebDAV list-test');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       final files = await client.webDav.ls(testDir);
       final file = files.singleWhere((f) => f.name == 'list-test.txt');
@@ -75,8 +76,8 @@ void main() {
     });
     test('Copy file', () async {
       final response = await client.webDav.copy(
-        '${testDir}/test.txt',
-        '${testDir}/test2.txt',
+        '$testDir/test.txt',
+        '$testDir/test2.txt',
       );
       expect(response.statusCode, 201);
       final files = await client.webDav.ls(testDir);
@@ -84,30 +85,28 @@ void main() {
       expect(files.where((f) => f.name == 'test2.txt'), hasLength(1));
     });
     test('Copy file (no overwrite)', () async {
-      final path = '${testDir}/copy-test.txt';
+      const path = '$testDir/copy-test.txt';
       final data = utf8.encode('WebDAV copytest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       expect(
-          () => client.webDav.copy(
-              '${testDir}/test.txt', '${testDir}/copy-test.txt',
-              overwrite: false),
+          () =>
+              client.webDav.copy('$testDir/test.txt', '$testDir/copy-test.txt'),
           throwsA(predicate((e) => e.statusCode == 412)));
     });
     test('Copy file (overwrite)', () async {
-      final path = '${testDir}/copy-test.txt';
+      const path = '$testDir/copy-test.txt';
       final data = utf8.encode('WebDAV copytest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
-      final response = await client.webDav.copy(
-          '${testDir}/test.txt', '${testDir}/copy-test.txt',
-          overwrite: true);
+      final response = await client.webDav
+          .copy('$testDir/test.txt', '$testDir/copy-test.txt', overwrite: true);
       expect(response.statusCode, 204);
     });
     test('Move file', () async {
       final response = await client.webDav.move(
-        '${testDir}/test2.txt',
-        '${testDir}/test3.txt',
+        '$testDir/test2.txt',
+        '$testDir/test3.txt',
       );
       expect(response.statusCode, 201);
       final files = await client.webDav.ls(testDir);
@@ -115,31 +114,29 @@ void main() {
       expect(files.where((f) => f.name == 'test3.txt'), hasLength(1));
     });
     test('Move file (no overwrite)', () async {
-      final path = '${testDir}/move-test.txt';
+      const path = '$testDir/move-test.txt';
       final data = utf8.encode('WebDAV movetest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       expect(
-          () => client.webDav.move(
-              '${testDir}/test.txt', '${testDir}/move-test.txt',
-              overwrite: false),
+          () =>
+              client.webDav.move('$testDir/test.txt', '$testDir/move-test.txt'),
           throwsA(predicate((e) => e.statusCode == 412)));
     });
     test('Move file (overwrite)', () async {
-      final path = '${testDir}/move-test.txt';
+      const path = '$testDir/move-test.txt';
       final data = utf8.encode('WebDAV movetest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
-      final response = await client.webDav.move(
-          '${testDir}/test.txt', '${testDir}/move-test.txt',
-          overwrite: true);
+      final response = await client.webDav
+          .move('$testDir/test.txt', '$testDir/move-test.txt', overwrite: true);
       expect(response.statusCode, 204);
     });
     test('Get file properties', () async {
-      final startTime = DateTime.now().subtract(Duration(seconds: 2));
-      final path = '${testDir}/prop-test.txt';
+      final startTime = DateTime.now().subtract(const Duration(seconds: 2));
+      const path = '$testDir/prop-test.txt';
       final data = utf8.encode('WebDAV proptest');
-      await client.webDav.upload(data, path);
+      await client.webDav.upload(Uint8List.fromList(data), path);
 
       final file = await client.webDav.getProps(path);
       expect(file.isDirectory, false);
@@ -166,7 +163,7 @@ void main() {
       expect(file.size, greaterThan(0));
     });
     test('Get additional properties', () async {
-      final path = '${testDir}/prop-test.txt';
+      const path = '$testDir/prop-test.txt';
       final file = await client.webDav.getProps(path);
 
       expect(file.getOtherProp('oc:comments-count', 'http://owncloud.org/ns'),
@@ -175,9 +172,10 @@ void main() {
           'true');
     });
     test('Filter files', () async {
-      final path = '${testDir}/filter-test.txt';
+      const path = '$testDir/filter-test.txt';
       final data = utf8.encode('WebDAV filtertest');
-      final response = await client.webDav.upload(data, path);
+      final response =
+          await client.webDav.upload(Uint8List.fromList(data), path);
       final id = response.headers['oc-fileid'];
 
       // Favorite file
@@ -196,9 +194,9 @@ void main() {
       expect(file.id, id);
     });
     test('Set properties', () async {
-      final createdDate = DateTime.utc(1971, 2, 1);
+      final createdDate = DateTime.utc(1971, 2);
       final createdEpoch = createdDate.millisecondsSinceEpoch / 1000;
-      final path = '${testDir}/prop-test.txt';
+      const path = '$testDir/prop-test.txt';
       final updated = await client.webDav.updateProps(path, {
         WebDavProps.ocFavorite: '1',
         WebDavProps.ncCreationTime: '$createdEpoch'
@@ -216,7 +214,7 @@ void main() {
         'http://leonhardt.co.nz/ns': 'le',
         'http://test/ns': 'test'
       };
-      final path = '${testDir}/prop-test.txt';
+      const path = '$testDir/prop-test.txt';
 
       customNamespaces
           .forEach((ns, prefix) => client.webDav.registerNamespace(ns, prefix));
@@ -246,9 +244,8 @@ void main() {
   });
 
   group('WebDavFile', () {
-    String _getXmlForFilePath(String xmlPath) {
-      return '<?xml version="1.0"?><d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns"><d:response><d:href>$xmlPath</d:href><d:propstat><d:prop><d:getlastmodified>Fri, 22 Jan 2021 08:02:09 GMT</d:getlastmodified><oc:id>00000054oc8kuawfom6a</oc:id><oc:share-types/></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat><d:propstat><d:prop><d:getcontentlength/><d:getcontenttype/></d:prop><d:status>HTTP/1.1 404 Not Found</d:status></d:propstat></d:response></d:multistatus>';
-    }
+    String _getXmlForFilePath(String xmlPath) =>
+        '<?xml version="1.0"?><d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns"><d:response><d:href>$xmlPath</d:href><d:propstat><d:prop><d:getlastmodified>Fri, 22 Jan 2021 08:02:09 GMT</d:getlastmodified><oc:id>00000054oc8kuawfom6a</oc:id><oc:share-types/></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat><d:propstat><d:prop><d:getcontentlength/><d:getcontenttype/></d:prop><d:status>HTTP/1.1 404 Not Found</d:status></d:propstat></d:response></d:multistatus>';
 
     test('correct parsing of path with simple Nextcloud host', () async {
       // https://cloud.com this is the host address

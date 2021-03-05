@@ -23,6 +23,8 @@ class SignalingManagement {
       _getUrl('signaling/settings'),
       [200],
     );
-    return SignalingSettings.fromJson(json.decode(result.body)['ocs']['data']);
+    return SignalingSettings.fromJson(
+      json.decode(result.body)['ocs']['data'] as Map<String, dynamic>,
+    );
   }
 }

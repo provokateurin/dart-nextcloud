@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import '../network.dart';
 
@@ -27,9 +28,9 @@ class LoginClient {
     );
     final data = json.decode(response.body);
     return LoginFlowInit(
-      data['poll']['token'],
-      data['poll']['endpoint'],
-      data['login'],
+      data['poll']['token'] as String,
+      data['poll']['endpoint'] as String,
+      data['login'] as String,
     );
   }
 
@@ -41,15 +42,15 @@ class LoginClient {
       'POST',
       init.endpoint, // Should be the same as '$_baseUrl/poll'
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'token': init.token,
-      })),
+      }))),
     );
     final data = json.decode(response.body);
     return LoginFlowResult(
-      data['server'],
-      data['loginName'],
-      data['appPassword'],
+      data['server'] as String,
+      data['loginName'] as String,
+      data['appPassword'] as String,
     );
   }
 }

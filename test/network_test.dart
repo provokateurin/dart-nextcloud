@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:mockito/mockito.dart';
 import 'package:nextcloud/src/http_client/http_client.dart';
 import 'package:nextcloud/src/network.dart';
 import 'package:test/test.dart';
-import 'package:mockito/mockito.dart';
 
 class HttpClientMock extends Mock implements HttpClient {}
 
@@ -18,7 +18,7 @@ void main() {
     setUpAll(() {
       when(httpClientMock.send(httpRequest)).thenAnswer(
         (_) async => StreamedResponse(
-          Stream.empty(),
+          const Stream.empty(),
           HttpStatus.ok,
         ),
       );

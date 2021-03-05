@@ -35,7 +35,7 @@ void main() {
 
       for (final url in urls) {
         final client = NextCloudClient.withCredentials(
-          url[0],
+          url[0] as Uri,
           Config.username,
           Config.password,
         );

@@ -175,22 +175,23 @@ class Message {
 
   // ignore: public_member_api_docs
   factory Message.fromJson(Map<String, dynamic> json) => Message(
-        id: json['id'],
-        token: json['token'],
-        actorType: _toActorType(json['actorType']),
-        actorId: json['actorId'],
-        actorDisplayName: json['actorDisplayName'],
+        id: json['id'] as int,
+        token: json['token'] as String,
+        actorType: _toActorType(json['actorType'] as String),
+        actorId: json['actorId'] as String,
+        actorDisplayName: json['actorDisplayName'] as String,
         timestamp: DateTime.fromMillisecondsSinceEpoch(
-          json['timestamp'] * 1000,
+          (json['timestamp'] as int) * 1000,
           isUtc: true,
         ),
-        message: json['message'],
+        message: json['message'] as String,
         messageParameters: json['messageParameters'],
-        systemMessage: json['systemMessage'],
+        systemMessage: json['systemMessage'] as String,
         messageType: json['messageType'] != null
-            ? MessageType.values[_messageTypes.indexOf(json['messageType'])]
+            ? MessageType
+                .values[_messageTypes.indexOf(json['messageType'] as String)]
             : null,
-        isReplyable: json['isReplyable'],
+        isReplyable: json['isReplyable'] as bool,
       );
 
   /// The message id
@@ -241,10 +242,11 @@ class Suggestion {
 
   // ignore: public_member_api_docs
   factory Suggestion.fromJson(Map<String, dynamic> json) => Suggestion(
-        id: json['id'],
-        displayName: json['label'],
+        id: json['id'] as String,
+        displayName: json['label'] as String,
         type: json['source'] != null
-            ? SuggestionType.values[_suggestionTypes.indexOf(json['source'])]
+            ? SuggestionType
+                .values[_suggestionTypes.indexOf(json['source'] as String)]
             : null,
       );
 
@@ -274,17 +276,17 @@ class Participant {
 
   // ignore: public_member_api_docs
   factory Participant.fromJson(Map<String, dynamic> json) => Participant(
-        userId: json['userId'],
-        displayName: json['displayName'],
+        userId: json['userId'] as String,
+        displayName: json['displayName'] as String,
         participantType: _toEnumValue(
           ParticipantType.values,
-          json['participantType'],
+          json['participantType'] as int,
         ),
         lastPing: DateTime.fromMillisecondsSinceEpoch(
-          json['lastPing'] * 1000,
+          (json['lastPing'] as int) * 1000,
           isUtc: true,
         ),
-        sessionId: json['sessionId'],
+        sessionId: json['sessionId'] as String,
       );
 
   /// The id to identify the user in requests (The username id)
@@ -338,50 +340,54 @@ class Conversation {
 
   // ignore: public_member_api_docs
   factory Conversation.fromJson(Map<String, dynamic> json) => Conversation(
-        token: json['token'],
+        token: json['token'] as String,
         type: _toEnumValue(
           ConversationType.values,
-          json['type'],
+          json['type'] as int,
         ),
-        name: json['name'],
-        displayName: json['displayName'],
+        name: json['name'] as String,
+        displayName: json['displayName'] as String,
         participantType: _toEnumValue(
           ParticipantType.values,
-          json['participantType'],
+          json['participantType'] as int,
         ),
-        readOnlyState:
-            _toEnumValue(ReadOnlyState.values, json['readOnly'], first: 0),
-        userCount: json['count'],
-        guestCount: json['numGuests'],
+        readOnlyState: _toEnumValue(
+          ReadOnlyState.values,
+          json['readOnly'] as int,
+          first: 0,
+        ),
+        userCount: json['count'] as int,
+        guestCount: json['numGuests'] as int,
         lastPing: DateTime.fromMillisecondsSinceEpoch(
-          json['lastPing'] * 1000,
+          (json['lastPing'] as int) * 1000,
           isUtc: true,
         ),
-        sessionId: json['sessionId'],
-        hasPassword: json['hasPassword'],
-        hasCall: json['hasCall'],
-        canStartCall: json['canStartCall'],
+        sessionId: json['sessionId'] as String,
+        hasPassword: json['hasPassword'] as bool,
+        hasCall: json['hasCall'] as bool,
+        canStartCall: json['canStartCall'] as bool,
         lastActivity: DateTime.fromMillisecondsSinceEpoch(
-          json['lastActivity'] * 1000,
+          (json['lastActivity'] as int) * 1000,
           isUtc: true,
         ).toLocal(),
-        isFavorite: json['isFavorite'],
+        isFavorite: json['isFavorite'] as bool,
         notificationLevel: _toEnumValue(
           NotificationLevel.values,
-          json['notificationLevel'],
+          json['notificationLevel'] as int,
           first: 0,
         ),
         lobbyState: _toEnumValue(
           LobbyState.values,
-          json['lobbyState'],
+          json['lobbyState'] as int,
           first: 0,
         ),
-        unreadMessages: json['unreadMessages'],
-        unreadMention: json['unreadMention'],
-        lastReadMessage: json['lastReadMessage'],
-        lastMessage: Message.fromJson(json['lastMessage']),
-        objectType: json['objectType'],
-        objectId: json['objectId'],
+        unreadMessages: json['unreadMessages'] as int,
+        unreadMention: json['unreadMention'] as bool,
+        lastReadMessage: json['lastReadMessage'] as int,
+        lastMessage:
+            Message.fromJson(json['lastMessage'] as Map<String, dynamic>),
+        objectType: json['objectType'] as String,
+        objectId: json['objectId'] as String,
       );
 
   /// The conversation token
@@ -473,7 +479,10 @@ class Room {
 
   // ignore: public_member_api_docs
   factory Room.fromJson(List<dynamic> json) => Room(
-        json.map<Conversation>((e) => Conversation.fromJson(e)).toList(),
+        json
+            .map<Conversation>(
+                (e) => Conversation.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   /// All user conversations
@@ -493,13 +502,13 @@ class SignalingSettings {
   // ignore: public_member_api_docs
   factory SignalingSettings.fromJson(Map<String, dynamic> json) =>
       SignalingSettings(
-        ticket: json['ticket'],
+        ticket: json['ticket'] as String,
         externalSignalingServerAddress:
-            json['server'].toString() == '[]' ? null : json['server'],
+            json['server'].toString() == '[]' ? null : json['server'] as String,
         stunServerAddresses: json['stunservers']
             .map<String>((i) => i['url'].toString())
-            .toList(),
-        turnServers: json['turnservers'],
+            .toList() as List<String>,
+        turnServers: json['turnservers'] as List,
       );
 
   /// The ticket for the external signaling server

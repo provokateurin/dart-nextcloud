@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import '../network.dart';
 
@@ -23,9 +24,9 @@ class GuestManagement {
       'POST',
       _getUrl('guest/$sessionId/name'),
       [200],
-      data: utf8.encode(json.encode({
+      data: Uint8List.fromList(utf8.encode(json.encode({
         'displayName': displayName,
-      })),
+      }))),
     );
   }
 }

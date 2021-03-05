@@ -128,7 +128,7 @@ class WebDavClient {
       dirs[0] = '/${dirs[0]}';
     }
     for (final dir in dirs) {
-      await mkdir(dir, true);
+      await mkdir(dir);
     }
   }
 
@@ -214,7 +214,7 @@ class WebDavClient {
       'PROPFIND',
       await _getUrl(remotePath),
       [207, 301],
-      data: data,
+      data: Uint8List.fromList(data),
     );
     if (response.statusCode == 301) {
       return ls(response.headers['location']);
@@ -257,7 +257,7 @@ class WebDavClient {
       'REPORT',
       await _getUrl(remotePath),
       [200, 207],
-      data: data,
+      data: Uint8List.fromList(data),
     );
     final files = treeFromWebDavXml(response.body);
     for (final file in files) {
@@ -288,7 +288,7 @@ class WebDavClient {
       'PROPFIND',
       await _getUrl(remotePath),
       [200, 207],
-      data: data,
+      data: Uint8List.fromList(data),
       headers: {'Depth': '0'},
     );
     final file = fileFromWebDavXml(response.body);
@@ -319,7 +319,7 @@ class WebDavClient {
       'PROPPATCH',
       await _getUrl(remotePath),
       [200, 207],
-      data: data,
+      data: Uint8List.fromList(data),
     );
     return checkUpdateFromWebDavXml(response.body);
   }

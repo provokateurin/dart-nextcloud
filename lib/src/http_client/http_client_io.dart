@@ -5,7 +5,7 @@ class HttpClient extends http.BaseClient {
   // ignore: public_member_api_docs
   HttpClient() : _client = http.Client();
 
-  final http.BaseClient _client;
+  final http.Client _client;
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) =>
