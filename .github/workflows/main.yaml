@@ -1,0 +1,40 @@
+name: Main
+on: [ push, pull_request ]
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: dev
+      - run: dart pub get
+      - run: dart analyze
+  formatting:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: dev
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed .
+  tests:
+    name: Run tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ] # macos doesn't have docker installed
+        sdk: [ stable, beta, dev ]
+    env:
+      NONINTERACTIVE: 1 # So we don't run browser tests
+    steps:
+      - uses: actions/checkout@v1
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+      - run: dart pub get
+      - run: ./scripts/test.sh
