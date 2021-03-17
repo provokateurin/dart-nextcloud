@@ -50,10 +50,8 @@ void main() {
           equals(201));
       final files = await client.webDav.ls(testDir);
       expect(files.length, equals(2));
-      expect(files.singleWhere((f) => f.name == 'test.png', orElse: () => null),
-          isNotNull);
-      expect(files.singleWhere((f) => f.name == 'test.txt', orElse: () => null),
-          isNotNull);
+      expect(files.where((f) => f.name == 'test.png').length, 1);
+      expect(files.where((f) => f.name == 'test.txt').length, 1);
     });
     test('List directory with properties', () async {
       final startTime = DateTime.now()
@@ -92,7 +90,8 @@ void main() {
       expect(
           () =>
               client.webDav.copy('$testDir/test.txt', '$testDir/copy-test.txt'),
-          throwsA(predicate((e) => e.statusCode == 412)));
+          // ignore: avoid_types_on_closure_parameters
+          throwsA(predicate((RequestException e) => e.statusCode == 412)));
     });
     test('Copy file (overwrite)', () async {
       const path = '$testDir/copy-test.txt';
@@ -121,7 +120,8 @@ void main() {
       expect(
           () =>
               client.webDav.move('$testDir/test.txt', '$testDir/move-test.txt'),
-          throwsA(predicate((e) => e.statusCode == 412)));
+          // ignore: avoid_types_on_closure_parameters
+          throwsA(predicate((RequestException e) => e.statusCode == 412)));
     });
     test('Move file (overwrite)', () async {
       const path = '$testDir/move-test.txt';

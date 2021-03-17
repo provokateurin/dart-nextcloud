@@ -16,4 +16,4 @@ echo "Starting container"
 # shellcheck disable=SC2155
 export CONTAINER_ID=$(sudo docker run -d --rm -p 8080:80 dart-nextcloud)
 
-dart --no-sound-null-safety test "$@"
+dart test "$@"

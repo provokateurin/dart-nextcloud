@@ -11,46 +11,46 @@ class WebDavFile {
   String path;
 
   /// The fileid namespaced by the instance id, globally unique
-  String id;
+  late String id;
 
   /// The unique id for the file within the instance
-  String fileId;
+  late String fileId;
 
   /// Whether this is a collection resource type
-  bool isCollection = false;
+  late bool isCollection = false;
 
   // ignore: public_member_api_docs
-  String mimeType;
+  String? mimeType;
 
   /// File content length or folder size
-  int size;
+  late int size;
 
   /// The user id of the owner of a shared file
-  String ownerId;
+  late String ownerId;
 
   /// The display name of the owner of a shared file
-  String ownerDisplay;
+  late String ownerDisplay;
 
   /// Share note
-  String note;
+  late String note;
 
   // ignore: public_member_api_docs
-  DateTime lastModified;
+  late DateTime lastModified;
 
   /// Upload date of the file.
-  DateTime uploadedDate;
+  late DateTime uploadedDate;
 
   /// Creation date of the file as provided by uploader.
-  DateTime createdDate;
+  late DateTime createdDate;
 
   // ignore: public_member_api_docs
-  List<int> shareTypes = [];
+  late List<int> shareTypes = [];
 
   /// User IDs of sharees.
-  List<String> sharees = [];
+  late List<String> sharees = [];
 
   /// Whether this file is marked as favorite.
-  bool favorite = false;
+  late bool favorite = false;
 
   /// Other properties, mapped by their prefixed name name
   final Map<String, String> _otherProps = {};
@@ -60,12 +60,12 @@ class WebDavFile {
 
   /// Add an additional property by [name] and [value]
   void addOtherProp(xml.XmlName name, String value) {
-    _otherNamespaces[name.namespaceUri] = name.prefix;
+    _otherNamespaces[name.namespaceUri!] = name.prefix!;
     _otherProps[name.qualified] = value;
   }
 
   /// Lookup an additional property by [name] and [namespaceUri]
-  String getOtherProp(String name, String namespaceUri) {
+  String? getOtherProp(String name, String namespaceUri) {
     final localName = xml.XmlName.fromString(name).local;
     // find correct prefix
     final prefix = _otherNamespaces[namespaceUri];
@@ -161,18 +161,18 @@ WebDavFile _fromWebDavXml(xml.XmlElement response) {
   ).firstMatch(davItemName);
   //group(0) is always the whole string
   //group(1) is the group we need
-  final file = WebDavFile(pathMath.group(1));
+  final file = WebDavFile(pathMath!.group(1)!);
 
   final propStatElements = response.findElements('d:propstat');
   for (final propStat in propStatElements) {
-    final status = propStat.getElement('d:status').text;
+    final status = propStat.getElement('d:status')!.text;
     final props = propStat.getElement('d:prop');
 
     if (!status.contains('200')) {
       // Skip any props that are not returned correctly (e.g. not found)
       continue;
     }
-    for (final prop in props.nodes.whereType<xml.XmlElement>()) {
+    for (final prop in props!.nodes.whereType<xml.XmlElement>()) {
       _handleProp(prop, file);
     }
   }
@@ -207,7 +207,7 @@ bool checkUpdateFromWebDavXml(String xmlStr) {
   final response = xmlDocument.findAllElements('d:response').single;
   final propStatElements = response.findElements('d:propstat');
   for (final propStat in propStatElements) {
-    final status = propStat.getElement('d:status').text;
+    final status = propStat.getElement('d:status')!.text;
     if (!status.contains('200')) {
       return false;
     }

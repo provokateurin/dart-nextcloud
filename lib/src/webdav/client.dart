@@ -16,11 +16,11 @@ class WebDavClient {
   ) : _davUrl = '$_baseUrl/remote.php/dav';
 
   final String _baseUrl;
-  final String _davUrl;
+  late final String _davUrl;
 
   final Network _network;
 
-  String _username;
+  String? _username;
 
   bool _useBackwardsCompatiblePaths = false;
 
@@ -69,8 +69,8 @@ class WebDavClient {
     String method,
     String url,
     List<int> expectedCodes, {
-    Uint8List data,
-    Map<String, String> headers,
+    Uint8List? data,
+    Map<String, String>? headers,
   }) {
     headers = headers ?? {};
     headers[HttpHeaders.contentTypeHeader] = ContentType.xml.value;
@@ -119,8 +119,7 @@ class WebDavClient {
   /// just like mkdir -p
   Future mkdirs(String path) async {
     path = path.trim();
-    final dirs = path.split('/')
-      ..removeWhere((value) => value == null || value == '');
+    final dirs = path.split('/')..removeWhere((value) => value == '');
     if (dirs.isEmpty) {
       return;
     }
@@ -217,7 +216,7 @@ class WebDavClient {
       data: Uint8List.fromList(data),
     );
     if (response.statusCode == 301) {
-      return ls(response.headers['location']);
+      return ls(response.headers['location']!);
     }
     final files = treeFromWebDavXml(response.body)..removeAt(0);
     for (final file in files) {

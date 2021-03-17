@@ -18,15 +18,16 @@ void main() {
     });
     // We need to skip this test on CI, because it can't work
     if (Platform.environment['NONINTERACTIVE'] == null ||
-        Platform.environment['NONINTERACTIVE'].isEmpty) {
+        Platform.environment['NONINTERACTIVE']!.isEmpty) {
       test('Login flow works', () async {
         var client = NextCloudClient.withoutLogin(
           Config.host,
           defaultHeaders: {HttpHeaders.userAgentHeader: 'dart-nextcloud'},
         );
         final init = await client.login.initLoginFlow();
-        print('Please open: ${init.login}');
-        LoginFlowResult _result;
+        print(
+            "Please open ${init.login} and login as '${Config.username}' with '${Config.password}'");
+        LoginFlowResult? _result;
         while (_result == null) {
           try {
             _result = await client.login.pollLogin(init);

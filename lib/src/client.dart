@@ -45,7 +45,7 @@ class NextCloudClient {
     Uri host,
     String username,
     String password, {
-    Map<String, String> defaultHeaders,
+    Map<String, String>? defaultHeaders,
   }) =>
       NextCloudClient(
         host,
@@ -64,7 +64,7 @@ class NextCloudClient {
   factory NextCloudClient.withAppPassword(
     Uri host,
     String appPassword, {
-    Map<String, String> defaultHeaders,
+    Map<String, String>? defaultHeaders,
   }) =>
       NextCloudClient(
         host,
@@ -81,7 +81,7 @@ class NextCloudClient {
   /// This headers will then be added to every request. Common examples are User-Agent and Accept-Language.
   factory NextCloudClient.withoutLogin(
     Uri host, {
-    Map<String, String> defaultHeaders,
+    Map<String, String>? defaultHeaders,
   }) =>
       NextCloudClient(
         host,
@@ -93,18 +93,18 @@ class NextCloudClient {
   /// The host of the cloud
   ///
   /// For example: `cloud.example.com`
-  String baseUrl;
+  late String baseUrl;
 
-  WebDavClient _webDavClient;
-  UserClient _userClient;
-  UsersClient _usersClient;
-  SharesClient _sharesClient;
-  ShareesClient _shareesClient;
-  TalkClient _talkClient;
-  AvatarClient _avatarClient;
-  AutocompleteClient _autocompleteClient;
-  PreviewClient _previewClient;
-  LoginClient _login;
+  late WebDavClient _webDavClient;
+  late UserClient _userClient;
+  late UsersClient _usersClient;
+  late SharesClient _sharesClient;
+  late ShareesClient _shareesClient;
+  late TalkClient _talkClient;
+  late AvatarClient _avatarClient;
+  late AutocompleteClient _autocompleteClient;
+  late PreviewClient _previewClient;
+  late LoginClient _login;
 
   // ignore: public_member_api_docs
   WebDavClient get webDav => _webDavClient;

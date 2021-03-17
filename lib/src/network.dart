@@ -47,7 +47,7 @@ class NextCloudHttpClient extends HttpClient {
   // ignore: public_member_api_docs
   factory NextCloudHttpClient.defaultClient(
     String authString,
-    Map<String, String> defaultHeaders,
+    Map<String, String>? defaultHeaders,
   ) =>
       NextCloudHttpClient(
         authString,
@@ -60,7 +60,7 @@ class NextCloudHttpClient extends HttpClient {
   factory NextCloudHttpClient.withCredentials(
     String username,
     String password, {
-    Map<String, String> defaultHeaders,
+    Map<String, String>? defaultHeaders,
   }) =>
       NextCloudHttpClient.defaultClient(
         'Basic ${base64.encode(utf8.encode('$username:$password')).trim()}',
@@ -71,7 +71,7 @@ class NextCloudHttpClient extends HttpClient {
   /// [appPassword] for all subsequent requests.
   factory NextCloudHttpClient.withAppPassword(
     String appPassword, {
-    Map<String, String> defaultHeaders,
+    Map<String, String>? defaultHeaders,
   }) =>
       NextCloudHttpClient.defaultClient(
         'Bearer $appPassword',
@@ -81,7 +81,7 @@ class NextCloudHttpClient extends HttpClient {
   /// Constructs a new [NextCloudHttpClient] without login data.
   /// May only be useful for app password login setup
   factory NextCloudHttpClient.withoutLogin({
-    Map<String, String> defaultHeaders,
+    Map<String, String>? defaultHeaders,
   }) =>
       NextCloudHttpClient.defaultClient(
         '',
@@ -90,7 +90,7 @@ class NextCloudHttpClient extends HttpClient {
 
   final http.Client _inner;
   final String _authString;
-  final Map<String, String> _defaultHeaders;
+  final Map<String, String>? _defaultHeaders;
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
@@ -102,7 +102,7 @@ class NextCloudHttpClient extends HttpClient {
     coreHeaders.forEach((key, value) {
       assert(
         !request.headers.containsKey(key) &&
-            (_defaultHeaders == null || !_defaultHeaders.containsKey(key)),
+            (_defaultHeaders == null || !_defaultHeaders!.containsKey(key)),
         'Overriding library core header ($key) is not allowed!',
       );
     });
@@ -164,8 +164,8 @@ class Network {
     String method,
     String url,
     List<int> expectedCodes, {
-    Uint8List data,
-    Map<String, String> headers,
+    Uint8List? data,
+    Map<String, String>? headers,
   }) async =>
       http.Response.fromStream(await download(
         method,
@@ -180,8 +180,8 @@ class Network {
     String method,
     String url,
     List<int> expectedCodes, {
-    Uint8List data,
-    Map<String, String> headers,
+    Uint8List? data,
+    Map<String, String>? headers,
   }) async {
     final response = await _client.send(http.Request(method, Uri.parse(url))
       ..followRedirects = false

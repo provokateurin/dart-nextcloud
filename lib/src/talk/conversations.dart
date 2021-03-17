@@ -12,8 +12,8 @@ class ConversationManagement {
     _baseUrl = url;
   }
 
-  String _baseUrl;
-  Network _network;
+  late String _baseUrl;
+  late Network _network;
 
   String _getUrl(String path) => '$_baseUrl/$path';
 
@@ -38,9 +38,9 @@ class ConversationManagement {
   /// The [name] is the conversation name (Not available for [ConversationType.oneToOne])
   Future<String> createConversation(
     ConversationType type, {
-    String invite,
+    String? invite,
     ParticipantSource source = ParticipantSource.users,
-    String name,
+    String? name,
   }) async {
     assert(
       type != ConversationType.changelog || name == null,
@@ -282,7 +282,7 @@ class ConversationManagement {
   /// (403 error)
   ///
   /// The function returns the session id after joining a conversation
-  Future<String> joinConversation(String token, {String password}) async {
+  Future<String> joinConversation(String token, {String? password}) async {
     final result = await _network.send(
       'POST',
       _getUrl('room/$token/participants/active'),

@@ -20,10 +20,8 @@ class ShareesClient {
     String itemType, {
     bool lookup = false,
   }) async {
-    var url = '$_baseUrl?search=$search&perPage=$perPage&lookup=$lookup';
-    if (itemType != null) {
-      url += '&itemType=$itemType';
-    }
+    final url =
+        '$_baseUrl?search=$search&perPage=$perPage&lookup=$lookup&itemType=$itemType';
     final response = await _network.send('GET', url, [200]);
     return shareesFromShareesXml(response.body);
   }

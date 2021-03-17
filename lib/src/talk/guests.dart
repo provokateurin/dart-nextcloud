@@ -11,8 +11,8 @@ class GuestManagement {
     _baseUrl = url;
   }
 
-  String _baseUrl;
-  Network _network;
+  late String _baseUrl;
+  late Network _network;
 
   String _getUrl(String path) => '$_baseUrl/$path';
 

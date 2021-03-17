@@ -15,10 +15,10 @@ class TalkClient {
     _signalingManagement = SignalingManagement(network, _baseUrl);
   }
 
-  ConversationManagement _conversationManagement;
-  GuestManagement _guestManagement;
-  SignalingManagement _signalingManagement;
-  MessageManagement _messageManagement;
+  late ConversationManagement _conversationManagement;
+  late GuestManagement _guestManagement;
+  late SignalingManagement _signalingManagement;
+  late MessageManagement _messageManagement;
 
   /// ALl management option for talk conversations
   ConversationManagement get conversationManagement => _conversationManagement;

@@ -24,14 +24,14 @@ class SharesClient {
     }
 
     // If the path does not start with '/' append it after the baseUrl
-    return [_baseUrl, path].join('');
+    return [_baseUrl, path].join();
   }
 
   /// Get a list of shares.
   ///
   /// By default it is a list of all shares of the current user
   Future<List<Share>> getShares({
-    String path,
+    String? path,
     bool reshares = false,
     bool subfiles = false,
   }) async {
@@ -110,10 +110,10 @@ class SharesClient {
   Future<Share> _createShare(
     String path,
     int shareType, {
-    String shareWith,
+    String? shareWith,
     bool publicUpload = false,
-    String password,
-    Permissions permissions,
+    String? password,
+    Permissions? permissions,
   }) async {
     // For sharing with user or group the user or group must be defined
     assert(
@@ -141,8 +141,8 @@ class SharesClient {
   Future<Share> shareWithUser(
     String path,
     String user, {
-    Permissions permissions,
-    bool publicUpload,
+    Permissions? permissions,
+    bool publicUpload = false,
   }) =>
       _createShare(
         path,
@@ -156,8 +156,8 @@ class SharesClient {
   Future<Share> shareWithGroup(
     String path,
     String group, {
-    Permissions permissions,
-    bool publicUpload,
+    Permissions? permissions,
+    bool publicUpload = false,
   }) =>
       _createShare(
         path,
@@ -171,9 +171,9 @@ class SharesClient {
   /// This url can be found in the returned [Share.url]
   Future<Share> shareWithPublicLink(
     String path, {
-    Permissions permissions,
-    String password,
-    bool publicUpload,
+    Permissions? permissions,
+    String? password,
+    bool publicUpload = false,
   }) =>
       _createShare(
         path,

@@ -12,8 +12,8 @@ class MessageManagement {
     _baseUrl = url;
   }
 
-  String _baseUrl;
-  Network _network;
+  late String _baseUrl;
+  late Network _network;
 
   String _getUrl(String path) => '$_baseUrl/$path';
 
@@ -35,7 +35,7 @@ class MessageManagement {
   Future<List<Message>> getMessages(
     String token, {
     int max = 100,
-    String lastKnownMessageID,
+    String? lastKnownMessageID,
     bool automaticMarkRead = true,
     bool includeLastKnownMessageId = false,
   }) async {
@@ -90,8 +90,8 @@ class MessageManagement {
   Future waitForMessage(
     String token, {
     int max = 100,
-    Duration timeout,
-    String lastKnownMessageID,
+    Duration timeout = const Duration(seconds: 30),
+    String? lastKnownMessageID,
     bool automaticMarkRead = true,
     bool includeLastKnownMessageId = false,
   }) async {
@@ -135,8 +135,8 @@ class MessageManagement {
   Future<Message> sendMessage(
     String token,
     String message, {
-    String guestDisplayName,
-    int replyTo,
+    String? guestDisplayName,
+    int? replyTo,
   }) async {
     final result = await _network.send(
       'POST',

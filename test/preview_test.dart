@@ -10,7 +10,7 @@ void main() {
 
   group('Preview', () {
     const imageName = 'preview.png';
-    WebDavFile previewFile;
+    late WebDavFile previewFile;
 
     setUpAll(() async {
       await client.webDav.status();
