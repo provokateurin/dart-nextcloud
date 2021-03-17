@@ -18,7 +18,7 @@ void main() {
       expect(await client.talk.conversationManagement.getUserConversations(),
           isNotEmpty);
     });
-    String token;
+    late String token;
     test('Create conversation', () async {
       token = await client.talk.conversationManagement
           .createConversation(ConversationType.group, name: 'Test-group');
@@ -123,7 +123,7 @@ void main() {
         isNotNull,
       );
     });
-    Message message;
+    late Message message;
     test('Send message', () async {
       message = await client.talk.messageManagement.sendMessage(
         token,

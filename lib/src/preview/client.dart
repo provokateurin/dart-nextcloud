@@ -108,8 +108,8 @@ class PreviewClient {
   String _createPreviewUrl(
     int width,
     int height, {
-    String filePath,
-    String fileId,
+    String? filePath,
+    String? fileId,
     bool a = true,
     String mode = 'cover',
     bool forceIcon = false,
@@ -123,7 +123,11 @@ class PreviewClient {
       return '$_baseUrl/index.php/core/preview?fileId=$fileId&$query';
     }
 
-    return '$_baseUrl/index.php/core/preview.png?file=${Uri.encodeQueryComponent(filePath)}&$query';
+    if (filePath != null) {
+      return '$_baseUrl/index.php/core/preview.png?file=${Uri.encodeQueryComponent(filePath)}&$query';
+    }
+    // Never going to happen
+    return '';
   }
 
   /// fetch thumbnail for [remotePath] with provided [width] and [height]

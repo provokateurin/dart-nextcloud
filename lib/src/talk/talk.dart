@@ -1,9 +1,6 @@
 T _toEnumValue<T>(List<T> values, int index, {int first = 1}) {
-  if (index != null) {
-    index -= first;
-    return values[index];
-  }
-  return null;
+  index -= first;
+  return values[index];
 }
 
 List<String> _actors = ['guests', 'users', 'bots'];
@@ -160,17 +157,17 @@ enum LobbyState {
 class Message {
   // ignore: public_member_api_docs
   Message({
-    this.messageType,
-    this.isReplyable,
-    this.id,
-    this.token,
-    this.actorType,
-    this.actorId,
-    this.actorDisplayName,
-    this.timestamp,
-    this.message,
-    this.messageParameters,
-    this.systemMessage,
+    required this.messageType,
+    required this.isReplyable,
+    required this.id,
+    required this.token,
+    required this.actorType,
+    required this.actorId,
+    required this.actorDisplayName,
+    required this.timestamp,
+    required this.message,
+    required this.messageParameters,
+    required this.systemMessage,
   });
 
   // ignore: public_member_api_docs
@@ -187,10 +184,8 @@ class Message {
         message: json['message'] as String,
         messageParameters: json['messageParameters'],
         systemMessage: json['systemMessage'] as String,
-        messageType: json['messageType'] != null
-            ? MessageType
-                .values[_messageTypes.indexOf(json['messageType'] as String)]
-            : null,
+        messageType: MessageType
+            .values[_messageTypes.indexOf(json['messageType'] as String)],
         isReplyable: json['isReplyable'] as bool,
       );
 
@@ -238,16 +233,18 @@ class Message {
 /// A mention suggestion
 class Suggestion {
   // ignore: public_member_api_docs
-  Suggestion({this.id, this.displayName, this.type});
+  Suggestion({
+    required this.id,
+    required this.displayName,
+    required this.type,
+  });
 
   // ignore: public_member_api_docs
   factory Suggestion.fromJson(Map<String, dynamic> json) => Suggestion(
         id: json['id'] as String,
         displayName: json['label'] as String,
-        type: json['source'] != null
-            ? SuggestionType
-                .values[_suggestionTypes.indexOf(json['source'] as String)]
-            : null,
+        type: SuggestionType
+            .values[_suggestionTypes.indexOf(json['source'] as String)],
       );
 
   ///  The user id which should be sent as @<id>in the message
@@ -267,11 +264,11 @@ class Suggestion {
 class Participant {
   // ignore: public_member_api_docs
   Participant({
-    this.userId,
-    this.displayName,
-    this.participantType,
-    this.lastPing,
-    this.sessionId,
+    required this.userId,
+    required this.displayName,
+    required this.participantType,
+    required this.lastPing,
+    required this.sessionId,
   });
 
   // ignore: public_member_api_docs
@@ -313,29 +310,29 @@ class Participant {
 class Conversation {
   // ignore: public_member_api_docs
   Conversation({
-    this.token,
-    this.type,
-    this.name,
-    this.displayName,
-    this.participantType,
-    this.readOnlyState,
-    this.userCount,
-    this.guestCount,
-    this.lastPing,
-    this.sessionId,
-    this.hasPassword,
-    this.hasCall,
-    this.canStartCall,
-    this.lastActivity,
-    this.isFavorite,
-    this.notificationLevel,
-    this.lobbyState,
-    this.unreadMessages,
-    this.unreadMention,
-    this.lastReadMessage,
-    this.lastMessage,
-    this.objectType,
-    this.objectId,
+    required this.token,
+    required this.type,
+    required this.name,
+    required this.displayName,
+    required this.participantType,
+    required this.readOnlyState,
+    required this.userCount,
+    required this.guestCount,
+    required this.lastPing,
+    required this.sessionId,
+    required this.hasPassword,
+    required this.hasCall,
+    required this.canStartCall,
+    required this.lastActivity,
+    required this.isFavorite,
+    required this.notificationLevel,
+    required this.lobbyState,
+    required this.unreadMessages,
+    required this.unreadMention,
+    required this.lastReadMessage,
+    required this.lastMessage,
+    required this.objectType,
+    required this.objectId,
   });
 
   // ignore: public_member_api_docs
@@ -493,29 +490,26 @@ class Room {
 class SignalingSettings {
   // ignore: public_member_api_docs
   SignalingSettings({
-    this.ticket,
+    required this.ticket,
+    required this.stunServerAddresses,
+    required this.turnServers,
     this.externalSignalingServerAddress,
-    this.stunServerAddresses,
-    this.turnServers,
   });
 
   // ignore: public_member_api_docs
   factory SignalingSettings.fromJson(Map<String, dynamic> json) =>
       SignalingSettings(
         ticket: json['ticket'] as String,
-        externalSignalingServerAddress:
-            json['server'].toString() == '[]' ? null : json['server'] as String,
         stunServerAddresses: json['stunservers']
             .map<String>((i) => i['url'].toString())
             .toList() as List<String>,
         turnServers: json['turnservers'] as List,
+        externalSignalingServerAddress:
+            json['server'].toString() == '[]' ? null : json['server'] as String,
       );
 
   /// The ticket for the external signaling server
   final String ticket;
-
-  /// The url to an external signaling server
-  final String externalSignalingServerAddress;
 
   /// The urls to the STUN servers
   final List<String> stunServerAddresses;
@@ -524,4 +518,7 @@ class SignalingSettings {
   ///
   /// Not implemented yet
   final List<dynamic> turnServers;
+
+  /// The url to an external signaling server
+  final String? externalSignalingServerAddress;
 }

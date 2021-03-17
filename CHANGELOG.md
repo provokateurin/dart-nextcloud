@@ -1,3 +1,6 @@
+# v3.0.0
+* Migrate to null-safety
+
 # v2.1.4
 * Update dependencies
 * Update analysis options
