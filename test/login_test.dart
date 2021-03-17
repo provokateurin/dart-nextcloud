@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:browser_launcher/browser_launcher.dart';
 import 'package:nextcloud/nextcloud.dart';
 import 'package:test/test.dart';
 
@@ -26,8 +25,7 @@ void main() {
           defaultHeaders: {HttpHeaders.userAgentHeader: 'dart-nextcloud'},
         );
         final init = await client.login.initLoginFlow();
-        // Linux users might need to create a link: https://github.com/dart-lang/browser_launcher/issues/16
-        await Chrome.start([init.login]);
+        print('Please open: ${init.login}');
         LoginFlowResult _result;
         while (_result == null) {
           try {
