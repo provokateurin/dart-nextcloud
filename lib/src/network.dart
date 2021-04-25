@@ -167,13 +167,15 @@ class Network {
     Uint8List? data,
     Map<String, String>? headers,
   }) async =>
-      http.Response.fromStream(await download(
-        method,
-        url,
-        expectedCodes,
-        data: data,
-        headers: headers,
-      ));
+      http.Response.fromStream(
+        await download(
+          method,
+          url,
+          expectedCodes,
+          data: data,
+          headers: headers,
+        ),
+      );
 
   /// send the request with given [method] and [url]
   Future<http.StreamedResponse> download(
@@ -183,11 +185,13 @@ class Network {
     Uint8List? data,
     Map<String, String>? headers,
   }) async {
-    final response = await _client.send(http.Request(method, Uri.parse(url))
-      ..followRedirects = false
-      ..persistentConnection = true
-      ..bodyBytes = data ?? Uint8List(0)
-      ..headers.addAll(headers ?? {}));
+    final response = await _client.send(
+      http.Request(method, Uri.parse(url))
+        ..followRedirects = false
+        ..persistentConnection = true
+        ..bodyBytes = data ?? Uint8List(0)
+        ..headers.addAll(headers ?? {}),
+    );
 
     if (!expectedCodes.contains(response.statusCode)) {
       final r = await http.Response.fromStream(response);

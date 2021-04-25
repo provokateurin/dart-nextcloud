@@ -45,13 +45,17 @@ class MessageManagement {
       'GET',
       _getUrl('chat/$token'),
       [200],
-      data: Uint8List.fromList(utf8.encode(json.encode({
-        'lookIntoFuture': 0,
-        'limit': max,
-        'lastKnownMessageId': lastKnownMessageID,
-        'setReadMarker': automaticMarkRead ? 1 : 0,
-        'includeLastKnown': includeLastKnownMessageId ? 1 : 0,
-      }))),
+      data: Uint8List.fromList(
+        utf8.encode(
+          json.encode({
+            'lookIntoFuture': 0,
+            'limit': max,
+            'lastKnownMessageId': lastKnownMessageID,
+            'setReadMarker': automaticMarkRead ? 1 : 0,
+            'includeLastKnown': includeLastKnownMessageId ? 1 : 0,
+          }),
+        ),
+      ),
     );
     return json
         .decode(result.body)['ocs']['data']
@@ -64,9 +68,13 @@ class MessageManagement {
         'POST',
         _getUrl('chat/$token/read'),
         [200],
-        data: Uint8List.fromList(utf8.encode(json.encode({
-          'lastReadMessage': lastReadMessageId,
-        }))),
+        data: Uint8List.fromList(
+          utf8.encode(
+            json.encode({
+              'lastReadMessage': lastReadMessageId,
+            }),
+          ),
+        ),
       );
 
   /// Get future messages
@@ -97,21 +105,27 @@ class MessageManagement {
   }) async {
     assert(max <= 200, 'The max count must not be more than 200 hundred!');
     assert(timeout.inSeconds <= 60, 'The max timeout is 60 seconds!');
-    assert(false,
-        'This function does not work jet, please implement it and create a PR');
+    assert(
+      false,
+      'This function does not work jet, please implement it and create a PR',
+    );
 
     final result = await _network.download(
       'GET',
       _getUrl('chat/$token'),
       [200],
-      data: Uint8List.fromList(utf8.encode(json.encode({
-        'lookIntoFuture': 1,
-        'timeout': timeout.inSeconds,
-        'limit': max,
-        'lastKnownMessageId': lastKnownMessageID,
-        'setReadMarker': automaticMarkRead ? 1 : 0,
-        'includeLastKnown': includeLastKnownMessageId ? 1 : 0,
-      }))),
+      data: Uint8List.fromList(
+        utf8.encode(
+          json.encode({
+            'lookIntoFuture': 1,
+            'timeout': timeout.inSeconds,
+            'limit': max,
+            'lastKnownMessageId': lastKnownMessageID,
+            'setReadMarker': automaticMarkRead ? 1 : 0,
+            'includeLastKnown': includeLastKnownMessageId ? 1 : 0,
+          }),
+        ),
+      ),
     );
 
     // ignore: prefer_foreach
@@ -142,11 +156,15 @@ class MessageManagement {
       'POST',
       _getUrl('chat/$token'),
       [201],
-      data: Uint8List.fromList(utf8.encode(json.encode({
-        'message': message,
-        if (replyTo != null) 'replyTo': replyTo,
-        if (guestDisplayName != null) 'actorDisplayName': guestDisplayName,
-      }))),
+      data: Uint8List.fromList(
+        utf8.encode(
+          json.encode({
+            'message': message,
+            if (replyTo != null) 'replyTo': replyTo,
+            if (guestDisplayName != null) 'actorDisplayName': guestDisplayName,
+          }),
+        ),
+      ),
     );
     return Message.fromJson(
       json.decode(result.body)['ocs']['data'] as Map<String, dynamic>,
@@ -170,15 +188,20 @@ class MessageManagement {
       'GET',
       _getUrl('chat/$token/mentions'),
       [200],
-      data: Uint8List.fromList(utf8.encode(json.encode({
-        'search': search,
-        'limit': max,
-      }))),
+      data: Uint8List.fromList(
+        utf8.encode(
+          json.encode({
+            'search': search,
+            'limit': max,
+          }),
+        ),
+      ),
     );
     return json
         .decode(result.body)['ocs']['data']
         .map<Suggestion>(
-            (json) => Suggestion.fromJson(json as Map<String, dynamic>))
+          (json) => Suggestion.fromJson(json as Map<String, dynamic>),
+        )
         .toList() as List<Suggestion>;
   }
 }

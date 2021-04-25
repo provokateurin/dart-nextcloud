@@ -478,7 +478,8 @@ class Room {
   factory Room.fromJson(List<dynamic> json) => Room(
         json
             .map<Conversation>(
-                (e) => Conversation.fromJson(e as Map<String, dynamic>))
+              (e) => Conversation.fromJson(e as Map<String, dynamic>),
+            )
             .toList(),
       );
 

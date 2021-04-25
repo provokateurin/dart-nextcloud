@@ -15,8 +15,10 @@ void main() {
       );
     });
     test('Get conversations', () async {
-      expect(await client.talk.conversationManagement.getUserConversations(),
-          isNotEmpty);
+      expect(
+        await client.talk.conversationManagement.getUserConversations(),
+        isNotEmpty,
+      );
     });
     late String token;
     test('Create conversation', () async {
@@ -35,19 +37,24 @@ void main() {
     });
     test('Rename conversation', () async {
       expect(
-          await client.talk.conversationManagement.renameConversation(
-            token,
-            'Test-group-2',
-          ),
-          isNull);
+        await client.talk.conversationManagement.renameConversation(
+          token,
+          'Test-group-2',
+        ),
+        isNull,
+      );
     });
     test('Allow guests', () async {
       expect(
-          await client.talk.conversationManagement.allowGuests(token), isNull);
+        await client.talk.conversationManagement.allowGuests(token),
+        isNull,
+      );
     });
     test('Disallow guests', () async {
-      expect(await client.talk.conversationManagement.disallowGuests(token),
-          isNull);
+      expect(
+        await client.talk.conversationManagement.disallowGuests(token),
+        isNull,
+      );
     });
     test('Read-only', () async {
       expect(
@@ -161,8 +168,10 @@ void main() {
       );
     });
     test('Delete conversation', () async {
-      expect(await client.talk.conversationManagement.deleteConversation(token),
-          isNull);
+      expect(
+        await client.talk.conversationManagement.deleteConversation(token),
+        isNull,
+      );
     });
   });
 }

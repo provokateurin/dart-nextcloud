@@ -24,9 +24,13 @@ class GuestManagement {
       'POST',
       _getUrl('guest/$sessionId/name'),
       [200],
-      data: Uint8List.fromList(utf8.encode(json.encode({
-        'displayName': displayName,
-      }))),
+      data: Uint8List.fromList(
+        utf8.encode(
+          json.encode({
+            'displayName': displayName,
+          }),
+        ),
+      ),
     );
   }
 }

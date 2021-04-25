@@ -26,7 +26,8 @@ void main() {
         );
         final init = await client.login.initLoginFlow();
         print(
-            "Please open ${init.login} and login as '${Config.username}' with '${Config.password}'");
+          "Please open ${init.login} and login as '${Config.username}' with '${Config.password}'",
+        );
         LoginFlowResult? _result;
         while (_result == null) {
           try {
