@@ -241,6 +241,14 @@ void main() {
       expect(file.getOtherProp('custom', customNamespaces.keys.elementAt(1)),
           'test-custom-prop-value');
     });
+    test('Folders with URL like parts work', () async {
+      await client.webDav.mkdir(':443');
+      await client.webDav.upload(
+        File('test/files/test.png').readAsBytesSync(),
+        ':443/test.png',
+      );
+      expect((await client.webDav.ls(':443'))[0].name, 'test.png');
+    });
   });
 
   group('WebDavFile', () {

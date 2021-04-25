@@ -1,3 +1,6 @@
+# v3.0.1
+* Fix URL like paths
+
 # v3.0.0
 * Migrate to null-safety
 

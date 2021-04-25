@@ -74,9 +74,8 @@ class WebDavFile {
 
   /// Returns the decoded name of the file / folder without the whole path
   String get name {
-    // normalised path (remove trailing slash)
-    final end = path.endsWith('/') ? path.length - 1 : path.length;
-    return Uri.parse(path, 0, end).pathSegments.last;
+    final _path = path.substring(0, path.length - (path.endsWith('/') ? 1 : 0));
+    return Uri(path: _path).pathSegments.last;
   }
 
   /// Returns if the file is a directory
