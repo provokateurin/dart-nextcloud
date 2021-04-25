@@ -42,9 +42,13 @@ class LoginClient {
       'POST',
       init.endpoint, // Should be the same as '$_baseUrl/poll'
       [200],
-      data: Uint8List.fromList(utf8.encode(json.encode({
-        'token': init.token,
-      }))),
+      data: Uint8List.fromList(
+        utf8.encode(
+          json.encode({
+            'token': init.token,
+          }),
+        ),
+      ),
     );
     final data = json.decode(response.body);
     return LoginFlowResult(

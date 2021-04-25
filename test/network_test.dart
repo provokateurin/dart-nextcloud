@@ -16,6 +16,7 @@ void main() {
   test/network_test.dart 19:27                                 main.<fn>.<fn>
    */
   return;
+  // ignore: dead_code
   group('Network', () {
     final httpClientMock = HttpClientMock();
     final httpRequest = Request('GET', Uri.https('test', ''));

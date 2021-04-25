@@ -80,7 +80,8 @@ class SharesClient {
   /// Updates the expire date of a share
   Future<Share> updateShareExpireDate(int id, DateTime expireDate) async {
     final url = _getUrl(
-        '/shares/$id?expireDate=${expireDate.year}-${expireDate.month}-${expireDate.day}');
+      '/shares/$id?expireDate=${expireDate.year}-${expireDate.month}-${expireDate.day}',
+    );
     final response = await _network.send('PUT', url, [200]);
     return shareFromRequestResponseXml(response.body);
   }
@@ -127,7 +128,8 @@ class SharesClient {
     }
     permissions ??= Permissions([Permission.all]);
     var url = _getUrl(
-        '/shares?path=$path&shareType=$shareType&publicUpload=$publicUpload&permissions=${permissions.toInt()}');
+      '/shares?path=$path&shareType=$shareType&publicUpload=$publicUpload&permissions=${permissions.toInt()}',
+    );
     if (shareType == ShareTypes.user || shareType == ShareTypes.group) {
       url += '&shareWith=$shareWith';
     } else if (shareType == ShareTypes.publicLink && password != null) {

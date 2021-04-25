@@ -29,8 +29,11 @@ Future main() async {
 
     // Sharing example
     print('Share file:');
-    final share = await client.shares.shareWithUser('/test.txt', 'USER',
-        permissions: Permissions([Permission.read, Permission.update]));
+    final share = await client.shares.shareWithUser(
+      '/test.txt',
+      'USER',
+      permissions: Permissions([Permission.read, Permission.update]),
+    );
     print(share);
     print('List shared files');
     print((await client.shares.getShares(path: '/test.txt')).join('\n'));
@@ -40,7 +43,8 @@ Future main() async {
     print('Delete share');
     await client.shares.deleteShare(share.id);
     print(
-        'List shared files: ${(await client.shares.getShares(path: '/test.txt')).length}');
+      'List shared files: ${(await client.shares.getShares(path: '/test.txt')).length}',
+    );
 
     print('Download /test.txt ...');
     final downloadedData = await client.webDav.downloadStream('/test.txt');

@@ -37,17 +37,21 @@ void main() {
     });
     test('Upload files', () async {
       expect(
-          (await client.webDav.upload(
-                  File('test/files/test.png').readAsBytesSync(),
-                  '$testDir/test.png'))
-              .statusCode,
-          equals(201));
+        (await client.webDav.upload(
+          File('test/files/test.png').readAsBytesSync(),
+          '$testDir/test.png',
+        ))
+            .statusCode,
+        equals(201),
+      );
       expect(
-          (await client.webDav.upload(
-                  File('test/files/test.txt').readAsBytesSync(),
-                  '$testDir/test.txt'))
-              .statusCode,
-          equals(201));
+        (await client.webDav.upload(
+          File('test/files/test.txt').readAsBytesSync(),
+          '$testDir/test.txt',
+        ))
+            .statusCode,
+        equals(201),
+      );
       final files = await client.webDav.ls(testDir);
       expect(files.length, equals(2));
       expect(files.where((f) => f.name == 'test.png').length, 1);
@@ -65,8 +69,11 @@ void main() {
       final file = files.singleWhere((f) => f.name == 'list-test.txt');
       expect(file.isDirectory, false);
       expect(file.name, 'list-test.txt');
-      expect(startTime.isBefore(file.lastModified), isTrue,
-          reason: 'Expected $startTime < ${file.lastModified}');
+      expect(
+        startTime.isBefore(file.lastModified),
+        isTrue,
+        reason: 'Expected $startTime < ${file.lastModified}',
+      );
       expect(file.mimeType, 'text/plain');
       expect(file.path, path);
       expect(file.shareTypes, []);
@@ -88,10 +95,10 @@ void main() {
       await client.webDav.upload(Uint8List.fromList(data), path);
 
       expect(
-          () =>
-              client.webDav.copy('$testDir/test.txt', '$testDir/copy-test.txt'),
-          // ignore: avoid_types_on_closure_parameters
-          throwsA(predicate((RequestException e) => e.statusCode == 412)));
+        () => client.webDav.copy('$testDir/test.txt', '$testDir/copy-test.txt'),
+        // ignore: avoid_types_on_closure_parameters
+        throwsA(predicate((RequestException e) => e.statusCode == 412)),
+      );
     });
     test('Copy file (overwrite)', () async {
       const path = '$testDir/copy-test.txt';
@@ -118,10 +125,10 @@ void main() {
       await client.webDav.upload(Uint8List.fromList(data), path);
 
       expect(
-          () =>
-              client.webDav.move('$testDir/test.txt', '$testDir/move-test.txt'),
-          // ignore: avoid_types_on_closure_parameters
-          throwsA(predicate((RequestException e) => e.statusCode == 412)));
+        () => client.webDav.move('$testDir/test.txt', '$testDir/move-test.txt'),
+        // ignore: avoid_types_on_closure_parameters
+        throwsA(predicate((RequestException e) => e.statusCode == 412)),
+      );
     });
     test('Move file (overwrite)', () async {
       const path = '$testDir/move-test.txt';
@@ -141,10 +148,16 @@ void main() {
       final file = await client.webDav.getProps(path);
       expect(file.isDirectory, false);
       expect(file.name, 'prop-test.txt');
-      expect(file.lastModified.isAfter(startTime), isTrue,
-          reason: 'Expected lastModified: $startTime < ${file.lastModified}');
-      expect(file.uploadedDate.isAfter(startTime), isTrue,
-          reason: 'Expected uploadedDate: $startTime < ${file.uploadedDate}');
+      expect(
+        file.lastModified.isAfter(startTime),
+        isTrue,
+        reason: 'Expected lastModified: $startTime < ${file.lastModified}',
+      );
+      expect(
+        file.uploadedDate.isAfter(startTime),
+        isTrue,
+        reason: 'Expected uploadedDate: $startTime < ${file.uploadedDate}',
+      );
       expect(file.mimeType, 'text/plain');
       expect(file.path, path);
       expect(file.shareTypes, isEmpty);
@@ -166,10 +179,14 @@ void main() {
       const path = '$testDir/prop-test.txt';
       final file = await client.webDav.getProps(path);
 
-      expect(file.getOtherProp('oc:comments-count', 'http://owncloud.org/ns'),
-          '0');
-      expect(file.getOtherProp('nc:has-preview', 'http://nextcloud.org/ns'),
-          'true');
+      expect(
+        file.getOtherProp('oc:comments-count', 'http://owncloud.org/ns'),
+        '0',
+      );
+      expect(
+        file.getOtherProp('nc:has-preview', 'http://nextcloud.org/ns'),
+        'true',
+      );
     });
     test('Filter files', () async {
       const path = '$testDir/filter-test.txt';
@@ -182,13 +199,17 @@ void main() {
       await client.webDav.updateProps(path, {WebDavProps.ocFavorite: '1'});
 
       // Find favorites
-      final files = await client.webDav.filter(testDir, {
-        WebDavProps.ocFavorite: '1',
-      }, props: {
-        WebDavProps.ocId,
-        WebDavProps.ocFileId,
-        WebDavProps.ocFavorite,
-      });
+      final files = await client.webDav.filter(
+        testDir,
+        {
+          WebDavProps.ocFavorite: '1',
+        },
+        props: {
+          WebDavProps.ocId,
+          WebDavProps.ocFileId,
+          WebDavProps.ocFavorite,
+        },
+      );
       final file = files.singleWhere((e) => e.name == 'filter-test.txt');
       expect(file.favorite, isTrue);
       expect(file.id, id);
@@ -205,8 +226,11 @@ void main() {
 
       final file = await client.webDav.getProps(path);
       expect(file.favorite, isTrue);
-      expect(file.createdDate.isAtSameMomentAs(createdDate), isTrue,
-          reason: 'Expected same time: $createdDate = ${file.createdDate}');
+      expect(
+        file.createdDate.isAtSameMomentAs(createdDate),
+        isTrue,
+        reason: 'Expected same time: $createdDate = ${file.createdDate}',
+      );
       expect(file.uploadedDate, isNotNull);
     });
     test('Set custom properties', () async {
@@ -226,20 +250,29 @@ void main() {
       });
       expect(updated, isTrue);
 
-      final file = await client.webDav.getProps(path, props: {
-        'd:getlastmodified',
-        'oc:fileid',
-        'le:custom',
-        'le:custom2',
-        'test:custom',
-      });
+      final file = await client.webDav.getProps(
+        path,
+        props: {
+          'd:getlastmodified',
+          'oc:fileid',
+          'le:custom',
+          'le:custom2',
+          'test:custom',
+        },
+      );
       expect(file.name, 'prop-test.txt');
-      expect(file.getOtherProp('custom', customNamespaces.keys.first),
-          'le-custom-prop-value');
-      expect(file.getOtherProp('custom2', customNamespaces.keys.first),
-          'le-custom-prop-value2');
-      expect(file.getOtherProp('custom', customNamespaces.keys.elementAt(1)),
-          'test-custom-prop-value');
+      expect(
+        file.getOtherProp('custom', customNamespaces.keys.first),
+        'le-custom-prop-value',
+      );
+      expect(
+        file.getOtherProp('custom2', customNamespaces.keys.first),
+        'le-custom-prop-value2',
+      );
+      expect(
+        file.getOtherProp('custom', customNamespaces.keys.elementAt(1)),
+        'test-custom-prop-value',
+      );
     });
   });
 

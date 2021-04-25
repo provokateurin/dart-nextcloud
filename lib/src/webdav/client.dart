@@ -177,7 +177,8 @@ class WebDavClient {
 
   /// download [remotePath] and returns a stream with the received bytes
   Future<http.ByteStream> downloadStreamDirectoryAsZip(
-      String remotePath) async {
+    String remotePath,
+  ) async {
     final url =
         '$_baseUrl/index.php/apps/files/ajax/download.php?dir=$remotePath';
     return (await _network.download(
@@ -191,23 +192,31 @@ class WebDavClient {
   /// list the directories and files under given [remotePath].
   ///
   /// Optionally populates the given [props] on the returned files.
-  Future<List<WebDavFile>> ls(String remotePath,
-      {Set<String> props = const {
-        WebDavProps.davContentLength,
-        WebDavProps.davContentType,
-        WebDavProps.davLastModified,
-        WebDavProps.ocId,
-        WebDavProps.ocShareTypes,
-      }}) async {
+  Future<List<WebDavFile>> ls(
+    String remotePath, {
+    Set<String> props = const {
+      WebDavProps.davContentLength,
+      WebDavProps.davContentType,
+      WebDavProps.davLastModified,
+      WebDavProps.ocId,
+      WebDavProps.ocShareTypes,
+    },
+  }) async {
     final builder = XmlBuilder();
     builder
       ..processing('xml', 'version="1.0"')
-      ..element('d:propfind', nest: () {
-        namespaces.forEach(builder.namespace);
-        builder.element('d:prop', nest: () {
-          props.forEach(builder.element);
-        });
-      });
+      ..element(
+        'd:propfind',
+        nest: () {
+          namespaces.forEach(builder.namespace);
+          builder.element(
+            'd:prop',
+            nest: () {
+              props.forEach(builder.element);
+            },
+          );
+        },
+      );
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _send(
       'PROPFIND',
@@ -237,20 +246,32 @@ class WebDavClient {
     final builder = XmlBuilder();
     builder
       ..processing('xml', 'version="1.0"')
-      ..element('oc:filter-files', nest: () {
-        namespaces.forEach(builder.namespace);
-        builder
-          ..element('oc:filter-rules', nest: () {
-            propFilters.forEach((key, value) {
-              builder.element(key, nest: () {
-                builder.text(value);
-              });
-            });
-          })
-          ..element('d:prop', nest: () {
-            props.forEach(builder.element);
-          });
-      });
+      ..element(
+        'oc:filter-files',
+        nest: () {
+          namespaces.forEach(builder.namespace);
+          builder
+            ..element(
+              'oc:filter-rules',
+              nest: () {
+                propFilters.forEach((key, value) {
+                  builder.element(
+                    key,
+                    nest: () {
+                      builder.text(value);
+                    },
+                  );
+                });
+              },
+            )
+            ..element(
+              'd:prop',
+              nest: () {
+                props.forEach(builder.element);
+              },
+            );
+        },
+      );
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _send(
       'REPORT',
@@ -276,12 +297,18 @@ class WebDavClient {
     final builder = XmlBuilder();
     builder
       ..processing('xml', 'version="1.0"')
-      ..element('d:propfind', nest: () {
-        namespaces.forEach(builder.namespace);
-        builder.element('d:prop', nest: () {
-          props.forEach(builder.element);
-        });
-      });
+      ..element(
+        'd:propfind',
+        nest: () {
+          namespaces.forEach(builder.namespace);
+          builder.element(
+            'd:prop',
+            nest: () {
+              props.forEach(builder.element);
+            },
+          );
+        },
+      );
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _send(
       'PROPFIND',
@@ -301,18 +328,30 @@ class WebDavClient {
     final builder = XmlBuilder();
     builder
       ..processing('xml', 'version="1.0"')
-      ..element('d:propertyupdate', nest: () {
-        namespaces.forEach(builder.namespace);
-        builder.element('d:set', nest: () {
-          builder.element('d:prop', nest: () {
-            props.forEach((key, value) {
-              builder.element(key, nest: () {
-                builder.text(value);
-              });
-            });
-          });
-        });
-      });
+      ..element(
+        'd:propertyupdate',
+        nest: () {
+          namespaces.forEach(builder.namespace);
+          builder.element(
+            'd:set',
+            nest: () {
+              builder.element(
+                'd:prop',
+                nest: () {
+                  props.forEach((key, value) {
+                    builder.element(
+                      key,
+                      nest: () {
+                        builder.text(value);
+                      },
+                    );
+                  });
+                },
+              );
+            },
+          );
+        },
+      );
     final data = utf8.encode(builder.buildDocument().toString());
     final response = await _send(
       'PROPPATCH',
