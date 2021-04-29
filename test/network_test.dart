@@ -36,6 +36,8 @@ void main() {
 
     test('should add defaultHeaders to request', () async {
       final network = NextCloudHttpClient(
+        null,
+        null,
         authString,
         {
           HttpHeaders.userAgentHeader: userAgent,
@@ -50,6 +52,8 @@ void main() {
 
     test('should not override library headers', () async {
       final network = NextCloudHttpClient(
+        null,
+        null,
         authString,
         {
           HttpHeaders.authorizationHeader: 'wrong',
@@ -66,6 +70,8 @@ void main() {
     test('should ignore case-sensitivity of defaultHeader keys', () async {
       final authKey = HttpHeaders.userAgentHeader.toUpperCase();
       final network = NextCloudHttpClient(
+        null,
+        null,
         authString,
         {
           authKey: 'wrong',
@@ -81,5 +87,7 @@ void main() {
       //this test will catch if someone replaces map with a case sensitve map
       expect(httpRequest.headers[authKey], userAgent);
     });
+
+    // TODO: Add tests for AppType and language
   });
 }
