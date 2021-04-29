@@ -1,3 +1,5 @@
+import 'package:nextcloud/src/notifications/client.dart';
+
 import '../nextcloud.dart';
 import 'network.dart';
 
@@ -34,6 +36,7 @@ class NextCloudClient {
     _autocompleteClient = AutocompleteClient(baseUrl, network);
     _previewClient = PreviewClient(baseUrl, network);
     _login = LoginClient(baseUrl, network);
+    _notificationsClient = NotificationsClient(baseUrl, network);
   }
 
   /// Constructs a new [NextCloudClient] which will use the provided [username]
@@ -117,6 +120,7 @@ class NextCloudClient {
   late AutocompleteClient _autocompleteClient;
   late PreviewClient _previewClient;
   late LoginClient _login;
+  late NotificationsClient _notificationsClient;
 
   // ignore: public_member_api_docs
   WebDavClient get webDav => _webDavClient;
@@ -147,4 +151,7 @@ class NextCloudClient {
 
   // ignore: public_member_api_docs
   LoginClient get login => _login;
+
+  // ignore: public_member_api_docs
+  NotificationsClient get notifications => _notificationsClient;
 }
