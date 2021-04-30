@@ -103,6 +103,10 @@ enum ParticipantType {
 
 /// The notification level for a conversation
 enum NotificationLevel {
+  /// Default level
+  // ignore: constant_identifier_names
+  default_,
+
   /// Get all notifications (One-to-one conversation default)
   always,
 
