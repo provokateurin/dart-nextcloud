@@ -217,7 +217,7 @@ class ConversationManagement {
       data: Uint8List.fromList(
         utf8.encode(
           json.encode({
-            'level': level.index + 1,
+            'level': level.index,
           }),
         ),
       ),

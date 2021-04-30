@@ -103,6 +103,10 @@ enum ParticipantType {
 
 /// The notification level for a conversation
 enum NotificationLevel {
+  /// Default level
+  // ignore: constant_identifier_names
+  default_,
+
   /// Get all notifications (One-to-one conversation default)
   always,
 
@@ -180,7 +184,7 @@ class Message {
         timestamp: DateTime.fromMillisecondsSinceEpoch(
           (json['timestamp'] as int) * 1000,
           isUtc: true,
-        ),
+        ).toLocal(),
         message: json['message'] as String,
         messageParameters: json['messageParameters'],
         systemMessage: json['systemMessage'] as String,
@@ -282,7 +286,7 @@ class Participant {
         lastPing: DateTime.fromMillisecondsSinceEpoch(
           (json['lastPing'] as int) * 1000,
           isUtc: true,
-        ),
+        ).toLocal(),
         sessionId: json['sessionId'] as String,
       );
 
@@ -358,7 +362,7 @@ class Conversation {
         lastPing: DateTime.fromMillisecondsSinceEpoch(
           (json['lastPing'] as int) * 1000,
           isUtc: true,
-        ),
+        ).toLocal(),
         sessionId: json['sessionId'] as String,
         hasPassword: json['hasPassword'] as bool,
         hasCall: json['hasCall'] as bool,

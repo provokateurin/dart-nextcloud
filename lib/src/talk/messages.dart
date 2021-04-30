@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import '../../nextcloud.dart';
 import '../network.dart';
@@ -31,11 +30,11 @@ class MessageManagement {
   /// must be set to true.
   ///
   /// The [automaticMarkRead] property sets if the fetched messages should
-  /// marked as read, or the client do this by itself
+  /// marked as read, or the client does it by itself
   Future<List<Message>> getMessages(
     String token, {
     int max = 100,
-    String? lastKnownMessageID,
+    int? lastKnownMessageID,
     bool automaticMarkRead = true,
     bool includeLastKnownMessageId = false,
   }) async {
@@ -43,19 +42,19 @@ class MessageManagement {
 
     final result = await _network.send(
       'GET',
-      _getUrl('chat/$token'),
-      [200],
-      data: Uint8List.fromList(
-        utf8.encode(
-          json.encode({
-            'lookIntoFuture': 0,
-            'limit': max,
-            'lastKnownMessageId': lastKnownMessageID,
-            'setReadMarker': automaticMarkRead ? 1 : 0,
-            'includeLastKnown': includeLastKnownMessageId ? 1 : 0,
-          }),
-        ),
+      _getUrl(
+        'chat/$token?${Uri(
+          queryParameters: {
+            'lookIntoFuture': '0',
+            'limit': max.toString(),
+            if (lastKnownMessageID != null)
+              'lastKnownMessageId': lastKnownMessageID.toString(),
+            'setReadMarker': automaticMarkRead ? '1' : '0',
+            'includeLastKnown': includeLastKnownMessageId ? '1' : '0',
+          },
+        ).query}',
       ),
+      [200],
     );
     return json
         .decode(result.body)['ocs']['data']
@@ -66,15 +65,14 @@ class MessageManagement {
   /// Mark a chat as read
   Future markAsRead(String token, int lastReadMessageId) => _network.send(
         'POST',
-        _getUrl('chat/$token/read'),
-        [200],
-        data: Uint8List.fromList(
-          utf8.encode(
-            json.encode({
-              'lastReadMessage': lastReadMessageId,
-            }),
-          ),
+        _getUrl(
+          'chat/$token/read?${Uri(
+            queryParameters: {
+              'lastReadMessage': lastReadMessageId.toString(),
+            },
+          ).query}',
         ),
+        [200],
       );
 
   /// Get future messages
@@ -99,7 +97,7 @@ class MessageManagement {
     String token, {
     int max = 100,
     Duration timeout = const Duration(seconds: 30),
-    String? lastKnownMessageID,
+    int? lastKnownMessageID,
     bool automaticMarkRead = true,
     bool includeLastKnownMessageId = false,
   }) async {
@@ -107,25 +105,25 @@ class MessageManagement {
     assert(timeout.inSeconds <= 60, 'The max timeout is 60 seconds!');
     assert(
       false,
-      'This function does not work jet, please implement it and create a PR',
+      'This function does not work yet, please implement it and create a PR',
     );
 
     final result = await _network.download(
       'GET',
-      _getUrl('chat/$token'),
-      [200],
-      data: Uint8List.fromList(
-        utf8.encode(
-          json.encode({
+      _getUrl(
+        'chat/$token?${Uri(
+          queryParameters: {
             'lookIntoFuture': 1,
-            'timeout': timeout.inSeconds,
-            'limit': max,
-            'lastKnownMessageId': lastKnownMessageID,
+            'timeout': timeout.inSeconds.toString(),
+            'limit': max.toString(),
+            if (lastKnownMessageID != null)
+              'lastKnownMessageId': lastKnownMessageID,
             'setReadMarker': automaticMarkRead ? 1 : 0,
             'includeLastKnown': includeLastKnownMessageId ? 1 : 0,
-          }),
-        ),
+          },
+        ).query}',
       ),
+      [200],
     );
 
     // ignore: prefer_foreach
@@ -154,17 +152,16 @@ class MessageManagement {
   }) async {
     final result = await _network.send(
       'POST',
-      _getUrl('chat/$token'),
-      [201],
-      data: Uint8List.fromList(
-        utf8.encode(
-          json.encode({
+      _getUrl(
+        'chat/$token?${Uri(
+          queryParameters: {
             'message': message,
-            if (replyTo != null) 'replyTo': replyTo,
+            if (replyTo != null) 'replyTo': replyTo.toString(),
             if (guestDisplayName != null) 'actorDisplayName': guestDisplayName,
-          }),
-        ),
+          },
+        ).query}',
       ),
+      [201],
     );
     return Message.fromJson(
       json.decode(result.body)['ocs']['data'] as Map<String, dynamic>,
@@ -186,16 +183,15 @@ class MessageManagement {
 
     final result = await _network.send(
       'GET',
-      _getUrl('chat/$token/mentions'),
-      [200],
-      data: Uint8List.fromList(
-        utf8.encode(
-          json.encode({
+      _getUrl(
+        'chat/$token/mentions?${Uri(
+          queryParameters: {
             'search': search,
-            'limit': max,
-          }),
-        ),
+            'limit': max.toString(),
+          },
+        ).query}',
       ),
+      [200],
     );
     return json
         .decode(result.body)['ocs']['data']
