@@ -71,6 +71,73 @@ void main() {
       expect(httpRequest.headers[authKey], userAgent);
     });
 
-    // TODO: Add tests for AppType and language
+    test('should set user agent header based on app type', () async {
+      final network = NextCloudHttpClient(
+        AppType.talk,
+        null,
+        authString,
+        {},
+        httpClientMock,
+      );
+      await network.send(httpRequest);
+
+      expect(
+        httpRequest.headers[HttpHeaders.userAgentHeader],
+        AppType.talk.userAgent,
+      );
+    });
+
+    test('should set user agent header based on app type over default header',
+        () async {
+      final network = NextCloudHttpClient(
+        AppType.talk,
+        null,
+        authString,
+        {
+          HttpHeaders.userAgentHeader: 'test',
+        },
+        httpClientMock,
+      );
+      await network.send(httpRequest);
+
+      expect(
+        httpRequest.headers[HttpHeaders.userAgentHeader],
+        AppType.talk.userAgent,
+      );
+    });
+
+    test('should set accept language header based on language', () async {
+      final network = NextCloudHttpClient(
+        null,
+        'de',
+        authString,
+        {},
+        httpClientMock,
+      );
+      await network.send(httpRequest);
+
+      expect(
+        httpRequest.headers[HttpHeaders.acceptLanguage],
+        'de',
+      );
+    });
+
+    test('should not override accept language header if language is set',
+        () async {
+      final network = NextCloudHttpClient(
+        null,
+        'de',
+        authString,
+        {
+          HttpHeaders.acceptLanguage: 'en',
+        },
+        httpClientMock,
+      );
+
+      expect(
+        () async => network.send(httpRequest),
+        throwsA(isA<AssertionError>()),
+      );
+    });
   });
 }
