@@ -1,38 +1,21 @@
 import 'dart:io';
 
 import 'package:http/http.dart';
-import 'package:mockito/mockito.dart';
-import 'package:nextcloud/src/http_client/http_client.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:nextcloud/src/network.dart';
 import 'package:test/test.dart';
 
-class HttpClientMock extends Mock implements HttpClient {}
-
 void main() {
-  /*
-  This test is broken with null-safety for some dubious reason:
-  type 'Null' is not a subtype of type 'Future<StreamedResponse>'
-  package:nextcloud/src/http_client/http_client_io.dart 11:33  HttpClientMock.send
-  test/network_test.dart 19:27                                 main.<fn>.<fn>
-   */
-  return;
-  // ignore: dead_code
   group('Network', () {
-    final httpClientMock = HttpClientMock();
-    final httpRequest = Request('GET', Uri.https('test', ''));
+    final httpClientMock = MockClient(
+      (request) async => http.Response('', HttpStatus.ok),
+    );
+    late Request httpRequest;
     const authString = 'authString';
     const userAgent = 'dart-nextcloud';
 
-    setUpAll(() {
-      when(httpClientMock.send(httpRequest)).thenAnswer(
-        (_) async => StreamedResponse(
-          const Stream.empty(),
-          HttpStatus.ok,
-        ),
-      );
-    });
-
-    setUp(httpRequest.headers.clear);
+    setUp(() => httpRequest = Request('GET', Uri.https('test', '')));
 
     test('should add defaultHeaders to request', () async {
       final network = NextCloudHttpClient(
