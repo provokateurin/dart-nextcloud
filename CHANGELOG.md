@@ -1,3 +1,6 @@
+# v3.0.2
+* Switch license to BSD-3
+
 # v3.0.1
 * Fix URL like paths
 
