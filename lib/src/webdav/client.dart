@@ -126,8 +126,11 @@ class WebDavClient {
     if (path.startsWith('/')) {
       dirs[0] = '/${dirs[0]}';
     }
+
+    final pathBuilder = StringBuffer();
     for (final dir in dirs) {
-      await mkdir(dir);
+      pathBuilder.write('$dir/');
+      await mkdir(pathBuilder.toString());
     }
   }
 
