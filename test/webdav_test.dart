@@ -9,6 +9,7 @@ import 'config.dart';
 
 void main() {
   const testDir = 'dart-nextcloud-tests';
+  const testDirs = '/test1/test2/test3/';
   final client = getClient();
 
   group('WebDav', () {
@@ -31,6 +32,10 @@ void main() {
     });
     test('Create directory', () async {
       expect((await client.webDav.mkdir(testDir)).statusCode, equals(201));
+    });
+    test('Create directories recursively', () async {
+      await client.webDav.mkdirs(testDirs);
+      expect((await client.webDav.ls(testDirs)).length, equals(0));
     });
     test('List directory', () async {
       expect((await client.webDav.ls(testDir)).length, equals(0));
