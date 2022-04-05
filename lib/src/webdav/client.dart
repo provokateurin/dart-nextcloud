@@ -123,11 +123,17 @@ class WebDavClient {
     if (dirs.isEmpty) {
       return;
     }
+    
     if (path.startsWith('/')) {
       dirs[0] = '/${dirs[0]}';
     }
+
+    var folders = "";
     for (final dir in dirs) {
-      await mkdir(dir);
+      folders += '$dir';
+      print(folders);
+      await mkdir(folders);
+      folders += '/';
     }
   }
 

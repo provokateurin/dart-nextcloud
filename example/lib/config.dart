@@ -2,10 +2,10 @@ import 'package:nextcloud/nextcloud.dart';
 
 // ignore: avoid_classes_with_only_static_members
 class Config {
-  static Uri host = Uri.parse('https:files.prayercircle.co.uk');
-  static String username = 'admin';
-  static String password = 'sipmaf-fyzfAw-3morfi';
-  static String email = 'admin@prayercircle.co.uk';
+  static Uri host = Uri.parse('''''''');
+  static String username = 'PPP';
+  static String password = 'PPP';
+  static String email = '""""""""';
 }
 
 NextCloudClient getClient() => NextCloudClient.withCredentials(
