@@ -128,7 +128,6 @@ class WebDavClient {
     }
     var folders = "";
     for (final dir in dirs) {
-      await mkdir(dir);
       folders += '$dir';
       print(folders);
       await mkdir(folders);
