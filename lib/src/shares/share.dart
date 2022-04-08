@@ -31,7 +31,7 @@ class Share {
     required this.shareWithDisplayName,
     required this.mailSend,
     required this.hideDownload,
-    required this.password,
+    this.password,
     required this.url,
   });
 
@@ -114,7 +114,7 @@ class Share {
   final int hideDownload;
 
   /// Password for public link share
-  final String password;
+  final String? password;
 
   /// Url for public link share
   final String url;
@@ -347,7 +347,7 @@ Share shareFromShareMap(Map element) {
   final shareWithDisplayName =element['share_with_displayname'];
   final mailSend = element['mail_send'];
   final hideDownload = element['hide_download'];
-  final password = element['password'];
+  final password = element['password'] ?? '';
   final url = element['url'];
 
   final permissionsNumber = element['permissions'];
