@@ -34,7 +34,7 @@ class SharesClient {
   Future<List<Share>> getShares({
     String? path,
     bool reshares = false,
-    bool subfiles = false,
+    bool subfiles = true,
   }) async {
     var url = _getUrl('/shares?reshares=$reshares&subfiles=$subfiles');
     if (path != null) {
