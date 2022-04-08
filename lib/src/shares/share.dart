@@ -54,7 +54,7 @@ class Share {
   final int stime;
 
   // ignore: public_member_api_docs
-  final String parent;
+  final String? parent;
 
   // ignore: public_member_api_docs
   final DateTime? expiration;
