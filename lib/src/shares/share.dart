@@ -328,7 +328,7 @@ Share shareFromShareMap(Map element) {
   final uidOwner = element['uid_owner'];
   final displaynameOwner =element['displayname_owner'];
   final parent = element['parent'];
-  final expiration = DateTime.parse(element['expiration']);
+  final expiration = DateTime.parse(element['expiration']?? DateTime.now().toIso8601String());
   final token = element['token'];
   final uidFileOwner = element['uid_file_owner'];
   final note = element['note'];
@@ -343,7 +343,7 @@ Share shareFromShareMap(Map element) {
   final fileSource =element['file_source'];
   final fileParent =element['file_parent'];
   final fileTarget = element['file_target'];
-  final shareWith = element['share_with'];
+  final shareWith = element['share_with'] ?? '';
   final shareWithDisplayName =element['share_with_displayname'];
   final mailSend = element['mail_send'];
   final hideDownload = element['hide_download'];
