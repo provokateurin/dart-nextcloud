@@ -1,4 +1,5 @@
 import 'package:xml/xml.dart' as xml;
+import 'dart:convert';
 
 /// Share class
 class Share {
@@ -11,7 +12,7 @@ class Share {
     required this.permissions,
     required this.stime,
     required this.parent,
-    required this.expiration,
+    this.expiration,
     required this.token,
     required this.uidFileOwner,
     required this.note,
@@ -56,7 +57,7 @@ class Share {
   final String parent;
 
   // ignore: public_member_api_docs
-  final DateTime expiration;
+  final DateTime? expiration;
 
   // ignore: public_member_api_docs
   final String token;
@@ -101,7 +102,7 @@ class Share {
   final String fileTarget;
 
   // ignore: public_member_api_docs
-  final String shareWith;
+  final String? shareWith;
 
   // ignore: public_member_api_docs
   final String shareWithDisplayName;
@@ -235,12 +236,14 @@ List<Share> sharesFromSharesXml(String xmlStr) {
 
 /// Converts the shares xml to a list of share objects
 Share shareFromRequestResponseXml(String xmlStr) {
-  // parse the xml using the xml.XmlDocument.parse method
-  final xmlDocument = xml.XmlDocument.parse(xmlStr);
+  final Map<String, dynamic> map = json.decode(xmlStr);
+  // // parse the xml using the xml.XmlDocument.parse method
+  // final xmlDocument = xml.XmlDocument.parse(xmlStr);
 
-  // Get the created share
-  final response = xmlDocument.findAllElements('data').single;
-  return shareFromShareXml(response);
+  // // Get the created share
+  // final response = xmlDocument.findAllElements('data').single;
+  // return shareFromShareXml(response);
+  return shareFromShareMap(map['ocs']['data']);
 }
 
 /// Converts a share xml a a share object
@@ -284,6 +287,70 @@ Share shareFromShareXml(xml.XmlElement element) {
 
   final permissionsNumber =
       int.parse(element.findAllElements('permissions').single.text);
+  final permissions = Permissions.fromInt(permissionsNumber);
+
+  return Share(
+    id: id,
+    shareType: shareType,
+    uidOwner: uidOwner,
+    displaynameOwner: displaynameOwner,
+    permissions: permissions,
+    stime: stime,
+    parent: parent,
+    expiration: expiration,
+    token: token,
+    uidFileOwner: uidFileOwner,
+    note: note,
+    label: label,
+    displaynameFileOwner: displaynameFileOwner,
+    path: path,
+    itemType: itemType,
+    mimeType: mimeType,
+    storageId: storageId,
+    storage: storage,
+    itemSource: itemSource,
+    fileSource: fileSource,
+    fileParent: fileParent,
+    fileTarget: fileTarget,
+    shareWith: shareWith,
+    shareWithDisplayName: shareWithDisplayName,
+    mailSend: mailSend,
+    hideDownload: hideDownload,
+    password: password,
+    url: url,
+  );
+}
+
+Share shareFromShareMap(Map element) {
+  final id = int.parse(element['id']);
+  final shareType = element['share_type'];
+  final stime = element['stime'];
+  final uidOwner = element['uid_owner'];
+  final displaynameOwner =element['displayname_owner'];
+  final parent = element['parent'];
+  final expiration = DateTime.parse(element['expiration']);
+  final token = element['token'];
+  final uidFileOwner = element['uid_file_owner'];
+  final note = element['note'];
+  final label = element['label'];
+  final displaynameFileOwner =element['displayname_file_owner'];
+  final path = element['path'];
+  final itemType =element['item_type'];
+  final mimeType = element['mimetype'];
+  final storageId = element['storage_id'];
+  final storage = element['storage'];
+  final itemSource =element['item_source'];
+  final fileSource =element['file_source'];
+  final fileParent =element['file_parent'];
+  final fileTarget = element['file_target'];
+  final shareWith = element['share_with'];
+  final shareWithDisplayName =element['share_with_displayname'];
+  final mailSend = element['mail_send'];
+  final hideDownload = element['hide_download'];
+  final password = element['password'];
+  final url = element['url'];
+
+  final permissionsNumber = element['permissions'];
   final permissions = Permissions.fromInt(permissionsNumber);
 
   return Share(

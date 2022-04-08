@@ -1,5 +1,6 @@
 import '../../nextcloud.dart';
 import '../network.dart';
+import 'dart:convert';
 
 /// SharesClient class
 class SharesClient {
@@ -47,7 +48,9 @@ class SharesClient {
   Future<Share> getShare(int id) async {
     final url = _getUrl('/shares/$id');
     final response = await _network.send('GET', url, [200]);
-    return sharesFromSharesXml(response.body).single;
+    final Map<String, dynamic> map = json.decode(response.body);
+    return shareFromShareMap(map['ocs']['data'][0]);
+    // return sharesFromSharesXml(response.body).single;
   }
 
   /// Get a share by [id]
