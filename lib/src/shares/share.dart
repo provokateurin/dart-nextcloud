@@ -221,15 +221,22 @@ class Permissions {
 
 /// Converts the shares xml to a list of share objects
 List<Share> sharesFromSharesXml(String xmlStr) {
+  final Map<String, dynamic> map = json.decode(xmlStr);
   // Initialize a list to store the FileInfo Objects
   final tree = [];
 
-  // parse the xml using the xml.XmlDocument.parse method
-  final xmlDocument = xml.XmlDocument.parse(xmlStr);
+  // // parse the xml using the xml.XmlDocument.parse method
+  // final xmlDocument = xml.XmlDocument.parse(xmlStr);
 
-  // Iterate over the response to find all share elements and parse the information
-  for (final response in xmlDocument.findAllElements('element')) {
-    tree.add(shareFromShareXml(response));
+  // // Iterate over the response to find all share elements and parse the information
+  // for (final response in xmlDocument.findAllElements('element')) {
+  //   tree.add(shareFromShareXml(response));
+  // }
+  // return tree.cast<Share>();
+  for (final response in map['ocs']['data']) {
+    // for (final r in response[0]) {
+      tree.add(shareFromShareMap(response));
+    // }
   }
   return tree.cast<Share>();
 }
