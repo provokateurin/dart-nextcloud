@@ -150,9 +150,6 @@ class RequestException implements Exception {
   // ignore: public_member_api_docs
   String method;
 
-  @override
-  String toString() =>
-      'RequestException{method: $method, url: $url, statusCode: $statusCode, body: $body}';
 }
 
 /// Organizes the requests
