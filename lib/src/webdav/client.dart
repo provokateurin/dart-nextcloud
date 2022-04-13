@@ -471,7 +471,7 @@ class WebDavProps {
   static const ocId = 'oc:id';
 
   /// The unique id for the file within the instance
-  static const ocFileId = 'oc:fileid';
+  static const ocFileId = 'oc:fileId';
 
   /// List of user specified tags. Can be modified.
   static const ocTags = 'oc:tags';
