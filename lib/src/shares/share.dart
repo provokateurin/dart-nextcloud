@@ -221,7 +221,7 @@ class Permissions {
 
 /// Converts the shares xml to a list of share objects
 List<Share> sharesFromSharesXml(String xmlStr) {
-  final Map<String, dynamic> map = json.decode(xmlStr);
+  final  map = json.decode(xmlStr);
   // Initialize a list to store the FileInfo Objects
   final tree = [];
 
@@ -235,7 +235,7 @@ List<Share> sharesFromSharesXml(String xmlStr) {
   // return tree.cast<Share>();
   for (final response in map['ocs']['data']) {
     // for (final r in response[0]) {
-      tree.add(shareFromShareMap(response));
+      tree.add(shareFromShareMap(response as Map<String, dynamic>));
     // }
   }
   return tree.cast<Share>();
@@ -243,14 +243,14 @@ List<Share> sharesFromSharesXml(String xmlStr) {
 
 /// Converts the shares xml to a list of share objects
 Share shareFromRequestResponseXml(String xmlStr) {
-  final Map<String, dynamic> map = json.decode(xmlStr);
+  final map = json.decode(xmlStr);
   // // parse the xml using the xml.XmlDocument.parse method
   // final xmlDocument = xml.XmlDocument.parse(xmlStr);
 
   // // Get the created share
   // final response = xmlDocument.findAllElements('data').single;
   // return shareFromShareXml(response);
-  return shareFromShareMap(map['ocs']['data']);
+  return shareFromShareMap(map['ocs']['data'] as Map<String, dynamic>);
 }
 
 /// Converts a share xml a a share object
@@ -329,13 +329,13 @@ Share shareFromShareXml(xml.XmlElement element) {
 }
 
 Share shareFromShareMap(Map element) {
-  final id = int.parse(element['id']);
+  final id = int.parse(element['id'] as String);
   final shareType = element['share_type'];
   final stime = element['stime'];
   final uidOwner = element['uid_owner'];
   final displaynameOwner =element['displayname_owner'];
   final parent = element['parent'];
-  final expiration = DateTime.parse(element['expiration']?? DateTime.now().toIso8601String());
+  final expiration = DateTime.parse(element['expiration'] as String ?? DateTime.now().toIso8601String());
   final token = element['token'];
   final uidFileOwner = element['uid_file_owner'];
   final note = element['note'];
@@ -358,36 +358,36 @@ Share shareFromShareMap(Map element) {
   final url = element['url'];
 
   final permissionsNumber = element['permissions'];
-  final permissions = Permissions.fromInt(permissionsNumber);
+  final permissions = Permissions.fromInt(permissionsNumber as int);
 
   return Share(
     id: id,
-    shareType: shareType,
-    uidOwner: uidOwner,
-    displaynameOwner: displaynameOwner,
+    shareType: shareType as int,
+    uidOwner: uidOwner as String,
+    displaynameOwner: displaynameOwner as String,
     permissions: permissions,
-    stime: stime,
-    parent: parent,
+    stime: stime as int,
+    parent: parent as String,
     expiration: expiration,
-    token: token,
-    uidFileOwner: uidFileOwner,
-    note: note,
-    label: label,
-    displaynameFileOwner: displaynameFileOwner,
-    path: path,
-    itemType: itemType,
-    mimeType: mimeType,
-    storageId: storageId,
-    storage: storage,
-    itemSource: itemSource,
-    fileSource: fileSource,
-    fileParent: fileParent,
-    fileTarget: fileTarget,
-    shareWith: shareWith,
-    shareWithDisplayName: shareWithDisplayName,
-    mailSend: mailSend,
-    hideDownload: hideDownload,
-    password: password,
-    url: url,
+    token: token as String,
+    uidFileOwner: uidFileOwner as String,
+    note: note as String,
+    label: label as String,
+    displaynameFileOwner: displaynameFileOwner as String,
+    path: path as String,
+    itemType: itemType as String,
+    mimeType: mimeType as String,
+    storageId: storageId as String,
+    storage: storage as int,
+    itemSource: itemSource as int,
+    fileSource: fileSource as int,
+    fileParent: fileParent as int,
+    fileTarget: fileTarget as String,
+    shareWith: shareWith as String,
+    shareWithDisplayName: shareWithDisplayName as String,
+    mailSend: mailSend as int,
+    hideDownload: hideDownload as int,
+    password: password as String,
+    url: url as String,
   );
 }
