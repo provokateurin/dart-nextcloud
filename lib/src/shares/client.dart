@@ -48,8 +48,9 @@ class SharesClient {
   Future<Share> getShare(int id) async {
     final url = _getUrl('/shares/$id');
     final response = await _network.send('GET', url, [200]);
-    final Map<String, dynamic> map = json.decode(response.body);
-    return shareFromShareMap(map['ocs']['data'][0]);
+    // final Map<String, dynamic> map = json.decode(response.body);
+    final map = json.decode(response.body);
+    return shareFromShareMap(map['ocs']['data'][0] as Map<String, dynamic>);
     // return sharesFromSharesXml(response.body).single;
   }
 
