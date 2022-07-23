@@ -1,3 +1,6 @@
+# v3.0.2+1
+* Add deprecation notice
+
 # v3.0.2
 * Switch license to BSD-3
 

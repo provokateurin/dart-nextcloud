@@ -1,34 +1,4 @@
-# nextcloud
+# This package has been deprecated
 
-A Nextcloud client for dart
-
-## Features
-
-* Creating directories, removing directories and files
-* Uploading and downloading files
-* Directory listing
-* Get a user's full name and the groups the user belongs to
-* Move and copy files and folders
-* Create shares, update them and delete them. All share types supported (except federate cloud sharing)
-* Search for users to share a file or folder with (sharees)
-* Create chats with other users, message them and received messages (Talk)
-* Search for users to create a chat with
-* Get the avatar image of a user
-
-## Usage/Example
-
-[https://github.com/jld3103/dart-nextcloud/blob/master/example/example.dart](https://github.com/jld3103/dart-nextcloud/blob/master/example/example.dart)
-
-## Development
-
-You can create a Docker development instance of Nextcloud using `./scripts/run.sh`.  
-It already has everything that is necessary installed.  
-The username is `admin` and the password is `password`.
-
-## Testing
-
-The testing should also be done using the Docker development instance of Nextcloud.
-
-Then run the tests using `./scripts/test.sh`.  
-If you only want to run a subset of tests, pass the file names of the tests like this:  
-`./scripts/test.sh test/webdav_test.dart test/talk_test.dart`
+Please go to https://github.com/jld3103/nextcloud-neon/tree/main/packages/nextcloud and install the new client.  
+The new client will eventually replace this code when all endpoints of the old client have been implemented in the new client (see https://github.com/jld3103/nextcloud-neon/issues/1 for status on that).
